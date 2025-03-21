@@ -34,6 +34,7 @@ const OperationFee = sequelize.define('OperationFee', {
   generate_date: {
     type: DataTypes.DATE,
     allowNull: false,
+    defaultValue: Sequelize.NOW, 
   },
   paid_date: {
     type: DataTypes.DATE,

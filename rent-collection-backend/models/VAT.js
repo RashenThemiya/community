@@ -34,6 +34,7 @@ const VAT = sequelize.define('VAT', {
   generate_date: {
     type: DataTypes.DATE,
     allowNull: false,
+    defaultValue: Sequelize.NOW, 
   },
   paid_date: {
     type: DataTypes.DATE,

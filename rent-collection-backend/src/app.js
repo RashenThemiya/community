@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors'); // Import the CORS package
+const cors = require('cors');
 const sequelize = require('../config/database');
 const tenantRoutes = require('../routes/tenantRoutes');
 const adminRoutes = require('../routes/adminRoutes');
@@ -11,13 +11,10 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 
-// ✅ Allow requests from React app (running on http://localhost:3000)
 const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
-// Body parser middleware
 app.use(bodyParser.json());
-
 
 console.log("Loading environment variables...");
 console.log("Super Admin Email:", process.env.DEFAULT_SUPERADMIN_EMAIL);
@@ -29,20 +26,19 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 
-// Function to create default Super Admin and Admin
 const createDefaultAdmins = async () => {
   try {
     const users = [
       {
         username: process.env.DEFAULT_SUPERADMIN_USERNAME,
         email: process.env.DEFAULT_SUPERADMIN_EMAIL,
-        password: process.env.DEFAULT_SUPERADMIN_PASSWORD, // Do NOT hash here
+        password: process.env.DEFAULT_SUPERADMIN_PASSWORD,
         role: "superadmin"
       },
       {
         username: process.env.DEFAULT_ADMIN_USERNAME,
         email: process.env.DEFAULT_ADMIN_EMAIL,
-        password: process.env.DEFAULT_ADMIN_PASSWORD, // Do NOT hash here
+        password: process.env.DEFAULT_ADMIN_PASSWORD,
         role: "admin"
       }
     ];
@@ -50,7 +46,7 @@ const createDefaultAdmins = async () => {
     for (const user of users) {
       const existingUser = await Admin.findOne({ where: { email: user.email } });
       if (!existingUser) {
-        await Admin.create(user); // Password will be hashed inside model
+        await Admin.create(user);
         console.log(`✅ Default ${user.role} account created: ${user.email}`);
       } else {
         console.log(`⚡ Default ${user.role} already exists: ${user.email}`);
@@ -67,6 +63,7 @@ sequelize.sync({ alter: true }).then(() => {
   createDefaultAdmins();
 });
 
-// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
