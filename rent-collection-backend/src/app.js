@@ -47,23 +47,23 @@ const createDefaultAdmins = async () => {
       const existingUser = await Admin.findOne({ where: { email: user.email } });
       if (!existingUser) {
         await Admin.create(user);
-        console.log(`✅ Default ${user.role} account created: ${user.email}`);
+        console.log(` Default ${user.role} account created: ${user.email}`);
       } else {
-        console.log(`⚡ Default ${user.role} already exists: ${user.email}`);
+        console.log(` Default ${user.role} already exists: ${user.email}`);
       }
     }
   } catch (err) {
-    console.error('❌ Error creating default admins:', err.message);
+    console.error(' Error creating default admins:', err.message);
   }
 };
 
 // Sync database and create default admins
 sequelize.sync({ alter: true }).then(() => {
-  console.log('📦 Database synced!');
+  console.log(' Database synced!');
   createDefaultAdmins();
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(` Server running on port ${PORT}`);
 });

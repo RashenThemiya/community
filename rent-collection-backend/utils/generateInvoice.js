@@ -10,36 +10,36 @@ const { fetchAndCalculateDues } = require("./fetchAndCalculateDues");
 
 async function generateInvoice(shop_id, monthYear) {
   try {
-    // 🔄 Fetch shop details
+    //  Fetch shop details
     const shop = await Shop.findOne({ where: { shop_id } });
 
     if (!shop) {
       throw new Error(`Shop with ID ${shop_id} not found.`);
     }
 
-    // 📌 Fetch and calculate dues
+    //  Fetch and calculate dues
     const { totalArrest, totalPartPaid, totalUnpaid, totalUnpaidFine } = 
     await fetchAndCalculateDues(shop_id);
 
-    // 🏛️ Convert values to numbers
+    //  Convert values to numbers
     const rentAmount = parseFloat(shop.rent_amount) || 0;
     const operationFee = parseFloat(shop.operation_fee) || 0;
     const vatRate = parseFloat(shop.vat_rate) || 0;
 
-    // 🔍 Fetch Shop Balance for the given shop_id
+    //  Fetch Shop Balance for the given shop_id
     const shopBalanceRecord = await ShopBalance.findOne({ where: { shop_id } });
     const shopBalanceAmount = shopBalanceRecord ? parseFloat(shopBalanceRecord.balance_amount) : 0;
 
-    // 📌 VAT Calculation (Fixed)
+    //  VAT Calculation (Fixed)
     const vatAmount = (rentAmount + operationFee) * (vatRate / 100);
 
-    // 🏛️ Calculate final values
+    //  Calculate final values
     const totalArrears = totalArrest + totalPartPaid + totalUnpaid;
     const fineAmount = totalUnpaidFine;
     const totalAmountToPay =
       totalArrears + rentAmount + operationFee + vatAmount + fineAmount - shopBalanceAmount;
 
-    // 📝 Create invoice entry
+    //  Create invoice entry
     const invoice = await Invoice.create({
       invoice_id: `INV-${shop_id}-${monthYear.replace("-", "")}`,
       shop_id,
@@ -54,7 +54,7 @@ async function generateInvoice(shop_id, monthYear) {
       status: "Unpaid",
     });
 
-    // 📌 Create linked entries in related tables
+    //  Create linked entries in related tables
     await Rent.create({
       shop_id,
       invoice_id: invoice.invoice_id,
