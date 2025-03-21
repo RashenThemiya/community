@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min";
+import "bootstrap/dist/js/bootstrap.bundle.min"; // ✅ Add this
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -12,13 +12,14 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-         {/* Navbar is always visible on every page */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/manager-dashboard" element={<ManagerDashboard />} />
-        </Routes>
+        <div className="min-h-screen bg-gray-100">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/manager-dashboard" element={<ManagerDashboard />} />
+          </Routes>
+        </div>
       </Router>
     </AuthProvider>
   );

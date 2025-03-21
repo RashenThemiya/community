@@ -12,10 +12,12 @@ const bcrypt = require('bcrypt');
 const app = express();
 
 // ✅ Allow requests from React app (running on http://localhost:3000)
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // Body parser middleware
 app.use(bodyParser.json());
+
 
 console.log("Loading environment variables...");
 console.log("Super Admin Email:", process.env.DEFAULT_SUPERADMIN_EMAIL);
