@@ -15,6 +15,7 @@ import Report from './pages/Report';
 import Setting from './pages/Setting';
 import AddShop from './pages/AddShop';
 import EditShop from './pages/EditShop';
+import ViewShops from './pages/ViewShop';
 
 
 
@@ -37,6 +38,7 @@ function App() {
             <Route path="/settings" element={<Setting />} />
             <Route path="/add-shop" element={<AddShop />} />
             <Route path="/edit-shops" element={<EditShop />} />
+            <Route path="/view-shops" element={<ViewShops />} />
           </Routes>
         </div>
       </Router>
