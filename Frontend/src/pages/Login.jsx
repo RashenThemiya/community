@@ -19,7 +19,8 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await api.post("/admin/login", { email, password });
+            const response = await api.post("/api/admin/login", { email, password });
+
 
             const { token, role } = response.data;
             localStorage.setItem("token", token);

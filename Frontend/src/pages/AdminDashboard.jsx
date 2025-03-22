@@ -3,12 +3,14 @@ import Sidebar from '../components/Sidebar';
 
 const AdminDashboard = () => {
     return (
+
         <div className="flex min-h-screen bg-gray-100">
             {/* Sidebar Component */}
-            <Sidebar />
 
+            <div> <Sidebar /></div>
             {/* Main Content */}
             <div className="flex-1 p-6 transition-all duration-300">
+
                 <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
                 <p className="text-gray-600 mt-2">Welcome to the admin dashboard. Manage your content efficiently.</p>
 
