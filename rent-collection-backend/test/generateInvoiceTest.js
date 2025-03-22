@@ -2,7 +2,7 @@ const { generateInvoice } = require("../utils/generateInvoice");
 
 async function testInvoiceGeneration() {
     try {
-        const shop_id = "SHP009";
+        const shop_id = "SHP010";
         const month_year = "2025-03";
 
         console.log("🔄 Generating Invoice for:", shop_id, month_year);
