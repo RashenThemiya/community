@@ -1,6 +1,7 @@
 const { Sequelize } = require('sequelize');
 const Invoice = require('../models/Invoice');
 const Fine = require('../models/Fine'); // Import Fine model
+const AuditTrail = require('../models/AuditTrail'); // Import AuditTrail model
 const { applyFine } = require('../utils/applyFine'); // Import applyFine function
 const dayjs = require('dayjs');
 
@@ -47,6 +48,17 @@ async function applyFineToAllInvoices() {
             const result = await applyFine(invoice.invoice_id);
             if (result.success) {
                 totalFinedInvoices++;
+
+                // Log Audit Trail for fine application
+                await AuditTrail.create({
+                    shop_id: invoice.shop_id,
+                    invoice_id: invoice.invoice_id,
+                    event_type: 'Fine Applied',
+                    event_description: `Fine applied to invoice #${invoice.invoice_id} due to overdue payment.`,
+                    old_value: null, // No previous fine value
+                    new_value: result.fineAmount, // Fine amount applied
+                    user_actioned: 'System' // Since this is an automated process
+                });
             }
         }
 
