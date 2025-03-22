@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/axiosInstance"; // Import axios instance
 
@@ -31,7 +31,7 @@ const EditShop = () => {
         setError(null);
 
         try {
-            const response = await api.get(`/api/shops/${shopId}`); // Axios automatically includes token
+            const response = await api.get(`/api/shops/${shopId}`);
             setShop(response.data);
         } catch (err) {
             setError(err.response?.data?.message || "Failed to fetch shop details.");
@@ -50,15 +50,34 @@ const EditShop = () => {
         e.preventDefault();
         setLoading(true);
 
+        // Prevent submitting the form if `shop_name` is empty
+        if (!shop.shop_name.trim()) {
+            setError("Shop Name cannot be empty.");
+            setLoading(false);
+            return;
+        }
+
+        if (!shopId) {
+            setError("Shop ID is required.");
+            setLoading(false);
+            return;
+        }
+
         try {
-            await api.put(`/api/shops/${shopId}`, shop); // Axios instance sends token
-            navigate("/shop-management");
+            await api.put(`/api/shops/${shopId}`, shop); // Send the updated shop data
+            navigate("/shop-management"); // Redirect to the shop management page after success
         } catch (err) {
             setError(err.response?.data?.message || "Failed to update shop.");
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!shop.shop_name) {
+            setError(null); // Clear error if shop_name is empty
+        }
+    }, [shop.shop_name]);
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
