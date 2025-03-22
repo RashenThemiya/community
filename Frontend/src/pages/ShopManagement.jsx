@@ -7,10 +7,10 @@ const ShopManagement = () => {
     return (
         <div className="flex">
             {/* Sidebar */}
-            <Sidebar isExpanded={true} setIsExpanded={() => { }} />
+            <div> <Sidebar isExpanded={true} setIsExpanded={() => { }} /> </div>
 
             {/* Main Content */}
-            <div className="ml-64 p-8 w-full">
+            <div className="p-8 w-full">
                 <div className="text-3xl font-semibold mb-8">
                     <h1>Shop Management</h1>
                     <p className="text-lg text-gray-500">Manage your shops efficiently</p>
