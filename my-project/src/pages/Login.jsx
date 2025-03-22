@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons for password toggle
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import.meta.env.VITE_API_BASE_URL
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,14 +16,13 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); 
+    setError("");
     setLoading(true); // Start loading
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/admin/login`, // ✅ Corrected
-        { email, password }
-      );
+      const response = await axios.post("/api/admin/login", { email, password });
+
+
 
       const { token, role } = response.data;
 
@@ -45,7 +45,7 @@ const Login = () => {
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="card p-4 shadow" style={{ width: "400px" }}>
         <h2 className="text-center mb-3">Admin Login</h2>
-        
+
         {error && <div className="alert alert-danger text-center">{error}</div>}
 
         <form onSubmit={handleLogin}>
@@ -75,7 +75,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <span 
+              <span
                 className="input-group-text"
                 onClick={() => setShowPassword(!showPassword)}
                 style={{ cursor: "pointer" }}
@@ -86,8 +86,8 @@ const Login = () => {
           </div>
 
           {/* Submit Button */}
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary w-100"
             disabled={loading}
           >
