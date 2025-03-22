@@ -27,7 +27,7 @@ router.get('/:shopId', authenticateUser, authorizeRole(['admin', 'superadmin']),
 });
 
 // Add new shop (only accessible by Super Admin)
-router.post('/', authenticateUser, authorizeRole(['superadmin']), async (req, res) => {
+router.post('/', authenticateUser, authorizeRole(["admin", "superadmin"]), async (req, res) => {
   const { shop_id, shop_name, location, rent_amount, vat_rate, operation_fee } = req.body;
 
   if (!shop_id || !shop_name || !location || !rent_amount || !vat_rate || !operation_fee) {
@@ -35,13 +35,13 @@ router.post('/', authenticateUser, authorizeRole(['superadmin']), async (req, re
   }
 
   try {
-    const newShop = await Shop.create({ 
-      shop_id, 
-      shop_name, 
-      location, 
-      rent_amount, 
-      vat_rate, 
-      operation_fee 
+    const newShop = await Shop.create({
+      shop_id,
+      shop_name,
+      location,
+      rent_amount,
+      vat_rate,
+      operation_fee
     });
     res.status(201).json({ message: 'Shop added successfully', shopId: newShop.shop_id });
   } catch (err) {
@@ -50,7 +50,7 @@ router.post('/', authenticateUser, authorizeRole(['superadmin']), async (req, re
 });
 
 // Update shop (only accessible by Super Admin)
-router.put('/:shopId', authenticateUser, authorizeRole(['superadmin']), async (req, res) => {
+router.put('/:shopId', authenticateUser, authorizeRole(["admin", "superadmin"]), async (req, res) => {
   const { shopId } = req.params;
   const { shop_name, location, rent_amount, vat_rate, operation_fee } = req.body;
 
