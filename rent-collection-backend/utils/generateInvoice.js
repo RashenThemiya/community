@@ -75,7 +75,7 @@ async function generateInvoice(shop_id, monthYear) {
       vat_amount: vatAmount,
       status: "Unpaid",
     });
-
+   
     // 📝 Log event in audit_trail
     await AuditTrail.create({
       shop_id,
