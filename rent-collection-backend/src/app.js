@@ -8,7 +8,7 @@ const adminRoutes = require('../routes/adminRoutes');
 const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
-require("./jobs/cronJob");  // If placed in /jobs/
+require("../jobs/cronJob");  // If placed in /jobs/
 
 const app = express();
 

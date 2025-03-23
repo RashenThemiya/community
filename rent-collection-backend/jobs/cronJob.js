@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const { generateInvoice } = require("./generateInvoice");
+const { generateInvoice } = require("../utils/generateInvoice");
 const Shop = require("../models/Shop");
 
 async function generateMonthlyInvoices() {
