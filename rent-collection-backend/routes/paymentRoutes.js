@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/by-shop/:shopId', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { shopId } = req.params;
   const { amountPaid, paymentMethod } = req.body;
-
+//payment method-'Cash', 'Bank Transfer', 'Cheque', 'Correction Made'
   // Validate input
   if (!amountPaid || !paymentMethod) {
     return res.status(400).json({ success: false, message: 'Amount paid and payment method are required' });
@@ -31,6 +31,7 @@ router.post('/by-shop/:shopId', authenticateUser, authorizeRole(['admin', 'super
 router.post('/by-invoice/:invoiceId', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { invoiceId } = req.params;
   const { amountPaid, paymentMethod } = req.body;
+//payment method-'Cash', 'Bank Transfer', 'Cheque', 'Correction Made'
 
   // Validate input
   if (!amountPaid || !paymentMethod) {

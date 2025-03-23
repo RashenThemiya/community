@@ -6,7 +6,9 @@ const Fine = require('../models/Fine');
 const ShopBalance = require('../models/ShopBalance');
 const AuditTrail = require('../models/AuditTrail');
 const dayjs = require('dayjs');
-
+const { 
+    runInvoicePaymentProcessWithoutAddingToShopBalance
+  } = require('../utils/processPayment');
 async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amount, admin_put_amount, edit_reason = null }) {
     const t = await sequelize.transaction();
     try {
@@ -70,6 +72,11 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
 
         shopBalance.last_updated = new Date();
         await shopBalance.save({ transaction: t });
+
+        // If shop balance is greater than 0, run the invoice payment process
+        if (shopBalance.balance_amount > 0) {
+            await runInvoicePaymentProcessWithoutAddingToShopBalance(shop_id);
+        }
 
         // Log Audit Trail
         await AuditTrail.create(
