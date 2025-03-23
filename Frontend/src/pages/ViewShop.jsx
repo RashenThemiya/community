@@ -89,11 +89,12 @@ const ViewShops = () => {
                                         <td className="px-6 py-4 text-sm">{shop.operation_fee}</td>
                                         <td className="px-6 py-4 text-sm text-center">
                                             <button
-                                                onClick={() => navigate("/edit-shops")}
+                                                onClick={() => navigate(`/edit-shop/${shop.shop_id}`)}
                                                 className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 focus:outline-none transition duration-200"
                                             >
                                                 Edit
                                             </button>
+
                                             <button
                                                 onClick={() => handleDeleteShop(shop.shop_id)}
                                                 className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none transition duration-200 ml-2"
