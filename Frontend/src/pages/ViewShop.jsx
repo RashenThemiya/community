@@ -89,7 +89,7 @@ const ViewShops = () => {
                                         <td className="px-6 py-4 text-sm">{shop.operation_fee}</td>
                                         <td className="px-6 py-4 text-sm text-center">
                                             <button
-                                                onClick={() => navigate("/add-shop")}
+                                                onClick={() => navigate("/edit-shops")}
                                                 className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 focus:outline-none transition duration-200"
                                             >
                                                 Edit
