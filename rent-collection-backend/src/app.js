@@ -8,6 +8,7 @@ const adminRoutes = require('../routes/adminRoutes');
 const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
+const paymentRoutes = require('../routes/paymentRoutes');  // Import payment routes
 require("../jobs/cronJob");  // If placed in /jobs/
 
 const app = express();
@@ -26,6 +27,7 @@ console.log("JWT Secret:", process.env.JWT_SECRET);
 app.use('/api/tenants', tenantRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
+app.use('/api/payments', paymentRoutes);  // Payment-related routes
 
 const createDefaultAdmins = async () => {
   try {
