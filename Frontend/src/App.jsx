@@ -1,21 +1,21 @@
-import React from 'react'
+import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
-import ManagerDashboard from "./pages/ManagerDashboard";
-import ShopManagement from './pages/ShopManagement';
-import TenantManagement from './pages/TenantManagement';
+import Home from "./pages/Home";
 import Invoice from './pages/Invoice';
+import Login from "./pages/Login";
+import ManagerDashboard from "./pages/ManagerDashboard";
 import Payment from './pages/Payment';
 import Report from './pages/Report';
 import Setting from './pages/Setting';
-import AddShop from './pages/AddShop';
-import EditShop from './pages/EditShop';
-import ViewShops from './pages/ViewShop';
+import AddShop from './pages/ShopManagement/AddShop';
+import EditShop from './pages/ShopManagement/EditShop';
+import ShopManagement from './pages/ShopManagement/ShopManagement';
+import ViewShops from './pages/ShopManagement/ViewShop';
+import TenantManagement from './pages/TenantManagement/TenantManagement';
 
 
 

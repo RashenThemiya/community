@@ -148,4 +148,53 @@ async function processInvoicePayments(invoice, remainingBalance, t) {
 }
 
 
-module.exports = { processPaymentByShopId, processPaymentByInvoiceId };
+async function runInvoicePaymentProcessWithoutAddingToShopBalance(shopId) {
+    const t = await sequelize.transaction();
+    try {
+        // Fetch unpaid invoices for the given shop
+        const invoices = await Invoice.findAll({
+            where: {
+                shop_id: shopId,
+                status: { [Sequelize.Op.in]: ['Unpaid', 'Partially Paid', 'Arrest'] }
+            },
+            order: [['createdAt', 'ASC']],
+            transaction: t
+        });
+
+        if (!invoices.length) {
+            await t.rollback();
+            return { success: false, message: 'No unpaid invoices found for this shop.' };
+        }
+
+        // Get shop balance (without modifying it)
+        const shopBalance = await ShopBalance.findByPk(shopId, { transaction: t });
+        if (!shopBalance || shopBalance.balance_amount <= 0) {
+            await t.rollback();
+            return { success: false, message: 'No sufficient balance for payment processing' };
+        }
+
+        let remainingBalance = shopBalance.balance_amount;
+
+        // Process invoices without updating ShopBalance
+        for (const invoice of invoices) {
+            remainingBalance = await processInvoicePayments(invoice, remainingBalance, t);
+            if (remainingBalance <= 0) break;
+        }
+
+        await t.commit();
+        return { success: true, message: 'Invoice payment process completed without modifying shop balance.' };
+    } catch (error) {
+        await t.rollback();
+        console.error('❌ Invoice Payment Processing Error:', error);
+        return { success: false, message: 'Invoice payment processing failed' };
+    }
+}
+
+module.exports = { 
+    processPaymentByShopId, 
+    processPaymentByInvoiceId, 
+    processInvoicePayments, 
+    runInvoicePaymentProcessWithoutAddingToShopBalance
+};
+
+

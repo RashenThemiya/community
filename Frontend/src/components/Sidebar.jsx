@@ -20,18 +20,12 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="flex h-screen">
-            {/* Sidebar */}
-            <div className={`bg-gray-900 text-white transition-all duration-300 ${isExpanded ? "w-64" : "w-16"} fixed md:relative top-0 left-0 h-full z-50 flex flex-col`}>
-                {/* Sidebar Toggle Button */}
-                <button
-                    className="text-white p-4 focus:outline-none hover:bg-gray-700 transition md:flex items-center justify-center"
-                    onClick={toggleSidebar}
-                >
+        <>
+            {/* Sidebar for larger screens (Desktop) */}
+            <div className={`bg-gray-900 text-white transition-all duration-300 ${isExpanded ? "w-64" : "w-16"} fixed md:relative top-0 left-0 h-full z-50 flex-col hidden md:flex`}>
+                <button className="text-white p-4 focus:outline-none hover:bg-gray-700 transition md:flex items-center justify-center" onClick={toggleSidebar}>
                     {isExpanded ? <FaTimes size={24} /> : <FaBars size={24} />}
                 </button>
-
-                {/* Sidebar Menu Items */}
                 <ul className="mt-4 space-y-2">
                     {menuItems.map((item) => (
                         <li key={item.path}>
@@ -44,8 +38,15 @@ const Sidebar = () => {
                 </ul>
             </div>
 
-
-        </div>
+            {/* Sidebar for mobile view (Bottom navigation) */}
+            <div className="bg-gray-900 text-white fixed bottom-0 left-0 w-full flex justify-around p-2 md:hidden">
+                {menuItems.map((item) => (
+                    <Link key={item.path} to={item.path} className="flex flex-col items-center">
+                        <span className="text-xl">{item.icon}</span>
+                    </Link>
+                ))}
+            </div>
+        </>
     );
 };
 

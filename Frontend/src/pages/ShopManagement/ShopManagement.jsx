@@ -1,17 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-
+import Sidebar from "../../components/Sidebar";
 
 const ShopManagement = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex">
-            {/* Sidebar */}
-            <div> <Sidebar isExpanded={true} setIsExpanded={() => { }} /> </div>
+        <div className="flex flex-col md:flex-row h-screen">
+            {/* Sidebar - Ensure proper width */}
+            <Sidebar />
 
             {/* Main Content */}
-            <div className=" p-8 w-full">
+            <div className="p-8 w-full overflow-auto">
                 <div className="text-3xl font-semibold mb-8">
                     <h1>Shop Management</h1>
                     <p className="text-lg text-gray-500">Manage your shops efficiently</p>

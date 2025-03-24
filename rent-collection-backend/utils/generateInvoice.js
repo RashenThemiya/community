@@ -5,7 +5,9 @@ const Vat = require("../models/Vat");
 const AuditTrail = require("../models/AuditTrail");
 const Shop = require("../models/Shop");
 const ShopBalance = require("../models/ShopBalance");
-
+const { 
+  runInvoicePaymentProcessWithoutAddingToShopBalance
+} = require('../utils/processPayment');
 const { fetchAndCalculateDues } = require("./fetchAndCalculateDues");
 
 async function generateInvoice(shop_id, monthYear) {
@@ -36,8 +38,10 @@ async function generateInvoice(shop_id, monthYear) {
     //  Calculate final values
     const totalArrears = totalArrest + totalPartPaid + totalUnpaid;
     const fineAmount = totalUnpaidFine;
-    const totalAmountToPay =
+    let totalAmountToPay =
       totalArrears + rentAmount + operationFee + vatAmount + fineAmount - shopBalanceAmount;
+      totalAmountToPay = Math.max(0, totalAmountToPay);
+    
 
     //  Create invoice entry
     const invoice = await Invoice.create({
@@ -75,7 +79,7 @@ async function generateInvoice(shop_id, monthYear) {
       vat_amount: vatAmount,
       status: "Unpaid",
     });
-
+   
     // 📝 Log event in audit_trail
     await AuditTrail.create({
       shop_id,
@@ -86,7 +90,11 @@ async function generateInvoice(shop_id, monthYear) {
     });
 
     console.log(`✅ Invoice ${invoice.invoice_id} generated successfully.`);
+    if (shopBalanceAmount  > 0) {
+      await runInvoicePaymentProcessWithoutAddingToShopBalance(shop_id);
+    }
     return invoice;
+
   } catch (error) {
     console.error("❌ Error generating invoice:", error);
     throw error;
