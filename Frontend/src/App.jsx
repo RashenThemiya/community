@@ -15,6 +15,7 @@ import AddShop from './pages/ShopManagement/AddShop';
 import EditShop from './pages/ShopManagement/EditShop';
 import ShopManagement from './pages/ShopManagement/ShopManagement';
 import ViewShops from './pages/ShopManagement/ViewShop';
+import AddTenant from './pages/TenantManagement/AddTenant';
 import TenantManagement from './pages/TenantManagement/TenantManagement';
 
 
@@ -39,6 +40,8 @@ function App() {
             <Route path="/add-shop" element={<AddShop />} />
             <Route path="/edit-shop/:id" element={<EditShop />} />
             <Route path="/view-shops" element={<ViewShops />} />
+            <Route path="/add-tenant" element={<AddTenant />} />
+            
           </Routes>
         </div>
       </Router>
