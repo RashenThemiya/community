@@ -62,7 +62,5 @@ const Invoice = sequelize.define('Invoice', {
   tableName: 'invoices',
 });
 
-Shop.hasMany(Invoice, { foreignKey: 'shop_id' });
-Invoice.belongsTo(Shop, { foreignKey: 'shop_id' });
 
 module.exports = Invoice;

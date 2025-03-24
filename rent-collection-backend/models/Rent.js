@@ -15,6 +15,7 @@ const Rent = sequelize.define('Rent', {
       model: Shop,
       key: 'shop_id'
     },
+    onDelete: 'CASCADE'
   },
   invoice_id: {
     type: DataTypes.STRING,
@@ -22,6 +23,7 @@ const Rent = sequelize.define('Rent', {
       model: Invoice,
       key: 'invoice_id'
     },
+    onDelete: 'CASCADE'
   },
   rent_amount: {
     type: DataTypes.DECIMAL(10,2),
@@ -48,5 +50,6 @@ const Rent = sequelize.define('Rent', {
   timestamps: true,
   tableName: 'rents',
 });
+
 
 module.exports = Rent;

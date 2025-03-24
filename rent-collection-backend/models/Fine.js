@@ -15,6 +15,7 @@ const Fine = sequelize.define('Fine', {
       model: Shop,
       key: 'shop_id'
     },
+    onDelete: 'CASCADE'
   },
   invoice_id: {
     type: DataTypes.STRING,
@@ -22,6 +23,7 @@ const Fine = sequelize.define('Fine', {
       model: Invoice,
       key: 'invoice_id'
     },
+    onDelete: 'CASCADE'
   },
   fine_amount: {
     type: DataTypes.DECIMAL(10,2),
@@ -44,5 +46,6 @@ const Fine = sequelize.define('Fine', {
   timestamps: true,
   tableName: 'fines',
 });
+
 
 module.exports = Fine;

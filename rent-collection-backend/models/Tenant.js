@@ -42,8 +42,5 @@ const Tenant = sequelize.define('Tenant', {
   tableName: 'tenants',
 });
 
-// Relationships
-Shop.hasOne(Tenant, { foreignKey: 'shop_id' }); // One shop can have one tenant
-Tenant.belongsTo(Shop, { foreignKey: 'shop_id' }); // Each tenant belongs to a shop
 
 module.exports = Tenant;

@@ -15,8 +15,8 @@ async function testProcessPayment() {
         console.log('✅ Database connected successfully');
         await sequelize.sync(); // Ensures models are properly synced
 
-        const shopId = 'SHP001';
-        const invoiceId = 'INV-SHP009-202503';
+        const shopId = 'S002';
+        const invoiceId = 'INV-S002-202503';
         const amountPaid = 40;
         const paymentMethod = 'Cash';
 
@@ -49,7 +49,7 @@ async function testProcessPayment() {
 
 async function testRunInvoicePaymentProcessWithoutAddingToShopBalance() {
     try {
-        const shopId = 'SHP010'; // Update with a valid shop ID
+        const shopId = 'SHP005'; // Update with a valid shop ID
 
         const shopExists = await Shop.findByPk(shopId);
         if (!shopExists) {

@@ -15,6 +15,7 @@ const OperationFee = sequelize.define('OperationFee', {
       model: Shop,
       key: 'shop_id'
     },
+    onDelete: 'CASCADE'
   },
   invoice_id: {
     type: DataTypes.STRING,
@@ -22,6 +23,7 @@ const OperationFee = sequelize.define('OperationFee', {
       model: Invoice,
       key: 'invoice_id'
     },
+    onDelete: 'CASCADE'
   },
   operation_amount: {
     type: DataTypes.DECIMAL(10,2),
@@ -48,5 +50,6 @@ const OperationFee = sequelize.define('OperationFee', {
   timestamps: true,
   tableName: 'operation_fees',
 });
+
 
 module.exports = OperationFee;

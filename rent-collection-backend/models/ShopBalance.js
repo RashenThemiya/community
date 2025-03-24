@@ -10,6 +10,7 @@ const ShopBalance = sequelize.define('ShopBalance', {
       model: Shop,
       key: 'shop_id'
     },
+    onDelete: 'CASCADE',  // ✅ Deletes ShopBalance when Shop is deleted
   },
   balance_amount: {
     type: DataTypes.DECIMAL(10,2),
@@ -23,5 +24,6 @@ const ShopBalance = sequelize.define('ShopBalance', {
   timestamps: false,
   tableName: 'shop_balances',
 });
+
 
 module.exports = ShopBalance;
