@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../utils/axiosInstance";
+import api from "../../utils/axiosInstance";
 
 const EditShop = () => {
     const navigate = useNavigate();

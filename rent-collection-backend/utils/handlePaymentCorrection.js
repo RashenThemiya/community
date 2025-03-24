@@ -8,18 +8,18 @@ const AuditTrail = require('../models/AuditTrail');
 const dayjs = require('dayjs');
 const { 
     runInvoicePaymentProcessWithoutAddingToShopBalance
-  } = require('../utils/processPayment');
+} = require('../utils/processPayment');
+
 async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amount, admin_put_amount, edit_reason = null }) {
     const t = await sequelize.transaction();
     try {
         // Ensure amounts are properly parsed
-        const actualAmount = parseFloat(actual_amount) || 0;
-        const adminPutAmount = parseFloat(admin_put_amount) || 0;
+        const actualAmount = isNaN(parseFloat(actual_amount)) ? 0 : parseFloat(actual_amount);
+        const adminPutAmount = isNaN(parseFloat(admin_put_amount)) ? 0 : parseFloat(admin_put_amount);
         const missed_amount = actualAmount - adminPutAmount;
 
-        // Fetch Shop Balance
+        // Fetch or create Shop Balance
         let shopBalance = await ShopBalance.findOne({ where: { shop_id }, transaction: t });
-
         if (!shopBalance) {
             shopBalance = await ShopBalance.create(
                 { shop_id, balance_amount: 0, last_updated: new Date() },
@@ -27,14 +27,10 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
             );
         }
 
-        // Convert balance_amount to a proper number before any operations
         shopBalance.balance_amount = parseFloat(shopBalance.balance_amount) || 0;
-
-        // Store old balance for logging
         const oldBalance = shopBalance.balance_amount;
 
         if (invoice_id) {
-            // Case 1: Correction with invoice_id
             const invoice = await Invoice.findOne({ where: { invoice_id }, transaction: t });
             if (!invoice) throw new Error('Invoice not found');
 
@@ -42,18 +38,15 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
             if (!rent) throw new Error('Associated Rent not found');
 
             if (missed_amount > 0) {
-                // Refund any paid fine before deleting the fine
+                // Refund any paid fine before deleting it
                 const fine = await Fine.findOne({ where: { invoice_id }, transaction: t });
-                if (fine) {
-                    if (fine.status === 'Paid') {
-                        shopBalance.balance_amount += parseFloat(fine.amount) || 0;
-                    }
-                    await Fine.destroy({ where: { invoice_id }, transaction: t });
+                if (fine && fine.status === 'Paid') {
+                    shopBalance.balance_amount += parseFloat(fine.amount) || 0;
                 }
-
+                await Fine.destroy({ where: { invoice_id }, transaction: t });
                 shopBalance.balance_amount += missed_amount;
             } else if (missed_amount < 0) {
-                // If invoice is unpaid and older than 17 days, apply fine
+                // Apply fine if invoice is older than 17 days and unpaid
                 const invoiceAge = dayjs().diff(dayjs(invoice.createdAt), 'day');
                 if (invoice.status !== 'Paid' && invoiceAge > 17) {
                     const unpaidAmount = parseFloat(rent.amount) - parseFloat(rent.paid_amount);
@@ -63,31 +56,30 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
                 shopBalance.balance_amount += missed_amount;
             }
         } else {
-            // Case 2: Correction without invoice_id (directly on shop balance)
             shopBalance.balance_amount += missed_amount;
         }
 
-        // Ensure balance remains a proper number before formatting
         shopBalance.balance_amount = parseFloat(shopBalance.balance_amount.toFixed(2));
-
         shopBalance.last_updated = new Date();
         await shopBalance.save({ transaction: t });
 
-        // If shop balance is greater than 0, run the invoice payment process
+        // Run invoice payment process if shop balance is positive
         if (shopBalance.balance_amount > 0) {
             await runInvoicePaymentProcessWithoutAddingToShopBalance(shop_id);
         }
+
+        let newShopBalance = await ShopBalance.findOne({ where: { shop_id }, transaction: t });
 
         // Log Audit Trail
         await AuditTrail.create(
             {
                 shop_id,
-                invoice_id, // Store even if it's NULL
+                invoice_id, 
                 event_type: 'Correction',
                 event_description: `Corrected payment: actual=${actualAmount}, admin_put=${adminPutAmount}, difference=${missed_amount}`,
                 old_value: oldBalance,
-                new_value: shopBalance.balance_amount,
-                edit_reason, // Store edit reason if provided
+                new_value: newShopBalance ? newShopBalance.balance_amount : null,
+                edit_reason,
                 user_actioned: 'Admin'
             },
             { transaction: t }
