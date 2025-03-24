@@ -11,19 +11,11 @@ const OperationFee = sequelize.define('OperationFee', {
   },
   shop_id: {
     type: DataTypes.STRING(6),
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
-    onDelete: 'CASCADE'
+    allowNull: false,
   },
   invoice_id: {
     type: DataTypes.STRING,
-    references: {
-      model: Invoice,
-      key: 'invoice_id'
-    },
-    onDelete: 'CASCADE'
+    allowNull: false,
   },
   operation_amount: {
     type: DataTypes.DECIMAL(10,2),

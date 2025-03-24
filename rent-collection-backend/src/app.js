@@ -11,7 +11,7 @@ const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
 const paymentCorrection = require('../routes/paymentCorrection'); // Import payment routes
 require("../jobs/cronJob");  // If placed in /jobs/
-
+require('../models'); 
 
 const app = express();
 

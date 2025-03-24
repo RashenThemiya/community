@@ -1,8 +1,25 @@
 const express = require('express');
 const Shop = require('../models/Shop');
 const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
+const Tenant = require('../models/Tenant'); // ✅ Import Tenant model
 
 const router = express.Router();
+// Get shops without tenants
+router.get('/without-tenants', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const shopsWithoutTenants = await Shop.findAll({
+      include: [{
+        model: Tenant,
+        required: false, // Left join (shops with no tenants will still be included)
+      }],
+      where: { '$Tenant.shop_id$': null } // Filtering only shops that have no tenants
+    });
+
+    res.status(200).json(shopsWithoutTenants);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching shops without tenants', error: err.message });
+  }
+});
 
 // Get all shops (accessible by Admin and Super Admin)
 router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {

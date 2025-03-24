@@ -1,7 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Shop = require('./Shop');
-const Invoice = require('./Invoice');
 
 const Fine = sequelize.define('Fine', {
   fine_id: {
@@ -11,19 +9,11 @@ const Fine = sequelize.define('Fine', {
   },
   shop_id: {
     type: DataTypes.STRING(6),
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
-    onDelete: 'CASCADE'
+    allowNull: false, // Ensure a shop is always linked
   },
   invoice_id: {
     type: DataTypes.STRING,
-    references: {
-      model: Invoice,
-      key: 'invoice_id'
-    },
-    onDelete: 'CASCADE'
+    allowNull: false, // Optional: A fine may exist without an invoice
   },
   fine_amount: {
     type: DataTypes.DECIMAL(10,2),
@@ -46,6 +36,5 @@ const Fine = sequelize.define('Fine', {
   timestamps: true,
   tableName: 'fines',
 });
-
 
 module.exports = Fine;

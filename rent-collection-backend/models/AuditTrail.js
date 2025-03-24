@@ -11,21 +11,12 @@ const AuditTrail = sequelize.define('AuditTrail', {
   },
   shop_id: {
     type: DataTypes.STRING,
-    allowNull: true,
-    references: {
-      model: Shop,
-      key: 'shop_id',
-    },
-    onDelete: 'SET NULL', 
+    allowNull: true, 
   },
   invoice_id: {
     type: DataTypes.STRING,
     allowNull: true,
-    references: {
-      model: Invoice,
-      key: 'invoice_id',
-    },
-    onDelete: 'SET NULL', // ✅ Invoice deletion sets the field to NULL, but doesn't delete the audit record
+    // ✅ Invoice deletion sets the field to NULL, but doesn't delete the audit record
   },
   event_type: {
     type: DataTypes.ENUM(
@@ -72,10 +63,6 @@ const AuditTrail = sequelize.define('AuditTrail', {
 });
 
 // Define relationships (but without cascading deletion)
-Shop.hasMany(AuditTrail, { foreignKey: 'shop_id', onDelete: 'SET NULL', hooks: true });
-AuditTrail.belongsTo(Shop, { foreignKey: 'shop_id' });
 
-Invoice.hasMany(AuditTrail, { foreignKey: 'invoice_id', onDelete: 'SET NULL', hooks: true });
-AuditTrail.belongsTo(Invoice, { foreignKey: 'invoice_id' });
 
 module.exports = AuditTrail;

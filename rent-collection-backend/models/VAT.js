@@ -11,19 +11,11 @@ const VAT = sequelize.define('VAT', {
   },
   shop_id: {
     type: DataTypes.STRING(6),
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
-    onDelete: 'CASCADE'
+    allowNull: false,
   },
   invoice_id: {
     type: DataTypes.STRING,
-    references: {
-      model: Invoice,
-      key: 'invoice_id'
-    },
-    onDelete: 'CASCADE'
+    allowNull: false,
   },
   vat_amount: {
     type: DataTypes.DECIMAL(10,2),

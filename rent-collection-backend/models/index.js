@@ -6,42 +6,61 @@ const Invoice = require('./Invoice');
 const OperationFee = require('./OperationFee');
 const Rent = require('./Rent');
 const Tenant = require('./Tenant');
-const Vat = require('./Vat'); // ✅ Corrected import case
+const Vat = require('./Vat'); 
 const Payment = require('./Payment');
+const AuditTrail = require('./AuditTrail');
 
-// Define Associations
+// ✅ Tenant & Shop Relationship
+Shop.hasOne(Tenant, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
+Tenant.belongsTo(Shop, { foreignKey: 'shop_id', allowNull: false }); // Tenant MUST belong to a shop
+
+// ✅ Shop Balance
 Shop.hasOne(ShopBalance, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
 ShopBalance.belongsTo(Shop, { foreignKey: 'shop_id' });
 
+// ✅ Fines & Invoices
 Shop.hasMany(Fine, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
 Fine.belongsTo(Shop, { foreignKey: 'shop_id' });
 
 Invoice.hasMany(Fine, { foreignKey: 'invoice_id', onDelete: 'CASCADE', hooks: true });
 Fine.belongsTo(Invoice, { foreignKey: 'invoice_id' });
 
+// ✅ Invoices & Shops
 Shop.hasMany(Invoice, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
 Invoice.belongsTo(Shop, { foreignKey: 'shop_id' });
 
+// ✅ Operation Fees
 Shop.hasMany(OperationFee, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
 OperationFee.belongsTo(Shop, { foreignKey: 'shop_id' });
 
 Invoice.hasMany(OperationFee, { foreignKey: 'invoice_id', onDelete: 'CASCADE', hooks: true });
 OperationFee.belongsTo(Invoice, { foreignKey: 'invoice_id' });
 
+// ✅ Rent Payments
 Shop.hasMany(Rent, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
 Rent.belongsTo(Shop, { foreignKey: 'shop_id' });
 
 Invoice.hasMany(Rent, { foreignKey: 'invoice_id', onDelete: 'CASCADE', hooks: true });
 Rent.belongsTo(Invoice, { foreignKey: 'invoice_id' });
 
-Shop.hasOne(Tenant, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
-Tenant.belongsTo(Shop, { foreignKey: 'shop_id' });
-
+// ✅ VAT
 Shop.hasMany(Vat, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
 Vat.belongsTo(Shop, { foreignKey: 'shop_id' });
 
 Invoice.hasMany(Vat, { foreignKey: 'invoice_id', onDelete: 'CASCADE', hooks: true });
 Vat.belongsTo(Invoice, { foreignKey: 'invoice_id' });
 
-// Export models
-module.exports = { sequelize, Shop, ShopBalance, Fine, Invoice, OperationFee, Rent, Tenant, Vat, Payment };
+// ✅ Audit Trail (Ensure `shop_id` & `invoice_id` allow NULL for `SET NULL`)
+Shop.hasMany(AuditTrail, { foreignKey: 'shop_id', onDelete: 'SET NULL', hooks: true });
+AuditTrail.belongsTo(Shop, { foreignKey: 'shop_id', allowNull: true });
+
+Invoice.hasMany(AuditTrail, { foreignKey: 'invoice_id', onDelete: 'SET NULL', hooks: true });
+AuditTrail.belongsTo(Invoice, { foreignKey: 'invoice_id', allowNull: true });
+
+// ✅ Sync the database
+sequelize.sync({ alter: false }) 
+    .then(() => console.log("✅ Database & tables synced successfully!"))
+    .catch((err) => console.error("❌ Error syncing database:", err));
+
+// ✅ Export Models
+module.exports = { sequelize, Shop, ShopBalance, Fine, Invoice, OperationFee, Rent, Tenant, Vat, Payment, AuditTrail };

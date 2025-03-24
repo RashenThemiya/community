@@ -15,8 +15,8 @@ async function testProcessPayment() {
         console.log('✅ Database connected successfully');
         await sequelize.sync(); // Ensures models are properly synced
 
-        const shopId = 'S002';
-        const invoiceId = 'INV-S002-202503';
+        const shopId = 'SHP002';
+        const invoiceId = 'INV-SHP002-202503';
         const amountPaid = 40;
         const paymentMethod = 'Cash';
 

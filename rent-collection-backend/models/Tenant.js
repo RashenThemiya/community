@@ -10,12 +10,7 @@ const Tenant = sequelize.define('Tenant', {
   },
   shop_id: {
     type: DataTypes.STRING(6),
-    allowNull: false, // A tenant must be linked to a shop
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
-    onDelete: 'CASCADE', // If shop is deleted, remove the tenant
+    allowNull: false, // A tenant must be linked to a shop // If shop is deleted, remove the tenant
   },
   name: {
     type: DataTypes.STRING,

@@ -11,11 +11,6 @@ const Invoice = sequelize.define('Invoice', {
   shop_id: {
     type: DataTypes.STRING(6),
     allowNull: false,
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
-    onDelete: 'CASCADE',
   },
   month_year: {
     type: DataTypes.DATE,
