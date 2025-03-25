@@ -8,7 +8,9 @@ import Home from "./pages/Home";
 import Invoice from './pages/Invoice';
 import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
-import Payment from './pages/Payment';
+import MakePayment from './pages/Payment/makePayment';
+import Payment from './pages/Payment/Payment';
+import ViewPayments from './pages/Payment/ViewPayments';
 import Report from './pages/Report';
 import Setting from './pages/Setting';
 import AddShop from './pages/ShopManagement/AddShop';
@@ -16,9 +18,9 @@ import EditShop from './pages/ShopManagement/EditShop';
 import ShopManagement from './pages/ShopManagement/ShopManagement';
 import ViewShops from './pages/ShopManagement/ViewShop';
 import AddTenant from './pages/TenantManagement/AddTenant';
+import EditTenant from './pages/TenantManagement/EditTenant';
 import TenantManagement from './pages/TenantManagement/TenantManagement';
 import ViewTenants from './pages/TenantManagement/ViewTenants';
-import EditTenant from './pages/TenantManagement/EditTenant';
 function App() {
   return (
     <AuthProvider>
@@ -41,6 +43,8 @@ function App() {
             <Route path="/add-tenant" element={<AddTenant />} />
             <Route path="/view-tenants" element={<ViewTenants />} />
             <Route path="/edit-tenant/:id" element={<EditTenant />} />
+            <Route path="/make-payment" element={<MakePayment />} />
+            <Route path="/view-payments" element={<ViewPayments />} />
           </Routes>
         </div>
       </Router>

@@ -30,7 +30,7 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
-app.use('/api/payments', paymentCorrection);
+app.use('/api/paymentscorrection', paymentCorrection);
 
 const createDefaultAdmins = async () => {
   try {
