@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Invoice from './pages/Invoice';
 import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
+import CorrectPayment from './pages/Payment/CorrectPayment';
 import MakePayment from './pages/Payment/makePayment';
 import Payment from './pages/Payment/Payment';
 import ViewPayments from './pages/Payment/ViewPayments';
@@ -45,6 +46,7 @@ function App() {
             <Route path="/edit-tenant/:id" element={<EditTenant />} />
             <Route path="/make-payment" element={<MakePayment />} />
             <Route path="/view-payments" element={<ViewPayments />} />
+            <Route path="/correct-payment" element={<CorrectPayment />} />
           </Routes>
         </div>
       </Router>
