@@ -12,6 +12,8 @@ const paymentRoutes = require('../routes/paymentRoutes');
 const paymentCorrection = require('../routes/paymentCorrection'); // Import payment routes
 require("../jobs/cronJob");  // If placed in /jobs/
 require('../models'); 
+const invoiceRoutes = require('../routes/invoiceRoutes');
+
 
 const app = express();
 
@@ -31,6 +33,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
+app.use('/api/invoices', invoiceRoutes);
 
 const createDefaultAdmins = async () => {
   try {

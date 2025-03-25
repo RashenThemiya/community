@@ -5,7 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
-import Invoice from './pages/Invoice';
+import Invoice from './pages/Invoice/Invoice';
 import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import CorrectPayment from './pages/Payment/CorrectPayment';
