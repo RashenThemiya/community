@@ -17,10 +17,8 @@ import ShopManagement from './pages/ShopManagement/ShopManagement';
 import ViewShops from './pages/ShopManagement/ViewShop';
 import AddTenant from './pages/TenantManagement/AddTenant';
 import TenantManagement from './pages/TenantManagement/TenantManagement';
-
-
-
-
+import ViewTenants from './pages/TenantManagement/ViewTenants';
+import EditTenant from './pages/TenantManagement/EditTenant';
 function App() {
   return (
     <AuthProvider>
@@ -41,7 +39,8 @@ function App() {
             <Route path="/edit-shop/:id" element={<EditShop />} />
             <Route path="/view-shops" element={<ViewShops />} />
             <Route path="/add-tenant" element={<AddTenant />} />
-            
+            <Route path="/view-tenants" element={<ViewTenants />} />
+            <Route path="/edit-tenant/:id" element={<EditTenant />} />
           </Routes>
         </div>
       </Router>
