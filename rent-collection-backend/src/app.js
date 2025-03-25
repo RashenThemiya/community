@@ -10,6 +10,8 @@ const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
 const paymentCorrection = require('../routes/paymentCorrection'); // Import payment routes
+const foodPriceRoutes = require('../routes/foodPriceRoutes');
+
 require("../jobs/cronJob");  // If placed in /jobs/
 require('../models'); 
 
@@ -31,6 +33,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
+app.use('/api/food-prices', foodPriceRoutes);
 
 const createDefaultAdmins = async () => {
   try {
