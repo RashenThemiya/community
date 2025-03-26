@@ -155,6 +155,7 @@ const Invoice = () => {
                                 <th className="border p-2">Total Amount</th>
                                 <th className="border p-2">Status</th>
                                 <th className="border p-2">Created At</th>
+                                <th className="border p-2">Shop name</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -183,6 +184,7 @@ const Invoice = () => {
                                         <td className="border p-2">LKR {invoice.total_amount}</td>
                                         <td className={`border p-2 text-center font-bold ${getStatusClass(invoice.status)}`}>{invoice.status}</td>
                                         <td className="border p-2">{new Date(invoice.createdAt).toLocaleDateString()}</td>
+                                        <td className="border p-2">{invoice.Shop?.shop_name || 'N/A'}</td>
                                     </tr>
                                 ))
                             )}

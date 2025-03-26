@@ -1,18 +1,40 @@
 const express = require('express');
 const Invoice = require('../models/Invoice');
+const Shop = require('../models/Shop');
+const Tenant = require('../models/Tenant');
 const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Get all invoices (Admin & Superadmin)
+// Get all invoices with shop details and tenant (owner) information
+
+// Get all invoices with shop details and tenant information
 router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
     try {
-        const invoices = await Invoice.findAll();
+        const invoices = await Invoice.findAll({
+            include: [
+                {
+                    model: Shop,
+                    attributes: ['shop_name'],
+                    include: [
+                        {
+                            model: Tenant,
+                            attributes: ['name', 'contact'] // Fetch tenant details via Shop
+                        }
+                    ]
+                }
+            ]
+        });
+
         res.status(200).json(invoices);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching invoices', error: error.message });
     }
 });
+
+
+
+
 
 // Get invoice by ID (Admin & Superadmin)
 router.get('/:invoiceId', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
