@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { printInvoices } from "../../utils/printInvoices";
+
+import { useNavigate } from "react-router-dom";
 const Invoice = () => {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -10,6 +12,8 @@ const Invoice = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("all");
     const [selectedInvoices, setSelectedInvoices] = useState([]);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchInvoices = async () => {
@@ -186,7 +190,13 @@ const Invoice = () => {
 </td>
 
                                         <td className="border p-2">{invoice.invoice_id}</td>
-                                        <td className="border p-2">{invoice.shop_id}</td>
+                                        
+                                        <td
+                                            className="px-6 py-4 text-sm text-blue-600 cursor-pointer underline"
+                                            onClick={() => navigate(`/shop-summary/${invoice.shop_id}`)}
+                                        >
+                                            {invoice.shop_id}
+                                        </td>
                                         <td className="border p-2">{new Date(invoice.month_year).toLocaleDateString()}</td>
                                         <td className="border p-2">LKR {invoice.rent_amount}</td>
                                         <td className="border p-2">LKR {invoice.operation_fee}</td>
