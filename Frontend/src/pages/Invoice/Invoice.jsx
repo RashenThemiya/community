@@ -73,11 +73,21 @@ const Invoice = () => {
     
 
     const handlePrintSelected = () => {
+        const token = localStorage.getItem("token"); // Retrieve token
+        if (!token) {
+            setError("Unauthorized: Please log in first.");
+            return;
+        }
+    
         const invoicesToPrint = filteredInvoices.filter(invoice =>
             selectedInvoices.includes(invoice.invoice_id)
         );
-        printInvoices(invoicesToPrint);
+        
+        printInvoices(invoicesToPrint, token);
+        
+         // Pass token to the print function
     };
+    
 
     
 
@@ -150,12 +160,15 @@ const Invoice = () => {
                                 <th className="border p-2">Operation Fee</th>
                                 <th className="border p-2">VAT</th>
                                 <th className="border p-2">Previous Balance</th>
-                                <th className="border p-2">Fines</th>
+                                <th className="border p-2">total Fines</th>
+                                <th className="border p-2">Fines previous month</th>
                                 <th className="border p-2">Total Arrears</th>
                                 <th className="border p-2">Total Amount</th>
                                 <th className="border p-2">Status</th>
                                 <th className="border p-2">Created At</th>
                                 <th className="border p-2">Shop name</th>
+                                <th className="border p-2">Address</th>
+                                <th className="border p-2">Tenant</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -180,11 +193,14 @@ const Invoice = () => {
                                         <td className="border p-2">LKR {invoice.vat_amount}</td>
                                         <td className="border p-2">LKR {invoice.previous_balance}</td>
                                         <td className="border p-2">LKR {invoice.fines}</td>
+                                        <td className="border p-2">LKR {invoice.previous_fines}</td>
                                         <td className="border p-2">LKR {invoice.total_arrears}</td>
                                         <td className="border p-2">LKR {invoice.total_amount}</td>
                                         <td className={`border p-2 text-center font-bold ${getStatusClass(invoice.status)}`}>{invoice.status}</td>
                                         <td className="border p-2">{new Date(invoice.createdAt).toLocaleDateString()}</td>
                                         <td className="border p-2">{invoice.Shop?.shop_name || 'N/A'}</td>
+                                        <td className="border p-2">{invoice.Shop?.location || 'N/A'}</td>
+                                        <td className="border p-2">{invoice.Shop?.Tenant?.name || 'N/A'}</td>
                                     </tr>
                                 ))
                             )}
