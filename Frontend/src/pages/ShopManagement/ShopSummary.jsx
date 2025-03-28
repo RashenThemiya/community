@@ -36,11 +36,12 @@ const ShopSummary = () => {
             <div className="bg-white shadow-lg rounded-lg w-full max-w-7xl p-6 space-y-6">
                 {/* Back Button at the Top */}
                 <button
-                    onClick={() => navigate("/view-shops")}
+                    onClick={() => navigate(-1)}  // This will go back to the previous page
                     className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-300 transition duration-200"
                 >
                     ← Back
                 </button>
+
                 
                 {/* Shop Balance */}
                 <div className="bg-green-100 text-green-800 text-center text-xl font-semibold py-3 rounded-lg shadow-md">
