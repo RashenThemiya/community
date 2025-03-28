@@ -17,6 +17,7 @@ import Setting from './pages/Setting';
 import AddShop from './pages/ShopManagement/AddShop';
 import EditShop from './pages/ShopManagement/EditShop';
 import ShopManagement from './pages/ShopManagement/ShopManagement';
+import ShopSummary from './pages/ShopManagement/ShopSummary';
 import ViewShops from './pages/ShopManagement/ViewShop';
 import AddTenant from './pages/TenantManagement/AddTenant';
 import EditTenant from './pages/TenantManagement/EditTenant';
@@ -47,6 +48,8 @@ function App() {
             <Route path="/make-payment" element={<MakePayment />} />
             <Route path="/view-payments" element={<ViewPayments />} />
             <Route path="/correct-payment" element={<CorrectPayment />} />
+            <Route path="/shop-summary/:shopId" element={<ShopSummary />} />
+
           </Routes>
         </div>
       </Router>
