@@ -22,20 +22,20 @@ router.put('/update-vat-rate', authenticateUser, authorizeRole(["admin", "supera
   }
 
   try {
-    // Update the VAT rate for all shops
     const [updatedRows] = await Shop.update(
-      { vat_rate: newVatRate }, // The new VAT rate
-      { where: {}, returning: true } // Update all shops, no specific condition
+      { vat_rate: newVatRate },
+      { where: {} }
     );
 
     if (updatedRows === 0) {
       return res.status(404).json({ message: 'No shops found to update.' });
     }
 
-    res.status(200).json({ message: `VAT rate updated for ${updatedRows} shops successfully.` });
+    return res.status(200).json({ message: `VAT rate updated for ${updatedRows} shops successfully.` });
   } catch (err) {
-    res.status(500).json({ message: 'Error updating VAT rate for all shops', error: err.message });
+    return res.status(500).json({ message: 'Error updating VAT rate for all shops', error: err.message });
   }
 });
+
 
 module.exports = router; // Make sure to export the router
