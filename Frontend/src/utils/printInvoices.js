@@ -1,11 +1,23 @@
-export const printInvoices = (invoices) => {
+import api from "./axiosInstance";
+
+export const printInvoices = async (invoices) => {
     if (invoices.length === 0) {
         alert("Please select at least one invoice to print.");
         return;
     }
 
-    const printableContent = invoices.map(invoice => (
-        `<div style="border: 2px solid #000; padding: 16px; margin-bottom: 20px;">
+    try {
+        await Promise.all(
+            invoices.map(invoice =>
+                api.patch(`api/invoices/${invoice.invoice_id}/print`, { printed: true })
+            )
+        );
+    } catch (err) {
+        console.error("Failed to update invoices:", err);
+    }
+
+    const printableContent = invoices.map(invoice => `
+        <div style="border: 2px solid #000; padding: 16px; margin-bottom: 20px;">
             <h2 style="text-align: center; margin-bottom: 10px;">Invoice Details</h2>
             <hr />
             <p><strong>Invoice ID:</strong> ${invoice.invoice_id}</p>
@@ -20,10 +32,15 @@ export const printInvoices = (invoices) => {
             <p><strong>Total Amount:</strong> LKR ${invoice.total_amount}</p>
             <p><strong>Status:</strong> ${invoice.status}</p>
             <p><strong>Created At:</strong> ${new Date(invoice.createdAt).toLocaleDateString()}</p>
-        </div>`
-    )).join('');
+        </div>
+    `).join('');
 
     const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+        alert("Popup blocked! Please allow popups for printing.");
+        return;
+    }
+
     printWindow.document.write(`
         <html>
             <head>
@@ -43,4 +60,6 @@ export const printInvoices = (invoices) => {
 
     printWindow.document.close();
     printWindow.print();
+    
 };
+
