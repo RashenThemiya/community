@@ -15,7 +15,7 @@ router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async 
             include: [
                 {
                     model: Shop,
-                    attributes: ['shop_name'],
+                    attributes: ['shop_name','location'],
                     include: [
                         {
                             model: Tenant,
