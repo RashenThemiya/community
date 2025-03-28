@@ -63,7 +63,7 @@ async function processPayment(shopId, amountPaid, paymentMethod, invoiceId = nul
 
         // Fetch invoices that need payment
         let invoices;
-        if (invoiceId) {
+        if (false) { // Change this condition to true if you want to process only specific invoices
             invoices = await Invoice.findAll({ where: { invoice_id: invoiceId }, transaction: t });
         } else {
             invoices = await Invoice.findAll({

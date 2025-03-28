@@ -13,7 +13,7 @@ import MakePayment from './pages/Payment/makePayment';
 import Payment from './pages/Payment/Payment';
 import ViewPayments from './pages/Payment/ViewPayments';
 import Report from './pages/Report';
-import Setting from './pages/Setting';
+import Setting from './pages/SettingPage/Setting';
 import AddShop from './pages/ShopManagement/AddShop';
 import EditShop from './pages/ShopManagement/EditShop';
 import ShopManagement from './pages/ShopManagement/ShopManagement';
