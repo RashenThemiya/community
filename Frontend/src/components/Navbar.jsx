@@ -1,8 +1,17 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // Import i18next hook
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown visibility
+    const { i18n } = useTranslation(); // Use i18next hook to handle language change
+
+    // Function to change the language
+    const handleLanguageChange = (lng) => {
+        i18n.changeLanguage(lng);  // Change language to the selected one
+        setDropdownOpen(false);  // Close dropdown after selection
+    };
 
     return (
         <nav className="bg-gray-900 text-white p-4">
@@ -22,6 +31,38 @@ const Navbar = () => {
                     <Link className="block md:inline text-white hover:text-gray-300" to="/dailyprice">Daily Price</Link>
                     <Link className="block md:inline text-white hover:text-gray-300" to="/contact">Contact</Link>
                     <Link className="block md:inline text-white hover:text-gray-300" to="/login">Login</Link>
+
+                    {/* Language Dropdown */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                            className="text-white hover:text-gray-300"
+                        >
+                            Language
+                        </button>
+                        {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-40 bg-gray-800 text-white rounded shadow-lg">
+                                <button
+                                    onClick={() => handleLanguageChange('en')}
+                                    className="block w-full px-4 py-2 text-left hover:bg-gray-700"
+                                >
+                                    English
+                                </button>
+                                <button
+                                    onClick={() => handleLanguageChange('si')}
+                                    className="block w-full px-4 py-2 text-left hover:bg-gray-700"
+                                >
+                                    සිංහල
+                                </button>
+                                <button
+                                    onClick={() => handleLanguageChange('ta')}
+                                    className="block w-full px-4 py-2 text-left hover:bg-gray-700"
+                                >
+                                    தமிழ்
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </nav>
