@@ -39,7 +39,8 @@ const AdminDashboard = () => {
     const invoiceData = [
         { name: "Paid", value: parseInt(summary.invoiceCounts.paid_count), color: "#4CAF50" },
         { name: "Unpaid", value: parseInt(summary.invoiceCounts.unpaid_count), color: "#F44336" },
-        { name: "Partially Paid", value: parseInt(summary.invoiceCounts.partial_count), color: "#2196F3" }
+        { name: "Partially Paid", value: parseInt(summary.invoiceCounts.partial_count), color: "#2196F3" },
+        { name: "Arrest", value: parseInt(summary.invoiceCounts.arrest_count), color: "#FF9800" }
     ];
 
     // Summary Stats
