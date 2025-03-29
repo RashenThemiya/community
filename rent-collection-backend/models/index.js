@@ -57,6 +57,14 @@ AuditTrail.belongsTo(Shop, { foreignKey: 'shop_id', allowNull: true });
 Invoice.hasMany(AuditTrail, { foreignKey: 'invoice_id', onDelete: 'SET NULL', hooks: true });
 AuditTrail.belongsTo(Invoice, { foreignKey: 'invoice_id', allowNull: true });
 
+// ✅ Add Shop- Payment Association
+Shop.hasMany(Payment, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
+Payment.belongsTo(Shop, { foreignKey: 'shop_id' });
+
+// ✅ Add Invoice- Payment Association
+Invoice.hasMany(Payment, { foreignKey: 'invoice_id', onDelete: 'CASCADE', hooks: true });
+Payment.belongsTo(Invoice, { foreignKey: 'invoice_id' });
+
 // ✅ Sync the database
 sequelize.sync({ alter: false }) 
     .then(() => console.log("✅ Database & tables synced successfully!"))

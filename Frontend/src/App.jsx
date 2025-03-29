@@ -5,7 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
-import Invoice from './pages/Invoice';
+import Invoice from './pages/Invoice/Invoice';
 import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import CorrectPayment from './pages/Payment/CorrectPayment';
@@ -13,10 +13,13 @@ import MakePayment from './pages/Payment/makePayment';
 import Payment from './pages/Payment/Payment';
 import ViewPayments from './pages/Payment/ViewPayments';
 import Report from './pages/Report';
-import Setting from './pages/Setting';
+import Setting from './pages/SettingPage/Setting';
+import SystemLog from './pages/SettingPage/SystemLog';
+import UpdateVATRate from './pages/SettingPage/UpdateVATRate';
 import AddShop from './pages/ShopManagement/AddShop';
 import EditShop from './pages/ShopManagement/EditShop';
 import ShopManagement from './pages/ShopManagement/ShopManagement';
+import ShopSummary from './pages/ShopManagement/ShopSummary';
 import ViewShops from './pages/ShopManagement/ViewShop';
 import AddTenant from './pages/TenantManagement/AddTenant';
 import EditTenant from './pages/TenantManagement/EditTenant';
@@ -47,6 +50,10 @@ function App() {
             <Route path="/make-payment" element={<MakePayment />} />
             <Route path="/view-payments" element={<ViewPayments />} />
             <Route path="/correct-payment" element={<CorrectPayment />} />
+            <Route path="/shop-summary/:shopId" element={<ShopSummary />} />
+            <Route path="/update-vat-rate" element={<UpdateVATRate />} />
+            <Route path="/system-logs" element={<SystemLog />} />
+
           </Routes>
         </div>
       </Router>
