@@ -15,7 +15,7 @@ require("../jobs/cronJob");  // If placed in /jobs/
 require('../models'); 
 const invoiceRoutes = require('../routes/invoiceRoutes');
 const auditTrailRoutes = require('../routes/auditRoutes'); // Import audit trail routes
-
+const summeryRoutes = require('../routes/summeryRoutes'); // Import summary routes
 
 
 const app = express();
@@ -39,6 +39,7 @@ app.use('/api/paymentscorrection', paymentCorrection);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingRoutes); // Settings routes
 app.use('/api/audit', auditTrailRoutes); // Audit trail routes
+app.use('/api/summery', summeryRoutes); // Summary routes
 
 const createDefaultAdmins = async () => {
   try {
