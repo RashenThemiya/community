@@ -14,6 +14,7 @@ import Payment from './pages/Payment/Payment';
 import ViewPayments from './pages/Payment/ViewPayments';
 import Report from './pages/Report';
 import Setting from './pages/SettingPage/Setting';
+import SystemLog from './pages/SettingPage/SystemLog';
 import UpdateVATRate from './pages/SettingPage/UpdateVATRate';
 import AddShop from './pages/ShopManagement/AddShop';
 import EditShop from './pages/ShopManagement/EditShop';
@@ -51,6 +52,7 @@ function App() {
             <Route path="/correct-payment" element={<CorrectPayment />} />
             <Route path="/shop-summary/:shopId" element={<ShopSummary />} />
             <Route path="/update-vat-rate" element={<UpdateVATRate />} />
+            <Route path="/system-logs" element={<SystemLog />} />
 
           </Routes>
         </div>
