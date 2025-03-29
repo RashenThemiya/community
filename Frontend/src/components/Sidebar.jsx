@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaBars, FaChartBar, FaCog, FaFileInvoice, FaHome, FaMoneyBill, FaStore, FaTimes, FaUser } from "react-icons/fa";
+import { FaBars, FaChartBar, FaCog, FaFileInvoice, FaHome, FaMoneyBill, FaStore, FaTag, FaTimes, FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const menuItems = [
@@ -9,6 +9,7 @@ const menuItems = [
     { path: "/payments", icon: <FaMoneyBill />, label: "Payments" },
     { path: "/invoices", icon: <FaFileInvoice />, label: "Invoices" },
     { path: "/reports", icon: <FaChartBar />, label: "Reports" },
+    { path: "/daily-price", icon: <FaTag />, label: "Daily Price" }, // Added Daily Price
     { path: "/settings", icon: <FaCog />, label: "Settings" },
 ];
 

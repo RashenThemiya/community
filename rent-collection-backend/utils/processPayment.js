@@ -180,7 +180,10 @@ async function runInvoicePaymentProcessWithoutAddingToShopBalance(shopId) {
             remainingBalance = await processInvoicePayments(invoice, remainingBalance, t);
             if (remainingBalance <= 0) break;
         }
-
+        await shopBalance.update(
+            { balance_amount: remainingBalance },
+            { transaction: t }
+        );
         await t.commit();
         return { success: true, message: 'Invoice payment process completed without modifying shop balance.' };
     } catch (error) {
