@@ -14,6 +14,7 @@ const settingRoutes = require('../routes/settingRoutes'); // Import the new sett
 require("../jobs/cronJob");  // If placed in /jobs/
 require('../models'); 
 const invoiceRoutes = require('../routes/invoiceRoutes');
+const auditTrailRoutes = require('../routes/auditRoutes'); // Import audit trail routes
 
 
 
@@ -37,6 +38,7 @@ app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingRoutes); // Settings routes
+app.use('/api/audit', auditTrailRoutes); // Audit trail routes
 
 const createDefaultAdmins = async () => {
   try {
