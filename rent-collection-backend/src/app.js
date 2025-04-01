@@ -20,7 +20,7 @@ const summeryRoutes = require('../routes/summeryRoutes'); // Import summary rout
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:5173","http://localhost:60396"];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use(bodyParser.json());
