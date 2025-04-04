@@ -81,7 +81,12 @@ const ViewShops = () => {
                             <tbody className="text-gray-700">
                                 {filteredShops.map((shop) => (
                                     <tr key={shop.shop_id} className="hover:bg-gray-50 border-b">
-                                        <td className="px-6 py-4 text-sm">{shop.shop_id}</td>
+                                        <td
+                                            className="px-6 py-4 text-sm text-blue-600 cursor-pointer underline"
+                                            onClick={() => navigate(`/shop-summary/${shop.shop_id}`)}
+                                        >
+                                            {shop.shop_id}
+                                        </td>
                                         <td className="px-6 py-4 text-sm">{shop.shop_name}</td>
                                         <td className="px-6 py-4 text-sm">{shop.location}</td>
                                         <td className="px-6 py-4 text-sm">{shop.rent_amount}</td>

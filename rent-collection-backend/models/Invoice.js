@@ -36,6 +36,10 @@ const Invoice = sequelize.define('Invoice', {
     type: DataTypes.DECIMAL(10,2),
     defaultValue: 0,
   },
+  previous_fines: {
+    type: DataTypes.DECIMAL(10,2),
+    defaultValue: 0,
+  },
   total_arrears: {
     type: DataTypes.DECIMAL(10,2),
     defaultValue: 0,
