@@ -65,8 +65,7 @@ async function applyFine(invoiceId) {
         }, { transaction: t });
 
         // Update invoice fine & total arrears
-        invoice.total_arrears += totalFineAmount;
-        await invoice.save({ transaction: t });
+
 
         // Log in Audit Trail
         await AuditTrail.create({

@@ -9,15 +9,22 @@ const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
-const paymentCorrection = require('../routes/paymentCorrection'); // Import payment routes
 const foodPriceRoutes = require('../routes/foodPriceRoutes');
+
+
+const paymentCorrection = require('../routes/paymentCorrection'); 
+const settingRoutes = require('../routes/settingRoutes'); // Import the new setting routes// Import payment routes
 
 require("../jobs/cronJob");  // If placed in /jobs/
 require('../models'); 
+const invoiceRoutes = require('../routes/invoiceRoutes');
+const auditTrailRoutes = require('../routes/auditRoutes'); // Import audit trail routes
+const summeryRoutes = require('../routes/summeryRoutes'); // Import summary routes
+
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
+const allowedOrigins = ["http://localhost:3000", "http://localhost:5173","http://localhost:60396"];
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 app.use(bodyParser.json());
@@ -34,6 +41,12 @@ app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
 app.use('/api/food-prices', foodPriceRoutes);
+
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/settings', settingRoutes); // Settings routes
+app.use('/api/audit', auditTrailRoutes); // Audit trail routes
+app.use('/api/summery', summeryRoutes); // Summary routes
+
 
 const createDefaultAdmins = async () => {
   try {

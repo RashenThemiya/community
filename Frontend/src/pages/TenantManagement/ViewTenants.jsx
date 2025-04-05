@@ -84,7 +84,12 @@ const ViewTenants = () => {
                                         <td className="px-6 py-4 text-sm">{tenant.name}</td>
                                         <td className="px-6 py-4 text-sm">{tenant.contact}</td>
                                         <td className="px-6 py-4 text-sm">{tenant.email}</td>
-                                        <td className="px-6 py-4 text-sm">{tenant.shop_id}</td>
+                                        <td
+                                            className="px-6 py-4 text-sm text-blue-600 cursor-pointer underline"
+                                            onClick={() => navigate(`/shop-summary/${tenant.shop_id}`)}
+                                        >
+                                            {tenant.shop_id}
+                                        </td>
                                         <td className="px-6 py-4 text-sm text-center">
                                             <button
                                                 onClick={() => handleEditTenant(tenant.tenant_id)}

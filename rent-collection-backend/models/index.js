@@ -9,6 +9,14 @@ const Tenant = require('./Tenant');
 const Vat = require('./Vat'); 
 const Payment = require('./Payment');
 const AuditTrail = require('./AuditTrail');
+const Product = require('./Product'); // Assuming you have a Product model
+const Price = require('./Price'); // Assuming you have a Price model
+const FoodPrice = require('./FoodPrice');
+
+
+Product.hasMany(Price, { foreignKey: "product_id", onDelete: "CASCADE" });
+Price.belongsTo(Product, { foreignKey: "product_id" });
+
 
 // ✅ Tenant & Shop Relationship
 Shop.hasOne(Tenant, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
@@ -57,10 +65,18 @@ AuditTrail.belongsTo(Shop, { foreignKey: 'shop_id', allowNull: true });
 Invoice.hasMany(AuditTrail, { foreignKey: 'invoice_id', onDelete: 'SET NULL', hooks: true });
 AuditTrail.belongsTo(Invoice, { foreignKey: 'invoice_id', allowNull: true });
 
+// ✅ Add Shop- Payment Association
+Shop.hasMany(Payment, { foreignKey: 'shop_id', onDelete: 'CASCADE', hooks: true });
+Payment.belongsTo(Shop, { foreignKey: 'shop_id' });
+
+// ✅ Add Invoice- Payment Association
+Invoice.hasMany(Payment, { foreignKey: 'invoice_id', onDelete: 'CASCADE', hooks: true });
+Payment.belongsTo(Invoice, { foreignKey: 'invoice_id' });
+
 // ✅ Sync the database
 sequelize.sync({ alter: false }) 
     .then(() => console.log("✅ Database & tables synced successfully!"))
     .catch((err) => console.error("❌ Error syncing database:", err));
 
 // ✅ Export Models
-module.exports = { sequelize, Shop, ShopBalance, Fine, Invoice, OperationFee, Rent, Tenant, Vat, Payment, AuditTrail };
+module.exports = { sequelize, Shop, ShopBalance, Fine, Invoice, OperationFee, Rent, Tenant, Vat, Payment, AuditTrail, Product, Price,FoodPrice };
