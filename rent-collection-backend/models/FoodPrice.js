@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+const sequelize = require('../config/database');
 
 
 //here we are using food_id and price_date as the composite primary key
