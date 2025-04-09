@@ -1,60 +1,71 @@
 const express = require('express');
 const router = express.Router();
-const FoodPrice = require('../models/FoodPrice');
+const Product = require('../models/Product');
+const Price = require('../models/Price');
 
-// ✅ Add or Update Food Price
+// 🆕 Add or Update Price for a Product
 router.post('/add', async (req, res) => {
     try {
-        const { food_id, food_name, price_date, price } = req.body;
+        const { product_id, price, date } = req.body;
 
-        // Upsert the record using composite key
-        const [_, created] = await FoodPrice.upsert({
-            food_id,
-            food_name,
-            price_date,
-            price
+        if (!product_id || !price || !date) {
+            return res.status(400).json({ error: "Missing required fields" });
+        }
+
+        const [updatedOrCreated, created] = await Price.upsert({ product_id, price, date });
+
+        const savedPrice = await Price.findOne({
+            where: { product_id, date }
         });
-
-        // Refetch the saved record to return it
-        const foodPrice = await FoodPrice.findOne({ where: { food_id, price_date } });
 
         res.json({
             message: created ? 'Price added successfully' : 'Price updated successfully',
-            data: foodPrice
+            data: savedPrice
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ✅ Get Daily Food Prices
+// ✅ Get Daily Food Prices (for a specific date)
 router.get('/daily', async (req, res) => {
     try {
-        const { price_date } = req.query;
+        const { date } = req.query;
 
-        if (!price_date) {
-            return res.status(400).json({ error: "Missing 'price_date' query parameter" });
+        if (!date) {
+            return res.status(400).json({ error: "Missing 'date' query parameter" });
         }
 
-        const prices = await FoodPrice.findAll({
-            where: { price_date },
-            order: [['food_name', 'ASC']]
+        const prices = await Price.findAll({
+            where: { date },
+            include: {
+                model: Product,
+                attributes: ['id', 'name', 'type']
+            },
+            order: [[Product, 'name', 'ASC']]
         });
 
-        res.json(prices);   //It returns the result as a JSON array of food prices.
+        const formatted = prices.map(entry => ({
+            product_id: entry.product_id,
+            food_name: entry.Product.name,
+            price: entry.price,
+            date: entry.date
+        }));
+
+        res.json(formatted);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// ✅ Get Price History for a Food Item
-router.get('/history/:food_id', async (req, res) => {
+// ✅ Get Price History for One Food Item
+router.get('/history/:product_id', async (req, res) => {
     try {
-        const { food_id } = req.params;
+        const { product_id } = req.params;
 
-        const history = await FoodPrice.findAll({
-            where: { food_id },
-            order: [['price_date', 'DESC']]
+        const history = await Price.findAll({
+            where: { product_id },
+            order: [['date', 'DESC']]
         });
 
         res.json(history);
@@ -63,36 +74,32 @@ router.get('/history/:food_id', async (req, res) => {
     }
 });
 
-
-// ✅ Get All Price History
-// It returns an array of objects, each containing food_id, food_name, and an array of price history.
+// ✅ Get All Price History (grouped by product)
 router.get('/history-all', async (req, res) => {
     try {
-      const allPrices = await FoodPrice.findAll({
-        order: [['food_id', 'ASC'], ['price_date', 'ASC']]
-      });
-  
-      const grouped = {};
-  
-      allPrices.forEach(entry => {
-        const { food_id, food_name, price_date, price } = entry;
-  
-        if (!grouped[food_id]) {
-          grouped[food_id] = {
-            food_id,
-            food_name,
-            history: []
-          };
-        }
-  
-        grouped[food_id].history.push({ price_date, price });
-      });
-  
-      res.json(Object.values(grouped));
+        const products = await Product.findAll({
+            include: {
+                model: Price,
+                attributes: ['price', 'date'],
+                order: [['date', 'ASC']]
+            },
+            order: [['name', 'ASC']]
+        });
+
+        const result = products.map(product => ({
+            food_name: product.name,
+            product_id: product.id,
+            history: product.Prices.map(p => ({
+                price: p.price,
+                price_date: p.date
+            }))
+        }));
+
+        res.json(result);
     } catch (error) {
-      console.error('Error fetching price history:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error fetching price history:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-  });
+});
 
 module.exports = router;
