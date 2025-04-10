@@ -12,6 +12,10 @@ import CorrectPayment from './pages/Payment/CorrectPayment';
 import MakePayment from './pages/Payment/makePayment';
 import Payment from './pages/Payment/Payment';
 import ViewPayments from './pages/Payment/ViewPayments';
+import AddProduct from './pages/ProductManagement/AddProduct';
+import EditProduct from './pages/ProductManagement/EditProduct';
+import ProductManagement from './pages/ProductManagement/ProductManagement';
+import ViewProducts from './pages/ProductManagement/ViewProducts';
 import Report from './pages/Report';
 import Sanitation from './pages/Sanitation/SanitationTickets';
 import Setting from './pages/SettingPage/Setting';
@@ -57,6 +61,10 @@ function App() {
             <Route path="/system-logs" element={<SystemLog />} />
             <Route path="/vehicle-ticketing" element={<VehicleTicket />} />
             <Route path="/sanitation-ticketing" element={<Sanitation />} />
+            <Route path="/product-management" element={<ProductManagement />} />
+            <Route path="/add-product" element={<AddProduct />} />
+            <Route path="/edit-product/:id" element={<EditProduct />} />
+            <Route path="/view-products" element={<ViewProducts />} />
           </Routes>
         </div>
       </Router>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
     FaBars,
+    FaBox,
     FaChartBar,
     FaCog,
     FaFileInvoice,
@@ -24,6 +25,7 @@ const menuItems = [
     { path: "/payments", icon: <FaMoneyBill />, label: "Payments" },
     { path: "/invoices", icon: <FaFileInvoice />, label: "Invoices" },
     { path: "/reports", icon: <FaChartBar />, label: "Reports" },
+    { path: "/product-management", icon:  <FaBox />, label: "Product" },
     { path: "/daily-price", icon: <FaTag />, label: "Daily Price" },
     { path: "/vehicle-ticketing", icon: <FaTruckPickup />, label: "Vehicle Ticketing" },
     { path: "/sanitation-ticketing", icon: <FaToilet />, label: "Sanitation Ticketing" },
