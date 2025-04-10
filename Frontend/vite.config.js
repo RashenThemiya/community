@@ -4,20 +4,18 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: './', // ✅ makes asset paths relative (fix for S3 or static hosting)
   plugins: [react(), tailwindcss()],
   build: {
-    // Split vendor libraries into a separate chunk
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // This will create a 'vendor' chunk for all node_modules libraries
             return 'vendor';
           }
         },
       },
     },
-    // Increase chunk size limit if necessary
-    chunkSizeWarningLimit: 1000, // 1MB for example (default is 500KB)
+    chunkSizeWarningLimit: 1000,
   },
-})
+});

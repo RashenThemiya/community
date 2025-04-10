@@ -16,6 +16,8 @@ require('../models');
 const invoiceRoutes = require('../routes/invoiceRoutes');
 const auditTrailRoutes = require('../routes/auditRoutes'); // Import audit trail routes
 const summeryRoutes = require('../routes/summeryRoutes'); // Import summary routes
+const vehicleTicketRoutes = require('../routes/vehicleTicket');
+const sanitationRoutes = require('../routes/sanitationRoutes'); // Import sanitation routes
 
 
 const app = express();
@@ -40,6 +42,8 @@ app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingRoutes); // Settings routes
 app.use('/api/audit', auditTrailRoutes); // Audit trail routes
 app.use('/api/summery', summeryRoutes); // Summary routes
+app.use('/api/vehicle-tickets', vehicleTicketRoutes);
+app.use('/api/sanitation', sanitationRoutes);
 
 const createDefaultAdmins = async () => {
   try {

@@ -13,6 +13,7 @@ import MakePayment from './pages/Payment/makePayment';
 import Payment from './pages/Payment/Payment';
 import ViewPayments from './pages/Payment/ViewPayments';
 import Report from './pages/Report';
+import Sanitation from './pages/Sanitation/SanitationTickets';
 import Setting from './pages/SettingPage/Setting';
 import SystemLog from './pages/SettingPage/SystemLog';
 import UpdateVATRate from './pages/SettingPage/UpdateVATRate';
@@ -25,6 +26,7 @@ import AddTenant from './pages/TenantManagement/AddTenant';
 import EditTenant from './pages/TenantManagement/EditTenant';
 import TenantManagement from './pages/TenantManagement/TenantManagement';
 import ViewTenants from './pages/TenantManagement/ViewTenants';
+import VehicleTicket from './pages/VehicleTickets/VehicleTickets';
 function App() {
   return (
     <AuthProvider>
@@ -53,7 +55,8 @@ function App() {
             <Route path="/shop-summary/:shopId" element={<ShopSummary />} />
             <Route path="/update-vat-rate" element={<UpdateVATRate />} />
             <Route path="/system-logs" element={<SystemLog />} />
-
+            <Route path="/vehicle-ticketing" element={<VehicleTicket />} />
+            <Route path="/sanitation-ticketing" element={<Sanitation />} />
           </Routes>
         </div>
       </Router>

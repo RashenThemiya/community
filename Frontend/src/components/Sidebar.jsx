@@ -10,6 +10,8 @@ import {
     FaStore,
     FaTag,
     FaTimes,
+    FaToilet,
+    FaTruckPickup,
     FaUser
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -23,6 +25,8 @@ const menuItems = [
     { path: "/invoices", icon: <FaFileInvoice />, label: "Invoices" },
     { path: "/reports", icon: <FaChartBar />, label: "Reports" },
     { path: "/daily-price", icon: <FaTag />, label: "Daily Price" },
+    { path: "/vehicle-ticketing", icon: <FaTruckPickup />, label: "Vehicle Ticketing" },
+    { path: "/sanitation-ticketing", icon: <FaToilet />, label: "Sanitation Ticketing" },
     { path: "/settings", icon: <FaCog />, label: "Settings" },
 ];
 
