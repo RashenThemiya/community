@@ -67,48 +67,58 @@ const ViewProducts = () => {
           <div className="overflow-x-auto shadow-lg rounded-lg">
             <table className="min-w-full table-auto">
               <thead className="bg-teal-600 text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-medium">Product ID</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium">Name</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium">Type</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium">Image</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="text-gray-700">
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50 border-b">
-                    <td className="px-6 py-4 text-sm">{product.id}</td>
-                    <td className="px-6 py-4 text-sm">{product.name}</td>
-                    <td className="px-6 py-4 text-sm capitalize">{product.type}</td>
-                    <td className="px-6 py-4 text-sm">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      ) : (
-                        <span className="text-gray-400 italic">No Image</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-sm">
-                      <button
-                        onClick={() => handleEditProduct(product.id)}
-                        className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition duration-200"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteProduct(product.id)}
-                        className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 ml-2 transition duration-200"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  <tr>
+    <th className="px-6 py-4 text-left text-sm font-medium">Product ID</th>
+    <th className="px-6 py-4 text-left text-sm font-medium">Name</th>
+    <th className="px-6 py-4 text-left text-sm font-medium">Type</th>
+    <th className="px-6 py-4 text-left text-sm font-medium">Image</th>
+    <th className="px-6 py-4 text-left text-sm font-medium">Actions</th>
+  </tr>
+</thead>
+<tbody className="text-gray-700">
+  {filteredProducts.map((product) => (
+    <tr key={product.id} className="hover:bg-gray-50 border-b">
+      <td className="px-6 py-4 text-sm">{product.id}</td>
+
+      <td
+        className="px-6 py-4 text-sm text-teal-700 font-medium cursor-pointer hover:underline"
+        onClick={() => navigate(`/product-summary/${product.id}`)}
+      >
+        {product.name}
+      </td>
+
+      <td className="px-6 py-4 text-sm capitalize">{product.type}</td>
+
+      <td className="px-6 py-4 text-sm">
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-16 h-16 object-cover rounded"
+          />
+        ) : (
+          <span className="text-gray-400 italic">No Image</span>
+        )}
+      </td>
+
+      <td className="px-6 py-4 text-sm">
+        <button
+          onClick={() => handleEditProduct(product.id)}
+          className="bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition duration-200"
+        >
+          Edit
+        </button>
+        <button
+          onClick={() => handleDeleteProduct(product.id)}
+          className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 ml-2 transition duration-200"
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
             </table>
           </div>
         )}
