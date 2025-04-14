@@ -20,7 +20,7 @@ const vehicleTicketRoutes = require('../routes/vehicleTicket');
 const sanitationRoutes = require('../routes/sanitationRoutes'); // Import sanitation routes
 const generateInvoiceRoutes = require('../routes/generateInvoiceRoutes');
 const productRoutes = require('../routes/productRoutes'); // Import product routes
-
+const productPriceRoutes = require('../routes/productPriceRoute'); // Import product price routes
 
 const app = express();
 
@@ -48,6 +48,7 @@ app.use('/api/vehicle-tickets', vehicleTicketRoutes);
 app.use('/api/sanitation', sanitationRoutes);
 app.use('/api/generateInvoices', generateInvoiceRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/prices', productPriceRoutes); // Product price routes
 
 const createDefaultAdmins = async () => {
   try {
