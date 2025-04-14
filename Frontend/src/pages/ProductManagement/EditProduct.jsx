@@ -8,7 +8,7 @@ const EditProduct = () => {
   const [product, setProduct] = useState({
     name: "",
     type: "fruit",
-    image: "",
+    image: null,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,8 +18,12 @@ const EditProduct = () => {
     const fetchProduct = async () => {
       try {
         const response = await api.get(`/api/products/${id}`);
-        setProduct(response.data);
-        setPreview(response.data.image || null);
+        setProduct({
+          name: response.data.name,
+          type: response.data.type,
+          image: null, // image file will be set only on change
+        });
+        setPreview(response.data.image || null); // this is base64 string sent from backend
       } catch {
         setError("Failed to load product details.");
       } finally {
@@ -40,12 +44,8 @@ const EditProduct = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProduct((prev) => ({ ...prev, image: reader.result }));
-        setPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+      setProduct((prev) => ({ ...prev, image: file }));
+      setPreview(URL.createObjectURL(file));
     }
   };
 
@@ -53,10 +53,22 @@ const EditProduct = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.put(`/api/products/${id}`, product);
+      const formData = new FormData();
+      formData.append("name", product.name);
+      formData.append("type", product.type);
+      if (product.image) {
+        formData.append("image", product.image);
+      }
+
+      await api.put(`/api/products/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       alert("Product updated successfully");
       navigate("/view-products");
-    } catch {
+    } catch (err) {
       setError("Failed to update product.");
     } finally {
       setLoading(false);
@@ -71,7 +83,7 @@ const EditProduct = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Editing Product Id - {id}</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
           <div>
             <label className="block text-sm font-medium text-gray-700">Product Name</label>
             <input
