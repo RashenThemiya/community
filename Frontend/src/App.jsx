@@ -4,6 +4,10 @@ import { AuthProvider } from "./context/AuthContext";
 
 
 import AdminDashboard from "./pages/AdminDashboard";
+import AddDailyPrice from './pages/DailyPrice/AddDailyPrice';
+import DailyPrice from './pages/DailyPrice/DailyPrice';
+import EditDailyPrice from './pages/DailyPrice/EditDailyPrice';
+import ViewDailyPrice from './pages/DailyPrice/ViewDailyPrice';
 import Home from "./pages/Home";
 import Invoice from './pages/Invoice/Invoice';
 import Login from "./pages/Login";
@@ -15,6 +19,7 @@ import ViewPayments from './pages/Payment/ViewPayments';
 import AddProduct from './pages/ProductManagement/AddProduct';
 import EditProduct from './pages/ProductManagement/EditProduct';
 import ProductManagement from './pages/ProductManagement/ProductManagement';
+import ProductSummary from './pages/ProductManagement/ProductSummary';
 import ViewProducts from './pages/ProductManagement/ViewProducts';
 import Report from './pages/Report';
 import Sanitation from './pages/Sanitation/SanitationTickets';
@@ -65,6 +70,11 @@ function App() {
             <Route path="/add-product" element={<AddProduct />} />
             <Route path="/edit-product/:id" element={<EditProduct />} />
             <Route path="/view-products" element={<ViewProducts />} />
+            <Route path="/daily-price" element={<DailyPrice/>} />
+            <Route path="/add-dailyprice" element={<AddDailyPrice />} />
+            <Route path="/view-dailyprices" element={<ViewDailyPrice />} />
+            <Route path="/edit-dailyprice/:date/:productId" element={<EditDailyPrice />} />
+            <Route path="/product-summary/:productId" element={<ProductSummary />} />   
           </Routes>
         </div>
       </Router>
