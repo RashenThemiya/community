@@ -2,15 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Sidebar from "../../components/Sidebar";
-import api from "../../utils/axiosInstance"; // <-- Use your axios instance
+import api from "../../utils/axiosInstance";
 
 const Setting = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    // Handle invoice generation
-    const handleGenerateInvoices = async () => {
-        const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
+
+    const handleApiCall = async (endpoint, successMsg, errorMsg) => {
         if (!token) {
             toast.error("Unauthorized! Please log in.");
             navigate("/login");
@@ -19,21 +19,29 @@ const Setting = () => {
 
         try {
             setLoading(true);
-            // API call to generate invoices
-            const response = await api.post("/api/generateInvoices/generate-all", {}, {
-                headers: {
-                    Authorization: `Bearer ${token}` // Pass token in headers
-                }
+            const response = await api.post(endpoint, {}, {
+                headers: { Authorization: `Bearer ${token}` }
             });
-            toast.success(response.data.message || "Invoices generated successfully!");
-            console.log("Generated invoices:", response.data.results);
+            toast.success(response.data.message || successMsg);
         } catch (error) {
-            console.error("Error generating invoices:", error);
-            toast.error(error.response?.data?.message || "Failed to generate invoices.");
+            console.error(error);
+            toast.error(error.response?.data?.message || errorMsg);
         } finally {
             setLoading(false);
         }
     };
+
+    const handleGenerateInvoices = () =>
+        handleApiCall("/api/generateInvoices/generate-all", "Invoices generated!", "Failed to generate invoices.");
+
+    const handleApplyFines = () =>
+        handleApiCall("/api/settings/apply-fines", "Fines applied successfully!", "Failed to apply fines.");
+
+    const handleFineArrest = () =>
+        handleApiCall("/api/settings/fine-arrest-action", "Fine arrest applied!", "Failed to apply fine arrest.");
+
+    const handleInvoiceArrest = () =>
+        handleApiCall("/api/settings/invoice-arrest-action", "Invoice arrest applied!", "Failed to apply invoice arrest.");
 
     return (
         <div className="flex flex-col md:flex-row h-screen">
@@ -47,8 +55,9 @@ const Setting = () => {
                     <p className="text-lg text-gray-500">Manage system settings</p>
                 </div>
 
-                {/* Settings Cards */}
+                {/* Settings Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+
                     {/* Update VAT Rate */}
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
                         <h2 className="text-xl font-semibold mb-4">Update VAT Rate</h2>
@@ -85,6 +94,51 @@ const Setting = () => {
                             disabled={loading}
                         >
                             {loading ? "Generating..." : "Generate Invoices"}
+                        </button>
+                    </div>
+
+                    {/* Apply Fines */}
+                    <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+                        <h2 className="text-xl font-semibold mb-4">Apply Fines</h2>
+                        <p className="text-gray-700 mb-4">Automatically apply fines for overdue invoices.</p>
+                        <button
+                            className={`py-2 px-4 rounded-lg text-white w-full ${
+                                loading ? "bg-gray-400 cursor-not-allowed" : "bg-yellow-500 hover:bg-yellow-600"
+                            }`}
+                            onClick={handleApplyFines}
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Apply Fines"}
+                        </button>
+                    </div>
+
+                    {/* Fine Arrest Action */}
+                    <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+                        <h2 className="text-xl font-semibold mb-4">Fine Arrest Action</h2>
+                        <p className="text-gray-700 mb-4">Mark overdue fines as Arrest after 30 days.</p>
+                        <button
+                            className={`py-2 px-4 rounded-lg text-white w-full ${
+                                loading ? "bg-gray-400 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"
+                            }`}
+                            onClick={handleFineArrest}
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Apply Fine Arrest"}
+                        </button>
+                    </div>
+
+                    {/* Invoice Arrest Action */}
+                    <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+                        <h2 className="text-xl font-semibold mb-4">Invoice Arrest Action</h2>
+                        <p className="text-gray-700 mb-4">Mark invoices and related records as Arrest if overdue.</p>
+                        <button
+                            className={`py-2 px-4 rounded-lg text-white w-full ${
+                                loading ? "bg-gray-400 cursor-not-allowed" : "bg-purple-500 hover:bg-purple-600"
+                            }`}
+                            onClick={handleInvoiceArrest}
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Apply Invoice Arrest"}
                         </button>
                     </div>
 
