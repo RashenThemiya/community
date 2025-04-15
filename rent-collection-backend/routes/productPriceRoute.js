@@ -5,6 +5,54 @@ const Product = require('../models/Product');
 const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
 
 // 1. Add or update daily price for a product
+// Bulk add/update daily prices
+router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+  const entries = req.body;
+
+  if (!Array.isArray(entries) || entries.length === 0) {
+    return res.status(400).json({ message: 'Request body must be a non-empty array.' });
+  }
+
+  const results = [];
+  const errors = [];
+
+  for (const entry of entries) {
+    const { product_id, price, date } = entry;
+
+    if (!product_id || !price || !date) {
+      errors.push({ entry, message: 'Missing required fields' });
+      continue;
+    }
+
+    try {
+      const [priceRecord, created] = await Price.findOrCreate({
+        where: { product_id, date },
+        defaults: { price }
+      });
+
+      if (!created) {
+        priceRecord.price = price;
+        await priceRecord.save();
+      }
+
+      results.push({
+        product_id,
+        date,
+        status: created ? 'added' : 'updated',
+        price: priceRecord.price,
+      });
+    } catch (err) {
+      errors.push({ entry, message: err.message });
+    }
+  }
+
+  res.status(200).json({
+    message: `Processed ${results.length} entries.`,
+    results,
+    errors,
+  });
+});
+
 router.post('/update', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { product_id, price, date } = req.body;
 
