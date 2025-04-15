@@ -5,11 +5,8 @@ import api from "../../utils/axiosInstance";
 const AddDailyPrice = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [form, setForm] = useState({
-    product_id: "",
-    price: "",
-    date: "",
-  });
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [prices, setPrices] = useState({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -29,10 +26,10 @@ const AddDailyPrice = () => {
     fetchProducts();
   }, []);
 
-  const handleChange = (e) => {
-    setForm((prev) => ({
+  const handlePriceChange = (productId, value) => {
+    setPrices((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [productId]: value,
     }));
   };
 
@@ -42,14 +39,29 @@ const AddDailyPrice = () => {
     setError(null);
     setSuccess(null);
 
-    try {
-      await api.post("/api/prices/update-price", form);
-      setSuccess("Price added/updated successfully!");
-      setForm({ product_id: "", price: "", date: "" });
+    // Prepare data: only include products with entered prices
+    const dataToSubmit = Object.entries(prices)
+      .filter(([_, price]) => price !== "")
+      .map(([product_id, price]) => ({
+        product_id,
+        price,
+        date,
+      }));
 
-      setTimeout(() => navigate("/view-prices"), 2000);
+    if (dataToSubmit.length === 0) {
+      setError("Please enter at least one price.");
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      await api.post("/api/prices/update-multiple", dataToSubmit);
+      setSuccess("Prices added/updated successfully!");
+      setPrices({});
+
+      setTimeout(() => navigate("/daily-price"), 2000);
     } catch (err) {
-      setError("Failed to update price.");
+      setError("Failed to update prices.");
     } finally {
       setSubmitting(false);
     }
@@ -60,68 +72,65 @@ const AddDailyPrice = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Add Daily Price</h2>
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <h2 className="text-2xl font-bold mb-6 text-center">Add Daily Prices</h2>
 
-        {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {success && <p className="text-green-500 text-sm mb-4 text-center">{success}</p>}
+        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Product</label>
-            <select
-              name="product_id"
-              value={form.product_id}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            >
-              <option value="">-- Select Product --</option>
-              {products.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({p.type})
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Price (Rs.)</label>
-            <input
-              type="number"
-              step="0.01"
-              name="price"
-              value={form.price}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input
               type="date"
-              name="date"
-              value={form.date}
-              onChange={handleChange}
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg"
               required
             />
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border border-gray-300">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="px-4 py-2 text-left">Product</th>
+                  <th className="px-4 py-2 text-left">Type</th>
+                  <th className="px-4 py-2 text-left">Price (Rs.)</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white text-sm">
+                {products.map((product) => (
+                  <tr key={product.id} className="border-b">
+                    <td className="px-4 py-2">{product.name}</td>
+                    <td className="px-4 py-2">{product.type}</td>
+                    <td className="px-4 py-2">
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={prices[product.id] || ""}
+                        onChange={(e) => handlePriceChange(product.id, e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300"
           >
-            {submitting ? "Saving..." : "Save Price"}
+            {submitting ? "Saving..." : "Save All Prices"}
           </button>
 
           <button
             type="button"
-            onClick={() => navigate("/view-prices")}
-            className="w-full mt-2 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+            onClick={() => navigate("/daily-price")}
+            className="w-full mt-2 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition duration-300"
           >
             Cancel
           </button>
