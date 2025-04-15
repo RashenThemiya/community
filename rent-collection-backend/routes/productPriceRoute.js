@@ -4,8 +4,7 @@ const Price = require('../models/Price');
 const Product = require('../models/Product');
 const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
 
-// 1. Add or update daily price for a product
-// Bulk add/update daily prices
+// 1. Add or update daily price for a product (bulk)
 router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const entries = req.body;
 
@@ -53,6 +52,7 @@ router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'super
   });
 });
 
+// 2. Add/update price for a single product/date
 router.post('/update', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { product_id, price, date } = req.body;
 
@@ -80,8 +80,8 @@ router.post('/update', authenticateUser, authorizeRole(['admin', 'superadmin']),
   }
 });
 
-// 2. Get price chart for a specific product (all price history)
-router.get('/product/:productId/chart', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+// 3. Get price chart for a specific product (all price history) — public
+router.get('/product/:productId/chart', async (req, res) => {
   const { productId } = req.params;
 
   try {
@@ -96,14 +96,14 @@ router.get('/product/:productId/chart', authenticateUser, authorizeRole(['admin'
   }
 });
 
-// 3. Get all product prices on a specific day
-router.get('/by-date/:date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+// 4. Get all product prices on a specific day — public (with image in base64)
+router.get('/by-date/:date', async (req, res) => {
   const { date } = req.params;
 
   try {
     const prices = await Price.findAll({
       where: { date },
-      include: [{ model: Product, attributes: ['id', 'name', 'type'] }],
+      include: [{ model: Product, attributes: ['id', 'name', 'type', 'image'] }],
     });
 
     const formatted = prices.map(p => ({
@@ -114,6 +114,9 @@ router.get('/by-date/:date', authenticateUser, authorizeRole(['admin', 'superadm
         id: p.Product.id,
         name: p.Product.name,
         type: p.Product.type,
+        image: p.Product.image
+          ? `data:image/jpeg;base64,${p.Product.image.toString('base64')}`
+          : null
       }
     }));
 
@@ -123,8 +126,8 @@ router.get('/by-date/:date', authenticateUser, authorizeRole(['admin', 'superadm
   }
 });
 
-// 4. Get price of a specific product on a specific day
-router.get('/product/:productId/date/:date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+// 5. Get price of a specific product on a specific day — public
+router.get('/product/:productId/date/:date', async (req, res) => {
   const { productId, date } = req.params;
 
   try {
@@ -144,6 +147,8 @@ router.get('/product/:productId/date/:date', authenticateUser, authorizeRole(['a
     res.status(500).json({ message: 'Error fetching price', error: err.message });
   }
 });
+
+// 6. Update price of a specific product on a specific day — admin only
 router.put('/product/:productId/date/:date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { productId, date } = req.params;
   const { price } = req.body;
@@ -175,6 +180,5 @@ router.put('/product/:productId/date/:date', authenticateUser, authorizeRole(['a
     res.status(500).json({ message: 'Error updating price', error: err.message });
   }
 });
-
 
 module.exports = router;
