@@ -7,6 +7,9 @@ import {
     FaFileInvoice,
     FaHome,
     FaMoneyBill,
+    FaNewspaper // Import the FaNewspaper icon for Publication
+    ,
+
     FaSignOutAlt,
     FaStore,
     FaTag,
@@ -25,11 +28,12 @@ const menuItems = [
     { path: "/payments", icon: <FaMoneyBill />, label: "Payments" },
     { path: "/invoices", icon: <FaFileInvoice />, label: "Invoices" },
     { path: "/reports", icon: <FaChartBar />, label: "Reports" },
-    { path: "/product-management", icon:  <FaBox />, label: "Product" },
+    { path: "/product-management", icon: <FaBox />, label: "Product" },
     { path: "/daily-price", icon: <FaTag />, label: "Daily Price" },
     { path: "/vehicle-ticketing", icon: <FaTruckPickup />, label: "Vehicle Ticketing" },
     { path: "/sanitation-ticketing", icon: <FaToilet />, label: "Sanitation Ticketing" },
     { path: "/settings", icon: <FaCog />, label: "Settings" },
+    { path: "/publication", icon: <FaNewspaper />, label: "Publication" }, // Added Publication menu item
 ];
 
 const Sidebar = () => {
