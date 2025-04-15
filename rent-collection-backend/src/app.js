@@ -21,7 +21,7 @@ const sanitationRoutes = require('../routes/sanitationRoutes'); // Import sanita
 const generateInvoiceRoutes = require('../routes/generateInvoiceRoutes');
 const productRoutes = require('../routes/productRoutes'); // Import product routes
 const productPriceRoutes = require('../routes/productPriceRoute'); // Import product price routes
-
+const publicationRoutes = require('../routes/publicationRoutes'); // Import publications routes
 const app = express();
 
 const allowedOrigins = ["http://localhost:3000", "http://localhost:5173","http://localhost:60396"];
@@ -49,6 +49,7 @@ app.use('/api/sanitation', sanitationRoutes);
 app.use('/api/generateInvoices', generateInvoiceRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/prices', productPriceRoutes); // Product price routes
+app.use('/api/publications', publicationRoutes); // Publications routes
 
 const createDefaultAdmins = async () => {
   try {
