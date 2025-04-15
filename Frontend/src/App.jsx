@@ -21,6 +21,9 @@ import EditProduct from './pages/ProductManagement/EditProduct';
 import ProductManagement from './pages/ProductManagement/ProductManagement';
 import ProductSummary from './pages/ProductManagement/ProductSummary';
 import ViewProducts from './pages/ProductManagement/ViewProducts';
+import AddPublication from './pages/Publications/AddPublication';
+import Publication from './pages/Publications/PublicationManagement';
+import ViewPublications from './pages/Publications/ViewPublications';
 import Report from './pages/Report';
 import Sanitation from './pages/Sanitation/SanitationTickets';
 import Setting from './pages/SettingPage/Setting';
@@ -74,7 +77,11 @@ function App() {
             <Route path="/add-dailyprice" element={<AddDailyPrice />} />
             <Route path="/view-dailyprices" element={<ViewDailyPrice />} />
             <Route path="/edit-dailyprice/:date/:productId" element={<EditDailyPrice />} />
-            <Route path="/product-summary/:productId" element={<ProductSummary />} />   
+            <Route path="/product-summary/:productId" element={<ProductSummary />} /> 
+            <Route path="/publication" element={<Publication />} />
+            <Route path="/add-publication" element={<AddPublication />} />
+            <Route path="/view-publications" element={<ViewPublications />} />
+
           </Routes>
         </div>
       </Router>
