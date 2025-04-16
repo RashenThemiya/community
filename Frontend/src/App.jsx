@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 
 import AdminDashboard from "./pages/AdminDashboard";
+import HomeDailyPrice from './pages/DailyPrice';
 import AddDailyPrice from './pages/DailyPrice/AddDailyPrice';
 import DailyPrice from './pages/DailyPrice/DailyPrice';
 import EditDailyPrice from './pages/DailyPrice/EditDailyPrice';
@@ -24,7 +25,7 @@ import ViewProducts from './pages/ProductManagement/ViewProducts';
 import AddPublication from './pages/Publications/AddPublication';
 import Publication from './pages/Publications/PublicationManagement';
 import ViewPublications from './pages/Publications/ViewPublications';
-import Report from './pages/Report';
+import Report from './pages/Report/Report';
 import Sanitation from './pages/Sanitation/SanitationTickets';
 import Setting from './pages/SettingPage/Setting';
 import SystemLog from './pages/SettingPage/SystemLog';
@@ -81,6 +82,7 @@ function App() {
             <Route path="/publication" element={<Publication />} />
             <Route path="/add-publication" element={<AddPublication />} />
             <Route path="/view-publications" element={<ViewPublications />} />
+            <Route path="/home-dailyprice" element={<HomeDailyPrice />} />
 
           </Routes>
         </div>
