@@ -96,8 +96,8 @@ const Invoice = () => {
     
 
     return (
-        <div className="flex min-h-screen bg-gray-100">
-            <div><Sidebar /></div>
+        <div className="flex h-screen bg-gray-100 overflow-hidden">
+            <Sidebar className="w-64 flex-shrink-0" />
             <div className="flex-1 p-6 overflow-auto">
                 <h1 className="text-3xl font-bold mb-4">Invoice Management</h1>
                 {error && <p className="text-red-500">{error}</p>}

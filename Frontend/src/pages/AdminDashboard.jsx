@@ -32,17 +32,22 @@ const AdminDashboard = () => {
         return <div className="flex justify-center items-center h-screen text-red-500 text-lg">{error}</div>;
     }
 
-    // Calculate Pending Collection
-    const pendingCollection = parseFloat(summary.rentSums.total_rent_amount) - parseFloat(summary.rentSums.total_rent_paid);
+    // Calculate total pending collection (rent + operation + vat + fine)
+    const pendingCollection =
+        (parseFloat(summary.rentSums.total_rent_amount) - parseFloat(summary.rentSums.total_rent_paid)) +
+        (parseFloat(summary.operationFeeSums.total_operation_amount) - parseFloat(summary.operationFeeSums.total_operation_paid)) +
+        (parseFloat(summary.vatSums.total_vat_amount) - parseFloat(summary.vatSums.total_vat_paid)) +
+        (parseFloat(summary.fineSums.total_fine_amount) - parseFloat(summary.fineSums.total_fine_paid));
 
-    // Invoice Data for Pie Chart
+    // Invoice Pie Chart Data
     const invoiceData = [
         { name: "Paid", value: parseInt(summary.invoiceCounts.paid_count), color: "#4CAF50" },
         { name: "Unpaid", value: parseInt(summary.invoiceCounts.unpaid_count), color: "#F44336" },
-        { name: "Partially Paid", value: parseInt(summary.invoiceCounts.partial_count), color: "#2196F3" }
+        { name: "Partially Paid", value: parseInt(summary.invoiceCounts.partial_count), color: "#2196F3" },
+        { name: "Arrest", value: parseInt(summary.invoiceCounts.arrest_count), color: "#FF9800" }
     ];
 
-    // Summary Stats
+    // Dashboard Stats
     const stats = [
         { title: "Total Tenants", value: summary.tenantCount, icon: <FaUsers className="text-3xl text-blue-500" /> },
         { title: "Total Shops", value: summary.shopCount, icon: <FaStore className="text-3xl text-green-500" /> },
@@ -52,21 +57,23 @@ const AdminDashboard = () => {
         { title: "Total VAT Paid", value: `LKR ${summary.vatSums.total_vat_paid}`, icon: <FaChartBar className="text-3xl text-indigo-500" /> },
         { title: "Total Fines", value: `LKR ${summary.fineSums.total_fine_amount}`, icon: <FaClock className="text-3xl text-red-500" /> },
         { title: "Total Fine Paid", value: `LKR ${summary.fineSums.total_fine_paid}`, icon: <FaClock className="text-3xl text-orange-500" /> },
+        { title: "Total Operation Fee", value: `LKR ${summary.operationFeeSums.total_operation_amount}`, icon: <FaClock className="text-3xl text-pink-500" /> },
+        { title: "Operation Fee Paid", value: `LKR ${summary.operationFeeSums.total_operation_paid}`, icon: <FaClock className="text-3xl text-purple-600" /> },
         { title: "Pending Collection", value: `LKR ${pendingCollection.toFixed(2)}`, icon: <FaClock className="text-3xl text-yellow-500" /> },
         { title: "Total Shop Balance", value: `LKR ${summary.shopBalanceSum.total_shop_balance}`, icon: <FaMoneyBillWave className="text-3xl text-green-500" /> }
     ];
 
     return (
         <div className="flex h-screen bg-gray-100 overflow-hidden">
-            {/* Sidebar (Sliding without Scroll) */}
+            {/* Sidebar */}
             <Sidebar className="w-64 flex-shrink-0" />
-            
+
             {/* Main Content */}
             <div className="flex-1 p-6 overflow-y-auto">
                 <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
                 <p className="text-gray-600 mt-2">Track and manage financial performance.</p>
 
-                {/* Summary Stats Cards */}
+                {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                     {stats.map((stat, index) => (
                         <div key={index} className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
@@ -79,7 +86,7 @@ const AdminDashboard = () => {
                     ))}
                 </div>
 
-                {/* Invoice Summary Chart */}
+                {/* Invoice Summary Pie Chart */}
                 <div className="bg-white p-6 rounded-lg shadow-md mt-6 flex justify-center">
                     <PieChart width={400} height={300}>
                         <Pie
