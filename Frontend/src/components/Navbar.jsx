@@ -31,12 +31,12 @@ const Navbar = () => {
                 <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
                     <div className="flex items-center space-x-3">
                         <img
-                            src="/gov_logo.png"
+                            src="Gov.jpg"
                             alt="Gov Logo"
                             className="w-10 h-10"
                         />
                         <Link to="/" className="text-xl font-bold tracking-wide">
-                            ශ්‍රී ලංකා රජයේ පසුබැසීම
+                        දඹුල්ල විශේෂිත ආර්ථික මධ්යස්ථානය
                         </Link>
                     </div>
 
