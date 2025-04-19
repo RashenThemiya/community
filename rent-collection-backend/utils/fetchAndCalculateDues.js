@@ -1,6 +1,6 @@
 const Rent = require("../models/Rent");
 const OperationFee = require("../models/OperationFee");
-const Vat = require("../models/Vat");
+const Vat = require("../models/VAT");
 const Fine = require("../models/Fine");
 const { calculateDues } = require("./calculateDues");
 async function fetchAndCalculateDues(shop_id) {
