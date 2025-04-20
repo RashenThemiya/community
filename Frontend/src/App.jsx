@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import 'font-awesome/css/font-awesome.min.css';
+
 
 
 import AdminDashboard from "./pages/AdminDashboard";
