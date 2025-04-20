@@ -2,13 +2,13 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import Slider from "react-slick";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 // Import slick-carousel styles
-import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
 
 const Home = () => {
     const { t } = useTranslation();
@@ -32,21 +32,21 @@ const Home = () => {
                 <Slider {...settings}>
                     <div>
                         <img
-                            src="1.jpg"
+                            src="/images/1.jpg"
                             alt="Slide 1"
                             className="w-full h-[500px] object-cover"
                         />
                     </div>
                     <div>
                         <img
-                            src="2.jpg"
+                            src="/images/2.jpg"
                             alt="Slide 2"
                             className="w-full h-[500px] object-cover"
                         />
                     </div>
                     <div>
                         <img
-                            src="3.jpg"
+                            src="/images/3.jpg"
                             alt="Slide 3"
                             className="w-full h-[500px] object-cover"
                         />
@@ -65,7 +65,7 @@ const Home = () => {
                 {/* Right Side: Image */}
                 <div>
                     <img
-                        src="logo.jpg"
+                        src="/images/logo.jpg"
                         alt="Illustration"
                         className="rounded-3xl w-full h-[350px] object-contain"
                     />
