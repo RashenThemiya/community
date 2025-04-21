@@ -7,7 +7,7 @@ const Rent = require('../models/Rent');
 const OperationFee = require('../models/OperationFee');
 const Fine = require('../models/Fine');
 const AuditTrail = require('../models/AuditTrail');
-const Vat = require('../models/Vat');
+const Vat = require('../models/VAT');
 
 async function processPaymentByShopId(shopId, amountPaid, paymentMethod) {
     return processPayment(shopId, amountPaid, paymentMethod, null);
@@ -180,7 +180,10 @@ async function runInvoicePaymentProcessWithoutAddingToShopBalance(shopId) {
             remainingBalance = await processInvoicePayments(invoice, remainingBalance, t);
             if (remainingBalance <= 0) break;
         }
-
+        await shopBalance.update(
+            { balance_amount: remainingBalance },
+            { transaction: t }
+        );
         await t.commit();
         return { success: true, message: 'Invoice payment process completed without modifying shop balance.' };
     } catch (error) {

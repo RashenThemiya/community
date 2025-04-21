@@ -1,32 +1,82 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
+// src/pages/Home.jsx
+
+import React from "react";
+import { useTranslation } from "react-i18next";
+import Slider from "react-slick";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import EconomicCenterNews from "../components/EconomicCenterNews";
 
 
-const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
+// Import slick-carousel styles
+import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+
+const Home = () => {
+    const { t } = useTranslation();
+
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 2000,
+    };
 
     return (
-        <nav className="bg-gray-900 text-white p-4">
-            <div className="max-w-7xl mx-auto flex justify-between items-center">
-                <Link className="text-xl font-bold text-white" to="/">Brand</Link>
-                <button
-                    className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
-                    aria-label="Toggle navigation"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </button>
-                <div className={`absolute md:static top-16 left-0 w-full md:w-auto bg-gray-900 md:bg-transparent md:flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 p-4 md:p-0 transition-all duration-300 ease-in-out ${isOpen ? 'block' : 'hidden'}`}>
-                    <Link className="block md:inline text-white hover:text-gray-300" to="/">Home</Link>
-                    <Link className="block md:inline text-white hover:text-gray-300" to="/dailyprice">Daily Price</Link>
-                    <Link className="block md:inline text-white hover:text-gray-300" to="/contact">Contact</Link>
-                    <Link className="block md:inline text-white hover:text-gray-300" to="/login">Login</Link>
+        <div>
+            <Navbar />
+
+            {/* Carousel */}
+            <div className="w-full">
+                <Slider {...settings}>
+                    <div>
+                        <img
+                            src="/images/1.jpg"
+                            alt="Slide 1"
+                            className="w-full h-[500px] object-cover"
+                        />
+                    </div>
+                    <div>
+                        <img
+                            src="/images/2.jpg"
+                            alt="Slide 2"
+                            className="w-full h-[500px] object-cover"
+                        />
+                    </div>
+                    <div>
+                        <img
+                            src="/images/3.jpg"
+                            alt="Slide 3"
+                            className="w-full h-[500px] object-cover"
+                        />
+                    </div>
+                </Slider>
+            </div>
+
+            {/* Welcome Section */}
+            <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div className="text-left space-y-6">
+                    <h1 className="text-3xl font-bold">{t("home.welcomeMessage")}</h1>
+                    <p className="text-lg text-gray-700 text-justify">{t("home.description")}</p>
+                </div>
+
+                <div>
+                    <img
+                        src="/images/logo.jpg"
+                        alt="Illustration"
+                        className="rounded-3xl w-full h-[350px] object-contain"
+                    />
                 </div>
             </div>
-        </nav>
+
+            <EconomicCenterNews />
+
+            <Footer />
+        </div>
     );
 };
 
-export default Navbar;
+export default Home;
