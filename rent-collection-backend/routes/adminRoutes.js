@@ -11,7 +11,7 @@ const router = express.Router();
  * Route: POST /api/admin/register
  * Access: Super Admin
  */
-router.post("/register", authenticateUser, authorizeRole(["superadmin"]), async (req, res) => {
+router.post("/register", authenticateUser, authorizeRole(["superadmin", "admin"]), async (req, res) => {
   const { username, email, password, role } = req.body;
 
   try {
@@ -34,6 +34,7 @@ router.post("/register", authenticateUser, authorizeRole(["superadmin"]), async 
   } catch (err) {
     console.error("Admin Registration Error:", err);
     res.status(500).json({ message: "Error registering admin", error: err.message });
+    
   }
 });
 
@@ -85,6 +86,34 @@ router.get("/profile", authenticateUser, async (req, res) => {
     res.status(500).json({ message: "Error fetching profile", error: err.message });
   }
 });
+/**
+ * 🔐 Change Admin Password
+ * Route: PUT /api/admin/change-password
+ * Access: Authenticated Admins
+ */
+router.put("/change-password", authenticateUser, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    // Find admin
+    const admin = await Admin.findByPk(req.user.adminId);
+    if (!admin) return res.status(404).json({ message: "Admin not found" });
+
+    // Check current password
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) return res.status(401).json({ message: "Current password is incorrect" });
+
+    // Hash and update new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedPassword;
+    await admin.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Password Change Error:", err);
+    res.status(500).json({ message: "Error updating password", error: err.message });
+  }
+});
 
 /**
  * 🔒 Super Admin-Only Route
@@ -109,7 +138,7 @@ router.get("/admin", authenticateUser, authorizeRole(["admin", "superadmin"]), (
  * Route: GET /api/admin/list
  * Access: Super Admin
  */
-router.get("/list", authenticateUser, authorizeRole(["superadmin"]), async (req, res) => {
+router.get("/list", authenticateUser, authorizeRole(["admin", "superadmin"]), async (req, res) => {
   try {
     const admins = await Admin.findAll({
       attributes: { exclude: ["password"] },
