@@ -24,8 +24,7 @@ const productPriceRoutes = require('../routes/productPriceRoute'); // Import pro
 const publicationRoutes = require('../routes/publicationRoutes'); // Import publications routes
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173","http://localhost:60396"];
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors({ origin: "*", credentials: true }));
 
 app.use(bodyParser.json());
 
