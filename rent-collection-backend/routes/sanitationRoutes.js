@@ -17,9 +17,13 @@ router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async
     const now = new Date();
     const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
 
+    // Assuming the logged-in user's info is available via req.user (e.g., from JWT token)
+    const byWhom = req.user.email; // You can also use req.user.name or req.user.username depending on the JWT token content
+
     const ticket = await Sanitation.create({
       price,
-      date
+      date,
+      byWhom // Add the 'byWhom' field here
     });
 
     res.status(201).json({
@@ -38,7 +42,10 @@ router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']),
 
   try {
     const whereClause = date ? { date } : {};
-    const tickets = await Sanitation.findAll({ where: whereClause });
+    const tickets = await Sanitation.findAll({
+      where: whereClause,
+      attributes: ['id', 'price', 'date', 'byWhom'] // Include 'byWhom' field
+    });
 
     res.status(200).json({ count: tickets.length, tickets });
   } catch (error) {
@@ -70,7 +77,6 @@ router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmi
     res.status(500).json({ message: 'Error fetching daily income', error: error.message });
   }
 });
-
 
 // 📆 Monthly income summary for sanitation
 router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
