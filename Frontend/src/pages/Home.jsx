@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import Slider from "react-slick";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import EconomicCenterNews from "../components/EconomicCenterNews";
+
 
 // Import slick-carousel styles
 import "slick-carousel/slick/slick-theme.css";
@@ -27,7 +29,7 @@ const Home = () => {
         <div>
             <Navbar />
 
-            {/* Full-Width Carousel at the Top */}
+            {/* Carousel */}
             <div className="w-full">
                 <Slider {...settings}>
                     <div>
@@ -54,15 +56,13 @@ const Home = () => {
                 </Slider>
             </div>
 
-            {/* Welcome Section with Text on Left and Image on Right */}
+            {/* Welcome Section */}
             <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                {/* Left Side: Welcome Text */}
                 <div className="text-left space-y-6">
                     <h1 className="text-3xl font-bold">{t("home.welcomeMessage")}</h1>
                     <p className="text-lg text-gray-700 text-justify">{t("home.description")}</p>
                 </div>
 
-                {/* Right Side: Image */}
                 <div>
                     <img
                         src="/images/logo.jpg"
@@ -71,6 +71,8 @@ const Home = () => {
                     />
                 </div>
             </div>
+
+            <EconomicCenterNews />
 
             <Footer />
         </div>
