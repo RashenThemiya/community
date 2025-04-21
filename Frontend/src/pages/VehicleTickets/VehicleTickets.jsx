@@ -106,7 +106,7 @@ const VehicleTickets = () => {
     <div className="flex flex-col md:flex-row h-screen">
       <Sidebar />
       <div className="flex-1 overflow-auto p-6 bg-gray-50">
-        <div className="max-w-5xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
             Vehicle Ticket Management
           </h2>
@@ -199,6 +199,7 @@ const VehicleTickets = () => {
                     <th className="p-3 text-left">Type</th>
                     <th className="p-3 text-left">Price</th>
                     <th className="p-3 text-left">Time</th>
+                    <th className="p-3 text-left">By</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -210,11 +211,12 @@ const VehicleTickets = () => {
                         <td className="p-3">{ticket.vehicleType}</td>
                         <td className="p-3">Rs. {ticket.ticketPrice}</td>
                         <td className="p-3">{ticket.time}</td>
+                        <td className="p-3">{ticket.byWhom}</td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td className="p-3 text-center text-gray-500" colSpan="5">
+                      <td className="p-3 text-center text-gray-500" colSpan="6">
                         No tickets found.
                       </td>
                     </tr>
