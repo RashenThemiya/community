@@ -149,6 +149,7 @@ const SanitationTickets = () => {
                     <th className="p-3 text-left">ID</th>
                     <th className="p-3 text-left">Price</th>
                     <th className="p-3 text-left">Date</th>
+                    <th className="p-3 text-left">By Whom</th> {/* ✅ Added */}
                   </tr>
                 </thead>
                 <tbody>
@@ -158,11 +159,12 @@ const SanitationTickets = () => {
                         <td className="p-3">{ticket.id}</td>
                         <td className="p-3">Rs. {ticket.price}</td>
                         <td className="p-3">{ticket.date}</td>
+                        <td className="p-3">{ticket.byWhom}</td> {/* ✅ Displaying byWhom */}
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td className="p-3 text-center text-gray-500" colSpan="3">
+                      <td className="p-3 text-center text-gray-500" colSpan="4">
                         No tickets found.
                       </td>
                     </tr>
