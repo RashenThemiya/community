@@ -44,8 +44,11 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
       if (response.statusCode == 200) {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', data['token']);
-        await prefs.setString('role', data['role']);
+
+        await prefs.setString('token', data['token'] ?? '');
+        await prefs.setString('role', data['role'] ?? '');
+        await prefs.setString('name', data['name']?.toString() ?? '');
+        await prefs.setString('email', data['email'] ?? '');
 
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
@@ -54,6 +57,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
         });
       }
     } catch (e) {
+      print('Login Error: $e');
       setState(() {
         _responseMessage = 'Something went wrong. Please try again.';
       });
