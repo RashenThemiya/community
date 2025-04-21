@@ -13,6 +13,7 @@ const VehicleTickets = () => {
   const [loading, setLoading] = useState(true);
   const [searchDate, setSearchDate] = useState("");
   const [searchVehicleNumber, setSearchVehicleNumber] = useState("");
+  const [searchByWhom, setSearchByWhom] = useState(""); // ✅ New
   const [dailyIncome, setDailyIncome] = useState({ totalIncome: 0, ticketCount: 0 });
   const [monthlyIncome, setMonthlyIncome] = useState({ totalIncome: 0, ticketCount: 0 });
 
@@ -20,8 +21,8 @@ const VehicleTickets = () => {
 
   useEffect(() => {
     fetchTickets();
-    fetchDailyIncome(); // <- updated to depend on searchDate
-  }, [searchDate]);
+    fetchDailyIncome();
+  }, [searchDate, searchByWhom]); // ✅ Watch searchByWhom
 
   useEffect(() => {
     filterTickets();
@@ -29,12 +30,14 @@ const VehicleTickets = () => {
 
   useEffect(() => {
     fetchMonthlyIncome();
-  }, []);
+  }, [searchByWhom]); // ✅ Watch searchByWhom
 
   const fetchTickets = async () => {
     try {
-      const query = searchDate ? `?date=${searchDate}` : "";
-      const res = await api.get(`/api/vehicle-tickets/by-date${query}`);
+      const queryParams = new URLSearchParams();
+      if (searchDate) queryParams.append("date", searchDate);
+      if (searchByWhom) queryParams.append("byWhom", searchByWhom);
+      const res = await api.get(`/api/vehicle-tickets/by-date?${queryParams}`);
       setTickets(res.data.tickets || []);
       setFilteredTickets(res.data.tickets || []);
     } catch (err) {
@@ -48,7 +51,15 @@ const VehicleTickets = () => {
     try {
       const res = await api.get("/api/vehicle-tickets/daily-income");
       const targetDate = searchDate || new Date().toISOString().split("T")[0];
-      const dateData = res.data.find(entry => entry.date === targetDate);
+      let dateData = res.data.find(entry => entry.date === targetDate);
+
+      if (searchByWhom) {
+        // Filter manually by 'byWhom'
+        const filtered = tickets.filter(t => t.date === targetDate && t.byWhom.includes(searchByWhom));
+        const totalIncome = filtered.reduce((acc, curr) => acc + parseFloat(curr.ticketPrice), 0);
+        dateData = { totalIncome, ticketCount: filtered.length };
+      }
+
       setDailyIncome(dateData || { totalIncome: 0, ticketCount: 0 });
     } catch (err) {
       console.error("Failed to fetch daily income:", err);
@@ -63,7 +74,22 @@ const VehicleTickets = () => {
         parseInt(entry.month) === now.getMonth() + 1 &&
         parseInt(entry.year) === now.getFullYear()
       );
-      setMonthlyIncome(monthData || { totalIncome: 0, ticketCount: 0 });
+
+      if (searchByWhom) {
+        const filtered = tickets.filter(t => {
+          const dateObj = new Date(t.date);
+          return (
+            dateObj.getMonth() === now.getMonth() &&
+            dateObj.getFullYear() === now.getFullYear() &&
+            t.byWhom.includes(searchByWhom)
+          );
+        });
+
+        const totalIncome = filtered.reduce((acc, curr) => acc + parseFloat(curr.ticketPrice), 0);
+        setMonthlyIncome({ totalIncome, ticketCount: filtered.length });
+      } else {
+        setMonthlyIncome(monthData || { totalIncome: 0, ticketCount: 0 });
+      }
     } catch (err) {
       console.error("Failed to fetch monthly income:", err);
     }
@@ -169,7 +195,7 @@ const VehicleTickets = () => {
           </div>
 
           {/* Filters */}
-          <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
             <input
               type="date"
               value={searchDate}
@@ -181,6 +207,13 @@ const VehicleTickets = () => {
               placeholder="Search by Vehicle Number"
               value={searchVehicleNumber}
               onChange={(e) => setSearchVehicleNumber(e.target.value)}
+              className="border border-gray-300 p-3 rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Search by Issuer Email"
+              value={searchByWhom}
+              onChange={(e) => setSearchByWhom(e.target.value)}
               className="border border-gray-300 p-3 rounded-lg"
             />
           </div>
