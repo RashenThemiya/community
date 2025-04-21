@@ -9,7 +9,6 @@ const router = express.Router();
 
 /**
  * ✅ Issue a new vehicle ticket
- * Required roles: admin or superadmin
  */
 router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { vehicleNumber, vehicleType, ticketPrice } = req.body;
@@ -19,24 +18,32 @@ router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async
   }
 
   try {
-    const byWhom = req.user.email; // Assumes JWT contains user.email
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const time = now.toTimeString().split(' ')[0];
+    const byWhom = req.user.email;
 
     const ticket = await VehicleTicket.create({
       vehicleNumber,
       vehicleType,
       ticketPrice,
+      date,
+      time,
       byWhom
     });
 
-    res.status(201).json({ message: 'Ticket issued successfully', ticket });
+    res.status(201).json({
+      message: 'Ticket issued successfully',
+      ticketId: ticket.id,
+      ticket
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error issuing ticket', error: error.message });
   }
 });
 
 /**
- * 📋 Get tickets filtered by date and optionally by 'byWhom'
- * Includes pagination (default: page 1, limit 10)
+ * 📋 Get tickets filtered by date and optionally by byWhom
  */
 router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { date, byWhom, page = 1, limit = 10 } = req.query;
@@ -62,16 +69,23 @@ router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']),
 });
 
 /**
- * 💰 Get total income and ticket count grouped by day
+ * 💰 Daily income summary (supports ?date=YYYY-MM-DD and ?byWhom)
  */
 router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+  const { date, byWhom } = req.query;
+
   try {
+    const whereClause = {};
+    if (date) whereClause.date = date;
+    if (byWhom) whereClause.byWhom = { [Op.like]: `%${byWhom}%` };
+
     const dailyIncome = await VehicleTicket.findAll({
       attributes: [
         [fn('DATE', col('date')), 'date'],
         [fn('SUM', col('ticketPrice')), 'totalIncome'],
         [fn('COUNT', col('id')), 'ticketCount']
       ],
+      where: whereClause,
       group: [literal('DATE(date)')],
       order: [[literal('DATE(date)'), 'DESC']]
     });
@@ -83,7 +97,7 @@ router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmi
 });
 
 /**
- * 📆 Get total income and ticket count grouped by month and year
+ * 📆 Monthly income summary
  */
 router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   try {
