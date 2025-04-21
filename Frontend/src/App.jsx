@@ -1,7 +1,7 @@
+import 'font-awesome/css/font-awesome.min.css';
 import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import 'font-awesome/css/font-awesome.min.css';
 
 
 
@@ -29,6 +29,7 @@ import Publication from './pages/Publications/PublicationManagement';
 import ViewPublications from './pages/Publications/ViewPublications';
 import Report from './pages/Report/Report';
 import Sanitation from './pages/Sanitation/SanitationTickets';
+import AdminPanel from './pages/SettingPage/AdminPanel';
 import Setting from './pages/SettingPage/Setting';
 import SystemLog from './pages/SettingPage/SystemLog';
 import UpdateVATRate from './pages/SettingPage/UpdateVATRate';
@@ -85,6 +86,7 @@ function App() {
             <Route path="/add-publication" element={<AddPublication />} />
             <Route path="/view-publications" element={<ViewPublications />} />
             <Route path="/home-dailyprice" element={<HomeDailyPrice />} />
+            <Route path="/admin-panel" element={<AdminPanel />}/>
 
           </Routes>
         </div>

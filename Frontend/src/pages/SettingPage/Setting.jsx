@@ -76,7 +76,7 @@ const Setting = () => {
                         <p className="text-gray-700 mb-4">Assign roles and permissions for users.</p>
                         <button
                             className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 w-full"
-                            onClick={() => navigate("/manage-roles")}
+                            onClick={() => navigate("/admin-panel")}
                         >
                             Manage Roles
                         </button>
