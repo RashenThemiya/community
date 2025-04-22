@@ -16,15 +16,21 @@ const VehicleTicket = sequelize.define('VehicleTicket', {
   },
   date: {
     type: DataTypes.DATEONLY,
-    allowNull: false
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   },
   time: {
     type: DataTypes.TIME,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  byWhom: {
+    type: DataTypes.STRING,
     allowNull: false
   }
 }, {
   tableName: 'vehicle_tickets',
-  timestamps: true  // Sequelize will automatically handle createdAt and updatedAt
+  timestamps: true
 });
 
 module.exports = VehicleTicket;

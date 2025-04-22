@@ -61,12 +61,19 @@ router.post("/login", async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    res.status(200).json({ message: "Login successful", token, role: admin.role });
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      role: admin.role,
+      name: admin.name,   // <-- add admin name here
+      email: admin.email  // (optional) include email if needed
+    });
   } catch (err) {
     console.error("Login Error:", err);
     res.status(500).json({ message: "Error logging in", error: err.message });
   }
 });
+
 /**
  * 👤 Get Admin Profile
  * Route: GET /api/admin/profile

@@ -5,7 +5,9 @@ const { authenticateUser, authorizeRole } = require('../middleware/authMiddlewar
 
 const router = express.Router();
 
-// ✅ Issue a new sanitation ticket
+/**
+ * ✅ Issue a new sanitation ticket
+ */
 router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { price } = req.body;
 
@@ -15,16 +17,18 @@ router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async
 
   try {
     const now = new Date();
-    const date = now.toISOString().split('T')[0]; // YYYY-MM-DD
+    const date = now.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    const byWhom = req.user.email;
 
     const ticket = await Sanitation.create({
       price,
-      date
+      date,
+      byWhom
     });
 
     res.status(201).json({
       message: 'Sanitation ticket issued successfully',
-      ticketId: ticket.id, // ✅ For frontend printing
+      ticketId: ticket.id,
       ticket
     });
   } catch (error) {
@@ -32,13 +36,22 @@ router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async
   }
 });
 
-// 📅 Get sanitation tickets by date (pass ?date=YYYY-MM-DD)
+/**
+ * 📅 Get sanitation tickets by date and byWhom (optional query params: ?date=YYYY-MM-DD&byWhom=email)
+ */
 router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
-  const { date } = req.query;
+  const { date, byWhom } = req.query;
 
   try {
-    const whereClause = date ? { date } : {};
-    const tickets = await Sanitation.findAll({ where: whereClause });
+    const whereClause = {};
+    if (date) whereClause.date = date;
+    if (byWhom) whereClause.byWhom = byWhom;
+
+    const tickets = await Sanitation.findAll({
+      where: whereClause,
+      attributes: ['id', 'price', 'date', 'byWhom'],
+      order: [['date', 'DESC'], ['id', 'DESC']]
+    });
 
     res.status(200).json({ count: tickets.length, tickets });
   } catch (error) {
@@ -46,13 +59,16 @@ router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']),
   }
 });
 
-// 💰 Daily income summary for sanitation
-// 💰 Daily income summary for sanitation (optionally accepts ?date=YYYY-MM-DD)
+/**
+ * 💰 Daily income summary (optional query params: ?date=YYYY-MM-DD&byWhom=email)
+ */
 router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
-  const { date } = req.query;
+  const { date, byWhom } = req.query;
 
   try {
-    const whereClause = date ? { date } : {};
+    const whereClause = {};
+    if (date) whereClause.date = date;
+    if (byWhom) whereClause.byWhom = byWhom;
 
     const dailyIncome = await Sanitation.findAll({
       attributes: [
@@ -71,10 +87,16 @@ router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmi
   }
 });
 
-
-// 📆 Monthly income summary for sanitation
+/**
+ * 📆 Monthly income summary (optional query param: ?byWhom=email)
+ */
 router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+  const { byWhom } = req.query;
+
   try {
+    const whereClause = {};
+    if (byWhom) whereClause.byWhom = byWhom;
+
     const monthlyIncome = await Sanitation.findAll({
       attributes: [
         [fn('YEAR', col('date')), 'year'],
@@ -82,6 +104,7 @@ router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superad
         [fn('SUM', col('price')), 'totalIncome'],
         [fn('COUNT', col('id')), 'ticketCount']
       ],
+      where: whereClause,
       group: [fn('YEAR', col('date')), fn('MONTH', col('date'))],
       order: [
         [fn('YEAR', col('date')), 'DESC'],

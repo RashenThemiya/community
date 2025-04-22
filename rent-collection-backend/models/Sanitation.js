@@ -15,10 +15,14 @@ const Sanitation = sequelize.define('Sanitation', {
   date: {
     type: DataTypes.DATEONLY,
     allowNull: false
+  },
+  byWhom: {
+    type: DataTypes.STRING,
+    allowNull: false
   }
 }, {
   tableName: 'sanitation',
-  timestamps: true  // This will automatically create createdAt and updatedAt fields
+  timestamps: true
 });
 
 module.exports = Sanitation;
