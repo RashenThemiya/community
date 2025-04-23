@@ -9,7 +9,7 @@ const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
-const foodPriceRoutes = require('../routes/foodPriceRoutes');
+
 
 
 const paymentCorrection = require('../routes/paymentCorrection'); 
@@ -43,7 +43,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
-app.use('/api/food-prices', foodPriceRoutes);
+
 
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingRoutes); // Settings routes
