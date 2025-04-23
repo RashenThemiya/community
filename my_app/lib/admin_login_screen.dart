@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminLoginScreen extends StatefulWidget {
   @override
@@ -12,9 +13,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String? _responseMessage;
+  bool _isLoading = false;
 
   Future<void> loginAdmin() async {
-    final String email = _emailController.text;
+    final String email = _emailController.text.trim();
     final String password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
@@ -24,20 +26,46 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       return;
     }
 
-    final url = Uri.parse('http://localhost:5000/api/admin/login'); // Replace with your API URL
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
-
     setState(() {
+      _isLoading = true;
+      _responseMessage = null;
+    });
+
+    final url = Uri.parse('http://localhost:5000/api/admin/login');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+
+      final data = jsonDecode(response.body);
+
       if (response.statusCode == 200) {
+        final prefs = await SharedPreferences.getInstance();
+
+        await prefs.setString('token', data['token'] ?? '');
+        await prefs.setString('role', data['role'] ?? '');
+        await prefs.setString('name', data['name']?.toString() ?? '');
+        await prefs.setString('email', data['email'] ?? '');
+
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else {
-        _responseMessage = 'Login failed. Check credentials';
+        setState(() {
+          _responseMessage = data['message'] ?? 'Login failed. Check credentials';
+        });
       }
-    });
+    } catch (e) {
+      print('Login Error: $e');
+      setState(() {
+        _responseMessage = 'Something went wrong. Please try again.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -52,6 +80,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
             TextField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
             ),
             TextField(
               controller: _passwordController,
@@ -59,10 +88,12 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               obscureText: true,
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: loginAdmin,
-              child: Text('Login'),
-            ),
+            _isLoading
+                ? CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: loginAdmin,
+                    child: Text('Login'),
+                  ),
             if (_responseMessage != null) ...[
               SizedBox(height: 20),
               Text(_responseMessage!, style: TextStyle(color: Colors.red)),

@@ -3,15 +3,15 @@ const { Sequelize } = require('sequelize');
 const Invoice = require('../models/Invoice');
 const Fine = require('../models/Fine');
 const Rent = require('../models/Rent');
-const Vat = require('../models/Vat');
+const Vat = require('../models/VAT');
 const Shop = require('../models/Shop');
 const ShopBalance = require('../models/ShopBalance');
-const Tenant = require('../models/Tenant'); // Import Tenant model
+const Tenant = require('../models/Tenant');
+const OperationFee = require('../models/OperationFee'); // ✅ Import it
 const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// Route to get counts and sums
 router.get('/summary', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
     try {
         const invoiceCounts = await Invoice.findAll({
@@ -45,22 +45,31 @@ router.get('/summary', authenticateUser, authorizeRole(['admin', 'superadmin']),
             ]
         });
 
+        const operationFeeSums = await OperationFee.findAll({ // ✅ NEW
+            attributes: [
+                [Sequelize.fn('SUM', Sequelize.col('operation_amount')), 'total_operation_amount'],
+                [Sequelize.fn('SUM', Sequelize.col('paid_amount')), 'total_operation_paid']
+            ]
+        });
+
         const shopBalanceSum = await ShopBalance.findAll({
             attributes: [[Sequelize.fn('SUM', Sequelize.col('balance_amount')), 'total_shop_balance']]
         });
 
         const shopCount = await Shop.count();
-        const tenantCount = await Tenant.count(); // Fetch total number of tenants
+        const tenantCount = await Tenant.count();
 
         res.json({
             invoiceCounts: invoiceCounts[0],
             rentSums: rentSums[0],
             vatSums: vatSums[0],
             fineSums: fineSums[0],
+            operationFeeSums: operationFeeSums[0], // ✅ Include it
             shopBalanceSum: shopBalanceSum[0],
             shopCount: shopCount,
-            tenantCount: tenantCount  // Include tenant count in response
+            tenantCount: tenantCount
         });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal Server Error' });
