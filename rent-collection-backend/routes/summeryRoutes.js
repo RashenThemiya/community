@@ -19,50 +19,54 @@ router.get('/summary', authenticateUser, authorizeRole(['admin', 'superadmin']),
         return res.status(400).json({ error: "Year is required." });
     }
 
-    const shopCount = await Shop.count();
-    const tenantCount = await Tenant.count();
-    const shopBalanceSum = await ShopBalance.findAll({
-        attributes: [[Sequelize.fn('SUM', Sequelize.col('balance_amount')), 'total_shop_balance']],
-        where: {
-            balance_amount: { [Op.gt]: 0 }
-        }
-    });
-
-    if (month) {
-        // Monthly summary (same as before)
-        const startDate = new Date(year, month - 1, 1);
-        const endDate = new Date(year, month, 0, 23, 59, 59);
-
-        const data = await getMonthlyData(startDate, endDate);
-
-        return res.json({
-            ...data,
-            shopCount,
-            tenantCount,
-            shopBalanceSum: shopBalanceSum[0]
+    try {
+        const shopCount = await Shop.count();
+        const tenantCount = await Tenant.count();
+        const shopBalanceSum = await ShopBalance.findAll({
+            attributes: [[Sequelize.fn('SUM', Sequelize.col('balance_amount')), 'total_shop_balance']],
+            where: {
+                balance_amount: { [Op.gt]: 0 }
+            }
         });
-    } else {
-        // Year-wise: fetch data for each month
-        const yearData = [];
 
-        for (let m = 0; m < 12; m++) {
-            const startDate = new Date(year, m, 1);
-            const endDate = new Date(year, m + 1, 0, 23, 59, 59);
-
+        if (month) {
+            // Monthly summary
+            const startDate = new Date(year, month - 1, 1);
+            const endDate = new Date(year, month, 0, 23, 59, 59);
             const data = await getMonthlyData(startDate, endDate);
-            yearData.push({
-                month: m + 1,
-                ...data
+
+            return res.json({
+                ...data,
+                shopCount,
+                tenantCount,
+                shopBalanceSum: shopBalanceSum[0]?.get({ plain: true }) || {}
+            });
+        } else {
+            // Year-wise summary
+            const yearData = [];
+
+            for (let m = 0; m < 12; m++) {
+                const startDate = new Date(year, m, 1);
+                const endDate = new Date(year, m + 1, 0, 23, 59, 59);
+                const data = await getMonthlyData(startDate, endDate);
+
+                yearData.push({
+                    month: m + 1,
+                    ...data
+                });
+            }
+
+            return res.json({
+                year,
+                monthlySummaries: yearData,
+                shopCount,
+                tenantCount,
+                shopBalanceSum: shopBalanceSum[0]?.get({ plain: true }) || {}
             });
         }
-
-        return res.json({
-            year,
-            monthlySummaries: yearData,
-            shopCount,
-            tenantCount,
-            shopBalanceSum: shopBalanceSum[0]
-        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error." });
     }
 });
 
@@ -121,11 +125,11 @@ const getMonthlyData = async (startDate, endDate) => {
     });
 
     return {
-        invoiceCounts: invoiceCounts[0],
-        rentSums: rentSums[0],
-        vatSums: vatSums[0],
-        fineSums: fineSums[0],
-        operationFeeSums: operationFeeSums[0],
+        invoiceCounts: invoiceCounts[0]?.get({ plain: true }) || {},
+        rentSums: rentSums[0]?.get({ plain: true }) || {},
+        vatSums: vatSums[0]?.get({ plain: true }) || {},
+        fineSums: fineSums[0]?.get({ plain: true }) || {},
+        operationFeeSums: operationFeeSums[0]?.get({ plain: true }) || {}
     };
 };
 
