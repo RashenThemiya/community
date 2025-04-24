@@ -1,8 +1,35 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const Shop = require('../models/Shop');
-const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
+const Tenant = require('../models/Tenant');
+const Payment = require('../models/Payment');
+const Invoice = require('../models/Invoice');
+const Fine = require('../models/Fine');
+const OperationFee = require('../models/OperationFee');
+const Rent = require('../models/Rent');
+const Vat = require('../models/VAT');
+const AuditTrail = require('../models/AuditTrail');
+const shopBalance = require('../models/ShopBalance');
+const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware"); // ✅ Import middleware once
 
 const router = express.Router();
+
+// Get shops without tenants
+router.get('/without-tenants', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const shopsWithoutTenants = await Shop.findAll({
+      include: [{
+        model: Tenant,
+        required: false, // Left join (shops with no tenants will still be included)
+      }],
+      where: { '$Tenant.shop_id$': null } // Filtering only shops that have no tenants
+    });
+
+    res.status(200).json(shopsWithoutTenants);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching shops without tenants', error: err.message });
+  }
+});
 
 // Get all shops (accessible by Admin and Super Admin)
 router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
@@ -70,7 +97,7 @@ router.put('/:shopId', authenticateUser, authorizeRole(["admin", "superadmin"]),
 });
 
 // Delete shop (only accessible by Super Admin)
-router.delete('/:shopId', authenticateUser, authorizeRole(['superadmin']), async (req, res) => {
+router.delete('/:shopId', authenticateUser, authorizeRole(["admin", "superadmin"]), async (req, res) => {
   const { shopId } = req.params;
 
   try {
@@ -84,4 +111,46 @@ router.delete('/:shopId', authenticateUser, authorizeRole(['superadmin']), async
   }
 });
 
+
+
+// GET shop summary by shop_id
+router.get('/shop-summary/:shop_id', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+  try {
+    const { shop_id } = req.params;
+
+    // Fetch shop details along with related records
+    const shop = await Shop.findOne({
+      where: { shop_id },
+      include: [
+        { model: Tenant },
+        { 
+          model: shopBalance, 
+          attributes: ['balance_amount'] // Only include these fields
+        },
+        { model: Invoice, 
+          separate: true, // Prevents duplicate invoice entries
+          include: [
+            { model: Fine }, // Fines related to invoice
+            { model: OperationFee }, // Operation fees related to invoice
+            { model: Vat }, // VAT details
+            { model: Rent } // Rent details related to invoice
+          ]  
+        },
+        { model: Payment }
+      ]
+    });
+
+    if (!shop) {
+      return res.status(404).json({ message: 'Shop not found' });
+    }
+
+    res.status(200).json({ shop });
+  } catch (error) {
+    console.error('Error fetching shop summary:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 module.exports = router;
+
+

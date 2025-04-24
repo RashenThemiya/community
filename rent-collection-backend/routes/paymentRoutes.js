@@ -1,14 +1,27 @@
 const express = require('express');
 const { processPaymentByShopId, processPaymentByInvoiceId } = require('../utils/processPayment');
 const { authenticateUser, authorizeRole } = require('../middleware/authMiddleware');
+const { Payment } = require('../models');
 
 const router = express.Router();
+
+// Route to get all payments
+// Get all payments (accessible by Admin and Super Admin)
+router.get('/payments', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+  try {
+      const payments = await Payment.findAll();
+      return res.status(200).json({ success: true, payments });
+  } catch (error) {
+      console.error('Error fetching payments:', error);
+      return res.status(500).json({ success: false, message: "Failed to fetch payments", error: error.message });
+  }
+});
 
 // Process payment by Shop ID (accessible by Admin and Super Admin)
 router.post('/by-shop/:shopId', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { shopId } = req.params;
   const { amountPaid, paymentMethod } = req.body;
-//payment method-'Cash', 'Bank Transfer', 'Cheque', 'Correction Made'
+
   // Validate input
   if (!amountPaid || !paymentMethod) {
     return res.status(400).json({ success: false, message: 'Amount paid and payment method are required' });
@@ -31,7 +44,6 @@ router.post('/by-shop/:shopId', authenticateUser, authorizeRole(['admin', 'super
 router.post('/by-invoice/:invoiceId', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { invoiceId } = req.params;
   const { amountPaid, paymentMethod } = req.body;
-//payment method-'Cash', 'Bank Transfer', 'Cheque', 'Correction Made'
 
   // Validate input
   if (!amountPaid || !paymentMethod) {

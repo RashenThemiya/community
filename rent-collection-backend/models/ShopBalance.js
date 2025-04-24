@@ -5,11 +5,7 @@ const Shop = require('./Shop');
 const ShopBalance = sequelize.define('ShopBalance', {
   shop_id: {
     type: DataTypes.STRING(6),
-    primaryKey: true,
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
+    primaryKey: true,  // ✅ Deletes ShopBalance when Shop is deleted
   },
   balance_amount: {
     type: DataTypes.DECIMAL(10,2),
@@ -23,5 +19,6 @@ const ShopBalance = sequelize.define('ShopBalance', {
   timestamps: false,
   tableName: 'shop_balances',
 });
+
 
 module.exports = ShopBalance;

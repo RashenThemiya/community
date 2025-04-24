@@ -11,17 +11,11 @@ const Rent = sequelize.define('Rent', {
   },
   shop_id: {
     type: DataTypes.STRING(6),
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
+    allowNull: false,
   },
   invoice_id: {
     type: DataTypes.STRING,
-    references: {
-      model: Invoice,
-      key: 'invoice_id'
-    },
+    allowNull: false,
   },
   rent_amount: {
     type: DataTypes.DECIMAL(10,2),
@@ -48,5 +42,6 @@ const Rent = sequelize.define('Rent', {
   timestamps: true,
   tableName: 'rents',
 });
+
 
 module.exports = Rent;

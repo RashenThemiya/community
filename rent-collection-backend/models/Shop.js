@@ -1,6 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-
 const Shop = sequelize.define('Shop', {
   shop_id: {
     type: DataTypes.STRING(6),
@@ -32,5 +31,6 @@ const Shop = sequelize.define('Shop', {
   timestamps: true,
   tableName: 'shops',
 });
+
 
 module.exports = Shop;

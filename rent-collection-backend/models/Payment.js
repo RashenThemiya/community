@@ -12,20 +12,11 @@ const Payment = sequelize.define('Payment', {
   shop_id: {
     type: DataTypes.STRING,
     allowNull: false,
-    references: {
-      model: Shop,
-      key: 'shop_id',
-    },
-    onDelete: 'CASCADE',
   },
   invoice_id: {
     type: DataTypes.STRING,
-    allowNull: true, // Invoice ID can now be NULL
-    references: {
-      model: Invoice,
-      key: 'invoice_id',
-    },
-    onDelete: 'SET NULL',
+    allowNull: true, // Invoice ID can now be NULL,
+
   },
   amount_paid: {
     type: DataTypes.DECIMAL(10,2),

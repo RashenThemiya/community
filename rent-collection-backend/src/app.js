@@ -9,14 +9,22 @@ const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
-const paymentCorrection = require('../routes/paymentCorrection'); // Import payment routes
+const paymentCorrection = require('../routes/paymentCorrection'); 
+const settingRoutes = require('../routes/settingRoutes'); // Import the new setting routes// Import payment routes
 require("../jobs/cronJob");  // If placed in /jobs/
-
-
+require('../models'); 
+const invoiceRoutes = require('../routes/invoiceRoutes');
+const auditTrailRoutes = require('../routes/auditRoutes'); // Import audit trail routes
+const summeryRoutes = require('../routes/summeryRoutes'); // Import summary routes
+const vehicleTicketRoutes = require('../routes/vehicleTicket');
+const sanitationRoutes = require('../routes/sanitationRoutes'); // Import sanitation routes
+const generateInvoiceRoutes = require('../routes/generateInvoiceRoutes');
+const productRoutes = require('../routes/productRoutes'); // Import product routes
+const productPriceRoutes = require('../routes/productPriceRoute'); // Import product price routes
+const publicationRoutes = require('../routes/publicationRoutes'); // Import publications routes
 const app = express();
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:5173"];
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cors({ origin: "*", credentials: true }));
 
 app.use(bodyParser.json());
 
@@ -30,7 +38,17 @@ app.use('/api/tenants', tenantRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
-app.use('/api/payments', paymentCorrection);
+app.use('/api/paymentscorrection', paymentCorrection);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/settings', settingRoutes); // Settings routes
+app.use('/api/audit', auditTrailRoutes); // Audit trail routes
+app.use('/api/summery', summeryRoutes); // Summary routes
+app.use('/api/vehicle-tickets', vehicleTicketRoutes);
+app.use('/api/sanitation', sanitationRoutes);
+app.use('/api/generateInvoices', generateInvoiceRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/prices', productPriceRoutes); // Product price routes
+app.use('/api/publications', publicationRoutes); // Publications routes
 
 const createDefaultAdmins = async () => {
   try {

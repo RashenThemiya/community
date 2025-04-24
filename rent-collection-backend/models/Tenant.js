@@ -10,12 +10,7 @@ const Tenant = sequelize.define('Tenant', {
   },
   shop_id: {
     type: DataTypes.STRING(6),
-    allowNull: false, // A tenant must be linked to a shop
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
-    onDelete: 'CASCADE', // If shop is deleted, remove the tenant
+    allowNull: false, // A tenant must be linked to a shop // If shop is deleted, remove the tenant
   },
   name: {
     type: DataTypes.STRING,
@@ -42,8 +37,5 @@ const Tenant = sequelize.define('Tenant', {
   tableName: 'tenants',
 });
 
-// Relationships
-Shop.hasOne(Tenant, { foreignKey: 'shop_id' }); // One shop can have one tenant
-Tenant.belongsTo(Shop, { foreignKey: 'shop_id' }); // Each tenant belongs to a shop
 
 module.exports = Tenant;

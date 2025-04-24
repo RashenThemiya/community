@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Shop = require('./Shop'); // Assuming a Shop model exists
-const Invoice = require('./Invoice'); // Assuming an Invoice model exists
+const Shop = require('./Shop'); 
+const Invoice = require('./Invoice');
 
 const AuditTrail = sequelize.define('AuditTrail', {
   audit_id: {
@@ -11,21 +11,12 @@ const AuditTrail = sequelize.define('AuditTrail', {
   },
   shop_id: {
     type: DataTypes.STRING,
-    allowNull: false,
-    references: {
-      model: Shop,
-      key: 'shop_id',
-    },
-    onDelete: 'CASCADE',
+    allowNull: true, 
   },
   invoice_id: {
     type: DataTypes.STRING,
     allowNull: true,
-    references: {
-      model: Invoice,
-      key: 'invoice_id',
-    },
-    onDelete: 'SET NULL',
+    // ✅ Invoice deletion sets the field to NULL, but doesn't delete the audit record
   },
   event_type: {
     type: DataTypes.ENUM(
@@ -70,5 +61,8 @@ const AuditTrail = sequelize.define('AuditTrail', {
   timestamps: false,
   tableName: 'audit_trail',
 });
+
+// Define relationships (but without cascading deletion)
+
 
 module.exports = AuditTrail;

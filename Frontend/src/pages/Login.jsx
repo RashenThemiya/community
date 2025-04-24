@@ -10,7 +10,9 @@ const Login = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const { setToken, setRole } = useAuth();
+
+    // Include setName from context
+    const { setToken, setRole, setName } = useAuth();
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -21,12 +23,17 @@ const Login = () => {
         try {
             const response = await api.post("/api/admin/login", { email, password });
 
+            const { token, role, name } = response.data;
 
-            const { token, role } = response.data;
+            // Store in localStorage
             localStorage.setItem("token", token);
             localStorage.setItem("role", role);
+            localStorage.setItem("name", name);
+
+            // Update context
             setToken(token);
             setRole(role);
+            setName(name);
 
             // Redirect based on role
             navigate(role === "admin" ? "/admin-dashboard" : "/manager-dashboard");

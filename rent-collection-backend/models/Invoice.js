@@ -11,11 +11,6 @@ const Invoice = sequelize.define('Invoice', {
   shop_id: {
     type: DataTypes.STRING(6),
     allowNull: false,
-    references: {
-      model: Shop,
-      key: 'shop_id'
-    },
-    onDelete: 'CASCADE',
   },
   month_year: {
     type: DataTypes.DATE,
@@ -41,6 +36,10 @@ const Invoice = sequelize.define('Invoice', {
     type: DataTypes.DECIMAL(10,2),
     defaultValue: 0,
   },
+  previous_fines: {
+    type: DataTypes.DECIMAL(10,2),
+    defaultValue: 0,
+  },
   total_arrears: {
     type: DataTypes.DECIMAL(10,2),
     defaultValue: 0,
@@ -62,7 +61,5 @@ const Invoice = sequelize.define('Invoice', {
   tableName: 'invoices',
 });
 
-Shop.hasMany(Invoice, { foreignKey: 'shop_id' });
-Invoice.belongsTo(Shop, { foreignKey: 'shop_id' });
 
 module.exports = Invoice;

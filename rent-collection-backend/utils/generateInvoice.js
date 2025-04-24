@@ -1,10 +1,12 @@
 const Invoice = require("../models/Invoice");
 const Rent = require("../models/Rent");
 const OperationFee = require("../models/OperationFee");
-const Vat = require("../models/Vat");
+const Vat = require("../models/VAT");
 const AuditTrail = require("../models/AuditTrail");
 const Shop = require("../models/Shop");
 const ShopBalance = require("../models/ShopBalance");
+const Fine = require("../models/Fine");  // Add this line
+
 const { 
   runInvoicePaymentProcessWithoutAddingToShopBalance
 } = require('../utils/processPayment');
@@ -42,6 +44,31 @@ async function generateInvoice(shop_id, monthYear) {
       totalArrears + rentAmount + operationFee + vatAmount + fineAmount - shopBalanceAmount;
       totalAmountToPay = Math.max(0, totalAmountToPay);
     
+      const { Op } = require("sequelize");
+
+      // Step 1: Find the latest invoice before the current one
+      const previousInvoice = await Invoice.findOne({
+        where: {
+          shop_id,
+          month_year: { [Op.lt]: monthYear }, // Get the most recent invoice before the current one
+        },
+        order: [["month_year", "DESC"]], // Ensure we get the latest past invoice
+      });
+      
+      let previousFines = 0;
+      
+      if (previousInvoice) {
+        // Step 2: Check if there are fines linked to that invoice
+        const fineRecord = await Fine.findOne({
+          where: { invoice_id: previousInvoice.invoice_id },
+          attributes: ["fine_amount"],
+          raw: true,
+        });
+      
+        // Step 3: If fines exist, take the fine amount; otherwise, default to 0
+        previousFines = fineRecord ? parseFloat(fineRecord.fine_amount) || 0 : 0;
+      }
+      
 
     //  Create invoice entry
     const invoice = await Invoice.create({
@@ -53,6 +80,7 @@ async function generateInvoice(shop_id, monthYear) {
       vat_amount: vatAmount, // ✅ Fixed
       previous_balance: shopBalanceAmount, // ✅ Corrected
       fines: fineAmount,
+      previous_fines: previousFines,
       total_arrears: totalArrears,
       total_amount: totalAmountToPay,
       status: "Unpaid",
