@@ -1,16 +1,17 @@
-import axios from 'axios';
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Tooltip,
-} from 'chart.js';
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import Navbar from '../components/Navbar';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -26,9 +27,13 @@ const ProductPriceChart = () => {
     const fetchChartData = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/prices/product/${id}/chart`);
+        console.log('First price entry:', res.data?.[0]);
+
         setPriceData(res.data);
         // Fetch product name
-        setProductName(res.data?.[0]?.productName || 'Product'); // Assuming the product name is in the response
+        setProductName(res.data?.[0]?.Product?.name || 'Product');
+
+        console.log() // Assuming the product name is in the response
       } catch (error) {
         console.error('Error fetching price chart:', error);
       } finally {
@@ -60,33 +65,27 @@ const ProductPriceChart = () => {
     setFilteredData(groupData());
   }, [priceData, filter]);
 
-  if (loading) return <p className="text-center text-gray-500">Loading chart...</p>;
-  if (filteredData.length === 0) return <p className="text-center text-red-500">No price data available.</p>;
+  if (loading) return <p>Loading chart...</p>;
+  if (filteredData.length === 0) return <p>No price data available.</p>;
 
   const chartData = {
     labels: filteredData.map(item => item.date),
     datasets: [
       {
-        label: 'Min Price (Rs)',
-        data: filteredData.map(item => item.min_price),
+        label: 'Price (Rs)',
+        data: filteredData.map(item => item.price),
         borderColor: 'rgba(75,192,192,1)',
-        backgroundColor: 'rgba(75,192,192,0.1)',
-        pointBackgroundColor: 'rgba(75,192,192,1)',
+        pointBackgroundColor: '#ff6384',
         pointBorderColor: '#fff',
-        pointRadius: 4,
+        pointRadius: 5,
         tension: 0.4,
-        fill: false,
-      },
-      {
-        label: 'Max Price (Rs)',
-        data: filteredData.map(item => item.max_price),
-        borderColor: 'rgba(255,99,132,1)',
-        backgroundColor: 'rgba(255,99,132,0.1)',
-        pointBackgroundColor: 'rgba(255,99,132,1)',
-        pointBorderColor: '#fff',
-        pointRadius: 4,
-        tension: 0.4,
-        fill: false,
+        backgroundColor: (ctx) => {
+          const gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 150);
+          gradient.addColorStop(0, 'rgba(255,99,132,0.3)');
+          gradient.addColorStop(1, 'rgba(54,162,235,0.1)');
+          return gradient;
+        },
+        fill: true,
       },
     ],
   };
@@ -120,28 +119,39 @@ const ProductPriceChart = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div>
+       <Navbar />
+    <div style={{ width: '100%', height: '350px', padding: '10px' }}>
+      
       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-        <h2 className="text-2xl font-bold">{productName} Price Chart</h2>
+        <h2 className="text-3xl font-bold text-center mb-6">{productName} Price Chart</h2> {/* Display the product name */}
       </div>
 
-      <div className="flex justify-end mb-6">
-        <label htmlFor="filter" className="mr-2 text-lg">Filter: </label>
+      <div style={{ textAlign: 'right', marginBottom: '10px' }}>
+        <label htmlFor="filter" style={{ fontSize: '16px', marginRight: '10px' }}>Filter: </label>
         <select
           id="filter"
           value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={e => setFilter(e.target.value)}
+          style={{
+            padding: '6px 12px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            borderRadius: '5px',
+            border: 'none',
+            fontSize: '14px',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s',
+          }}
         >
           <option value="daily">Daily</option>
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
         </select>
       </div>
-
-      <div style={{ width: '100%', height: '350px' }}>
-        <Line data={chartData} options={options} />
-      </div>
+      
+      <Line data={chartData} options={options} />
+    </div>
     </div>
   );
 };

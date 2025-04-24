@@ -90,6 +90,10 @@ router.get('/product/:productId/chart', async (req, res) => {
   try {
     const prices = await Price.findAll({
       where: { product_id: productId },
+      include: {
+        model: Product,
+        attributes: ['name'], // assuming 'name' is the field
+      },
       order: [['date', 'ASC']],
     });
 
