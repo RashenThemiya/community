@@ -11,6 +11,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import Navbar from '../components/Navbar';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -26,9 +27,13 @@ const ProductPriceChart = () => {
     const fetchChartData = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/prices/product/${id}/chart`);
+        console.log('First price entry:', res.data?.[0]);
+
         setPriceData(res.data);
         // Fetch product name
-        setProductName(res.data?.[0]?.productName || 'Product'); // Assuming the product name is in the response
+        setProductName(res.data?.[0]?.Product?.name || 'Product');
+
+        console.log() // Assuming the product name is in the response
       } catch (error) {
         console.error('Error fetching price chart:', error);
       } finally {
@@ -114,9 +119,12 @@ const ProductPriceChart = () => {
   };
 
   return (
+    <div>
+       <Navbar />
     <div style={{ width: '100%', height: '350px', padding: '10px' }}>
+      
       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-        <h2>{productName} Price Chart</h2> {/* Display the product name */}
+        <h2 className="text-3xl font-bold text-center mb-6">{productName} Price Chart</h2> {/* Display the product name */}
       </div>
 
       <div style={{ textAlign: 'right', marginBottom: '10px' }}>
@@ -143,6 +151,7 @@ const ProductPriceChart = () => {
       </div>
       
       <Line data={chartData} options={options} />
+    </div>
     </div>
   );
 };
