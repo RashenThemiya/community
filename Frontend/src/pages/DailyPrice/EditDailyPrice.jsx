@@ -4,10 +4,11 @@ import api from "../../utils/axiosInstance";
 
 const EditDailyPrice = () => {
   const navigate = useNavigate();
-  const { date, productId } = useParams(); // Fetching params from the URL
+  const { date, productId } = useParams();
 
   const [dailyPrice, setDailyPrice] = useState({
-    amount: "",
+    minPrice: "",
+    maxPrice: "",
     date: date,
     productId: productId,
   });
@@ -18,56 +19,55 @@ const EditDailyPrice = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(`Fetching data for productId: ${productId} and date: ${date}`);
-        
-        // Fetch daily price data
         const priceResponse = await api.get(`/api/prices/product/${productId}/date/${date}`);
-        console.log('Price Data:', priceResponse.data);
 
         if (priceResponse.data && priceResponse.data.product_id) {
-          // Fetch product details using the product_id
           const productResponse = await api.get(`/api/products/${priceResponse.data.product_id}`);
-          console.log('Product Data:', productResponse.data);
 
           setDailyPrice({
-            amount: priceResponse.data.price,
+            minPrice: priceResponse.data.min_price,
+            maxPrice: priceResponse.data.max_price,
             date: priceResponse.data.date,
             productId: priceResponse.data.product_id,
           });
+
           setProductName(productResponse.data.name);
         } else {
-          throw new Error("Product data is missing in the response.");
+          throw new Error("Price data is missing in the response.");
         }
       } catch (err) {
-        console.error('Error fetching daily price:', err);  // Log error
+        console.error("Error fetching daily price:", err);
         setError("Failed to load daily price.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [date, productId]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setDailyPrice((prev) => ({
       ...prev,
-      amount: e.target.value,
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
       await api.put(`/api/prices/product/${productId}/date/${date}`, {
-        price: dailyPrice.amount,
+        min_price: dailyPrice.minPrice,
+        max_price: dailyPrice.maxPrice,
       });
-      
 
-      alert("Daily price updated successfully");
+      alert("Daily price range updated successfully!");
       navigate("/view-dailyprices");
     } catch (err) {
-      console.error('Error updating daily price:', err);
+      console.error("Error updating daily price:", err);
       setError("Failed to update daily price.");
     } finally {
       setLoading(false);
@@ -81,7 +81,7 @@ const EditDailyPrice = () => {
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Edit Daily Price for {productName} on {date}
+          Edit Price Range for {productName} on {date}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -106,11 +106,23 @@ const EditDailyPrice = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Price Amount</label>
+            <label className="block text-sm font-medium text-gray-700">Min Price (Rs.)</label>
             <input
               type="number"
-              name="amount"
-              value={dailyPrice.amount}
+              name="minPrice"
+              value={dailyPrice.minPrice}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Max Price (Rs.)</label>
+            <input
+              type="number"
+              name="maxPrice"
+              value={dailyPrice.maxPrice}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-lg"
               required
@@ -122,12 +134,12 @@ const EditDailyPrice = () => {
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
             disabled={loading}
           >
-            {loading ? "Updating..." : "Update Price"}
+            {loading ? "Updating..." : "Update Price Range"}
           </button>
 
           <button
             type="button"
-            onClick={() => navigate("/view-dailyprice")}
+            onClick={() => navigate("/view-dailyprices")}
             className="w-full mt-2 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition duration-300"
           >
             Cancel

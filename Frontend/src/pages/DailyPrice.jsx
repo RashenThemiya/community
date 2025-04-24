@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const DailyPrice = () => {
   const { t } = useTranslation();
@@ -50,7 +50,7 @@ const DailyPrice = () => {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm"
+            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
@@ -67,28 +67,34 @@ const DailyPrice = () => {
             {dailyPrices.map((item) => (
               <div
                 key={item.id}
-                className="bg-white p-4 rounded shadow hover:shadow-md transition duration-200"
+                className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-200 ease-in-out"
               >
-                {item.product?.image && (
+                {item.product?.image ? (
                   <img
                     src={item.product.image}
                     alt={item.product.name}
                     className="h-32 w-full object-cover mb-4 rounded"
                   />
+                ) : (
+                  <div className="h-32 w-full bg-gray-100 flex items-center justify-center mb-4 rounded text-gray-400 text-sm">
+                    {t("dailyPrices.noImage", "No Image")}
+                  </div>
                 )}
+
                 <h2 className="text-xl font-semibold text-gray-800">
                   {item.product?.name || "Unnamed Product"}
                 </h2>
                 <p className="text-gray-600">{item.product?.type || "N/A"}</p>
                 <p className="mt-2 font-bold text-green-700">
-                  {t("dailyPrices.price", "Price")}: Rs. {item.amount}
+                  {t("dailyPrices.priceRange", "Price Range")}: Rs.{" "}
+                  {item.min_price} - Rs. {item.max_price}
                 </p>
                 <p className="text-sm text-gray-500">
                   {t("dailyPrices.date", "Date")}: {item.date}
                 </p>
                 <button
                   onClick={() => navigate(`/product/${item.product?.id}/chart`)}
-                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out"
                 >
                   {t("dailyPrices.history", "Price History")}
                 </button>
