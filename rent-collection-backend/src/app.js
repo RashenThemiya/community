@@ -9,8 +9,12 @@ const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
+
+
+
 const paymentCorrection = require('../routes/paymentCorrection'); 
 const settingRoutes = require('../routes/settingRoutes'); // Import the new setting routes// Import payment routes
+
 require("../jobs/cronJob");  // If placed in /jobs/
 require('../models'); 
 const invoiceRoutes = require('../routes/invoiceRoutes');
@@ -39,6 +43,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
+
+
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingRoutes); // Settings routes
 app.use('/api/audit', auditTrailRoutes); // Audit trail routes
@@ -49,6 +55,7 @@ app.use('/api/generateInvoices', generateInvoiceRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/prices', productPriceRoutes); // Product price routes
 app.use('/api/publications', publicationRoutes); // Publications routes
+
 
 const createDefaultAdmins = async () => {
   try {

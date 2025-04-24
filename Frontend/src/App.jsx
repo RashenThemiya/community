@@ -43,6 +43,7 @@ import EditTenant from './pages/TenantManagement/EditTenant';
 import TenantManagement from './pages/TenantManagement/TenantManagement';
 import ViewTenants from './pages/TenantManagement/ViewTenants';
 import VehicleTicket from './pages/VehicleTickets/VehicleTickets';
+import ProductPriceChart from './pages/ProductPriceChart';
 function App() {
   return (
     <AuthProvider>
@@ -87,6 +88,7 @@ function App() {
             <Route path="/view-publications" element={<ViewPublications />} />
             <Route path="/home-dailyprice" element={<HomeDailyPrice />} />
             <Route path="/admin-panel" element={<AdminPanel />}/>
+            <Route path="/product/:id/chart" element={<ProductPriceChart />} />
 
           </Routes>
         </div>
