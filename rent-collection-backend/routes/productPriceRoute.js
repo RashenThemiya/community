@@ -4,7 +4,7 @@ const Price = require('../models/Price');
 const Product = require('../models/Product');
 const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
 
-// 1. Add or update daily price for a product (bulk)
+// 1. Add or update daily price range for multiple products (bulk)
 router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const entries = req.body;
 
@@ -16,9 +16,9 @@ router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'super
   const errors = [];
 
   for (const entry of entries) {
-    const { product_id, price, date } = entry;
+    const { product_id, min_price, max_price, date } = entry;
 
-    if (!product_id || !price || !date) {
+    if (!product_id || min_price == null || max_price == null || !date) {
       errors.push({ entry, message: 'Missing required fields' });
       continue;
     }
@@ -26,11 +26,12 @@ router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'super
     try {
       const [priceRecord, created] = await Price.findOrCreate({
         where: { product_id, date },
-        defaults: { price }
+        defaults: { min_price, max_price }
       });
 
       if (!created) {
-        priceRecord.price = price;
+        priceRecord.min_price = min_price;
+        priceRecord.max_price = max_price;
         await priceRecord.save();
       }
 
@@ -38,7 +39,8 @@ router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'super
         product_id,
         date,
         status: created ? 'added' : 'updated',
-        price: priceRecord.price,
+        min_price: priceRecord.min_price,
+        max_price: priceRecord.max_price
       });
     } catch (err) {
       errors.push({ entry, message: err.message });
@@ -52,35 +54,36 @@ router.post('/update-multiple', authenticateUser, authorizeRole(['admin', 'super
   });
 });
 
-// 2. Add/update price for a single product/date
+// 2. Add/update price range for a single product/date
 router.post('/update', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
-  const { product_id, price, date } = req.body;
+  const { product_id, min_price, max_price, date } = req.body;
 
-  if (!product_id || !price || !date) {
-    return res.status(400).json({ message: 'product_id, price, and date are required.' });
+  if (!product_id || min_price == null || max_price == null || !date) {
+    return res.status(400).json({ message: 'product_id, min_price, max_price, and date are required.' });
   }
 
   try {
     const [priceRecord, created] = await Price.findOrCreate({
       where: { product_id, date },
-      defaults: { price }
+      defaults: { min_price, max_price }
     });
 
     if (!created) {
-      priceRecord.price = price;
+      priceRecord.min_price = min_price;
+      priceRecord.max_price = max_price;
       await priceRecord.save();
     }
 
     res.status(200).json({
-      message: created ? 'Price added successfully' : 'Price updated successfully',
+      message: created ? 'Price range added successfully' : 'Price range updated successfully',
       data: priceRecord
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error updating price', error: err.message });
+    res.status(500).json({ message: 'Error updating price range', error: err.message });
   }
 });
 
-// 3. Get price chart for a specific product (all price history) — public
+// 3. Get price range chart for a product
 router.get('/product/:productId/chart', async (req, res) => {
   const { productId } = req.params;
 
@@ -96,7 +99,7 @@ router.get('/product/:productId/chart', async (req, res) => {
   }
 });
 
-// 4. Get all product prices on a specific day — public (with image in base64)
+// 4. Get all product price ranges on a specific day
 router.get('/by-date/:date', async (req, res) => {
   const { date } = req.params;
 
@@ -109,7 +112,8 @@ router.get('/by-date/:date', async (req, res) => {
     const formatted = prices.map(p => ({
       id: p.id,
       date: p.date,
-      amount: p.price,
+      min_price: p.min_price,
+      max_price: p.max_price,
       product: {
         id: p.Product.id,
         name: p.Product.name,
@@ -126,7 +130,7 @@ router.get('/by-date/:date', async (req, res) => {
   }
 });
 
-// 5. Get price of a specific product on a specific day — public
+// 5. Get price range of a specific product on a specific day
 router.get('/product/:productId/date/:date', async (req, res) => {
   const { productId, date } = req.params;
 
@@ -148,13 +152,13 @@ router.get('/product/:productId/date/:date', async (req, res) => {
   }
 });
 
-// 6. Update price of a specific product on a specific day — admin only
+// 6. Update price range of a product on a specific day
 router.put('/product/:productId/date/:date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { productId, date } = req.params;
-  const { price } = req.body;
+  const { min_price, max_price } = req.body;
 
-  if (!price) {
-    return res.status(400).json({ message: 'Price is required.' });
+  if (min_price == null || max_price == null) {
+    return res.status(400).json({ message: 'min_price and max_price are required.' });
   }
 
   try {
@@ -169,15 +173,16 @@ router.put('/product/:productId/date/:date', authenticateUser, authorizeRole(['a
       return res.status(404).json({ message: 'Price record not found.' });
     }
 
-    priceRecord.price = price;
+    priceRecord.min_price = min_price;
+    priceRecord.max_price = max_price;
     await priceRecord.save();
 
     res.status(200).json({
-      message: 'Price updated successfully',
+      message: 'Price range updated successfully',
       data: priceRecord
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error updating price', error: err.message });
+    res.status(500).json({ message: 'Error updating price range', error: err.message });
   }
 });
 
