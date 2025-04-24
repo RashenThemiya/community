@@ -2,12 +2,14 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
 const DailyPrice = () => {
   const { t } = useTranslation();
   const [dailyPrices, setDailyPrices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -84,6 +86,12 @@ const DailyPrice = () => {
                 <p className="text-sm text-gray-500">
                   {t("dailyPrices.date", "Date")}: {item.date}
                 </p>
+                <button
+                  onClick={() => navigate(`/product/${item.product?.id}/chart`)}
+                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-200"
+                >
+                  {t("dailyPrices.history", "Price History")}
+                </button>
               </div>
             ))}
           </div>
