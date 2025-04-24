@@ -218,7 +218,10 @@ const AdminDashboard = () => {
         </div>
 
         {invoiceData.some(item => item.value > 0) && (
+        <div>
+            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-700">Invoice Status chart</h2>
           <div className="bg-white p-6 rounded-lg shadow-md mt-6 flex justify-center min-h-[300px]">
+            
             <PieChart width={400} height={300}>
               <Pie data={invoiceData} cx="50%" cy="50%" outerRadius={100} dataKey="value" label>
                 {invoiceData.map((entry, index) => (
@@ -228,6 +231,7 @@ const AdminDashboard = () => {
               <Tooltip />
               <Legend formatter={(value, entry) => `${value} (${entry?.payload?.value ?? 0})`} />
             </PieChart>
+          </div>
           </div>
         )}
       </div>
