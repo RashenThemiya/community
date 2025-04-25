@@ -102,7 +102,8 @@ const ShopSummary = () => {
                                 {activeTab === "payments" ? (
                                     <PaymentList payments={shop.Payments} />
                                 ) : (
-                                    <InvoiceTable shop={shop} />
+                                    <InvoiceTable shop={shop} payments={shop.Payments} />
+
                                 )}
                             </div>
                         </div>
