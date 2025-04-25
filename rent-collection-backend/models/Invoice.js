@@ -32,7 +32,7 @@ const Invoice = sequelize.define('Invoice', {
     type: DataTypes.DECIMAL(10,2),
     defaultValue: 0,
   },
-  fines: {
+  fines: { 
     type: DataTypes.DECIMAL(10,2),
     defaultValue: 0,
   },
