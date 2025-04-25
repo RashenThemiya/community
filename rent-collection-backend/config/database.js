@@ -7,4 +7,5 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   logging: false, // Disable logging
 });
 
+
 module.exports = sequelize;

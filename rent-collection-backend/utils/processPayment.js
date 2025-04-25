@@ -77,10 +77,11 @@ async function processPayment(shopId, amountPaid, paymentMethod, invoiceId = nul
         }
 
         // Process payments for each invoice
-        let remainingBalance = shopBalance.balance_amount;
+        let remainingBalance = shopBalance.balance_amount; //here shopbalnce<0 dont do paymnets
         for (const invoice of invoices) {
-            remainingBalance = await processInvoicePayments(invoice, remainingBalance, t);
             if (remainingBalance <= 0) break;
+            remainingBalance = await processInvoicePayments(invoice, remainingBalance, t);
+            
         }
 
         // Update Shop Balance
@@ -102,6 +103,7 @@ async function processInvoicePayments(invoice, remainingBalance, t) {
   let hasUnpaidOrPartial = false; // Flag for partially/unpaid records
 
   for (const model of [Rent, OperationFee, Vat, Fine]) {
+    
       const records = await model.findAll({
           where: {
               invoice_id: invoice.invoice_id,
@@ -121,7 +123,7 @@ async function processInvoicePayments(invoice, remainingBalance, t) {
           record.paid_amount = parseFloat(record.paid_amount) + payment;
           record.paid_amount = parseFloat(record.paid_amount.toFixed(2));
           remainingBalance -= payment;
-
+        
           // Update record status
           if (record.paid_amount >= dueAmount) {
               record.status = 'Paid';

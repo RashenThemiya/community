@@ -31,7 +31,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       _responseMessage = null;
     });
 
-    final url = Uri.parse('http://localhost:5000/api/admin/login');
+    final url = Uri.parse('http://3.108.254.92:5000/api/admin/login');
 
     try {
       final response = await http.post(

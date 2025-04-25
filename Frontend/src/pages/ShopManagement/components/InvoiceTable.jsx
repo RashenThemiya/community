@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const InvoiceTable = ({ shop }) => {
+const InvoiceTable = ({ shop,payments } ) => {
     const [expandedInvoice, setExpandedInvoice] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
 
@@ -52,6 +52,8 @@ const InvoiceTable = ({ shop }) => {
                             <th className="border p-2">Total Amount</th>
                             <th className="border p-2">Total Paid</th>
                             <th className="border p-2">Remaining</th>
+                            <th className="border p-2">Extra Payment</th>
+
                             <th className="border p-2">Status</th>
                             <th className="border p-2">Actions</th>
                         </tr>
@@ -65,14 +67,43 @@ const InvoiceTable = ({ shop }) => {
                                 0
                             ) || 0;
 
-                            const totalPaid = (
-                                (invoice.Fines?.reduce((sum, fine) => sum + parseFloat(fine.paid_amount || 0), 0) +
-                                invoice.Rents?.reduce((sum, rent) => sum + parseFloat(rent.paid_amount || 0), 0) +
-                                invoice.VATs?.reduce((sum, vat) => sum + parseFloat(vat.paid_amount || 0), 0) +
-                                invoice.OperationFees?.reduce((sum, fee) => sum + parseFloat(fee.paid_amount || 0), 0)) || 0
-                            ) + previousFinePaid;
+// Define invoice period
+                                const invoiceDate = new Date(invoice.month_year);
+                                const startOfMonth = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth(), 1);
+                                const endOfMonth = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth() + 1, 0);
 
-                            const remainingAmount = parseFloat(invoice.total_amount) - totalPaid;
+                                // Filter payments made within the invoice month
+                                const invoicePayments = payments?.filter(payment => {
+                                    const paymentDate = new Date(payment.payment_date);
+                                    return paymentDate >= startOfMonth && paymentDate <= endOfMonth;
+                                }) || [];
+
+                                // Sum up amount_paid from filtered payments
+                                const totalPaid = invoicePayments.reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
+
+
+                                                    // Total amount paid during the invoice period
+                            const invoiceTotalPaid = totalPaid;
+
+                            // Total invoice cost (e.g., rent + VAT + op. fee + fines)
+                            const invoiceTotalAmount = parseFloat(invoice.total_amount);
+
+                            // Total fines actually paid (from this invoice)
+                            const finePaid = invoice.Fines?.reduce(
+                                (sum, fine) => sum + parseFloat(fine.paid_amount || 0),
+                                0
+                            ) || 0;
+
+                            // Calculate how much was paid in excess of the invoice
+                            const overpaidAmount = invoiceTotalPaid - invoiceTotalAmount;
+
+                            // Extra payment is the amount remaining after also covering the fine payments
+                            const extraPayment = Math.max(0, overpaidAmount - finePaid);
+
+                            // Remaining is only applicable if there's no extra payment
+                            const remainingAmount = extraPayment > 0 ? 0 : invoiceTotalAmount - invoiceTotalPaid;
+
+                                
 
                             return (
                                 <React.Fragment key={invoice.invoice_id}>
@@ -88,6 +119,10 @@ const InvoiceTable = ({ shop }) => {
                                         <td className="border p-2 font-semibold">LKR {invoice.total_amount}</td>
                                         <td className="border p-2 text-green-600">LKR {totalPaid.toFixed(2)}</td>
                                         <td className="border p-2 text-red-600">LKR {remainingAmount.toFixed(2)}</td>
+                                        <td className="border p-2 text-blue-600">
+                                                {extraPayment > 0 ? `LKR ${extraPayment.toFixed(2)}` : "-"}
+                                                </td>
+
                                         <td className="border p-2 font-semibold">{invoice.status}</td>
                                         <td className="border p-2">
                                             <button
