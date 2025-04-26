@@ -25,7 +25,8 @@ const sanitationRoutes = require('../routes/sanitationRoutes'); // Import sanita
 const generateInvoiceRoutes = require('../routes/generateInvoiceRoutes');
 const productRoutes = require('../routes/productRoutes'); // Import product routes
 const productPriceRoutes = require('../routes/productPriceRoute'); // Import product price routes
-const publicationRoutes = require('../routes/publicationRoutes'); // Import publications routes
+const publicationRoutes = require('../routes/publicationRoutes'); 
+const ReportRoute        = require('../routes/ReportRoute')// Import publications routes
 const app = express();
 
 app.use(cors({ origin: "*", credentials: true }));
@@ -43,7 +44,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
-
+app.use('/api/report', ReportRoute); // Report routes
 
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingRoutes); // Settings routes

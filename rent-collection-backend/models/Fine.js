@@ -23,6 +23,10 @@ const Fine = sequelize.define('Fine', {
     type: DataTypes.DECIMAL(10,2),
     defaultValue: 0,
   },
+  paid_date: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
   generate_date: {
     type: DataTypes.DATE,
     allowNull: false,
