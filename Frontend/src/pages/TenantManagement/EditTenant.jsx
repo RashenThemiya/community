@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ Import
 
 const EditTenant = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const [tenant, setTenant] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [showConfirm, setShowConfirm] = useState(false);
 
     useEffect(() => {
         const fetchTenant = async () => {
@@ -18,7 +21,7 @@ const EditTenant = () => {
             } catch (err) {
                 setError("Failed to load tenant details.");
             } finally {
-                setLoading(false);
+                setInitialLoading(false);
             }
         };
         fetchTenant();
@@ -31,10 +34,8 @@ const EditTenant = () => {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleUpdate = async () => {
         setLoading(true);
-
         try {
             await api.put(`/api/tenants/${id}`, tenant);
             setSuccess("Tenant updated successfully! Redirecting...");
@@ -48,19 +49,19 @@ const EditTenant = () => {
         }
     };
 
-    if (loading) return <div className="text-center">Loading...</div>;
+    if (initialLoading) return <div className="text-center">Loading...</div>;
     if (error) return <div className="text-center text-red-500">{error}</div>;
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">
-                    Editing Tenant Id- {id} - Current Name-{tenant.name || "Loading..."}
+                    Editing Tenant Id- {id} - Current Name- {tenant.name || "Loading..."}
                 </h2>
 
                 {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Tenant Name</label>
                         <input
@@ -105,7 +106,6 @@ const EditTenant = () => {
                         />
                     </div>
 
-                    {/* ✅ Show Shop ID but make it read-only */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Shop ID</label>
                         <input
@@ -117,14 +117,27 @@ const EditTenant = () => {
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
-                        disabled={loading}
+                    {/* ConfirmWrapper for Update */}
+                    <ConfirmWrapper
+                        open={showConfirm}
+                        message="Are you sure you want to update this tenant?"
+                        onConfirm={() => {
+                            setShowConfirm(false);
+                            handleUpdate();
+                        }}
+                        onCancel={() => setShowConfirm(false)}
                     >
-                        {loading ? "Updating..." : "Update"}
-                    </button>
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirm(true)}
+                            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
+                            disabled={loading}
+                        >
+                            {loading ? "Updating..." : "Update"}
+                        </button>
+                    </ConfirmWrapper>
 
+                    {/* Cancel Button */}
                     <button
                         type="button"
                         onClick={() => navigate("/view-tenants")}

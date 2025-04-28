@@ -36,7 +36,7 @@ const Navbar = () => {
                             className="w-10 h-10"
                         />
                         <Link to="/" className="text-xl font-bold tracking-wide">
-                        දඹුල්ල විශේෂිත ආර්ථික මධ්යස්ථානය
+                        දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය
                         </Link>
                     </div>
 
