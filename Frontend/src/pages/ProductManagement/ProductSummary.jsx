@@ -13,7 +13,6 @@ import { Line } from "react-chartjs-2";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 
-// Register chart.js components
 ChartJS.register(
   LineElement,
   CategoryScale,
@@ -42,7 +41,6 @@ const ProductSummary = () => {
 
         setProduct(productRes.data);
 
-        // Ensure chart data is an array
         if (Array.isArray(chartRes.data)) {
           setPriceChart(chartRes.data);
         } else {
@@ -60,18 +58,27 @@ const ProductSummary = () => {
   }, [productId]);
 
   const chartData = {
-    labels: Array.isArray(priceChart)
-      ? priceChart.map((p) => new Date(p.date).toLocaleDateString())
-      : [],
+    labels: priceChart.map((entry) =>
+      new Date(entry.date).toLocaleDateString()
+    ),
     datasets: [
       {
-        label: "Price Over Time",
-        data: Array.isArray(priceChart) ? priceChart.map((p) => p.price) : [],
-        borderColor: "#3e95cd",
-        backgroundColor: "rgba(62, 149, 205, 0.1)",
+        label: "Min Price",
+        data: priceChart.map((entry) => entry.min_price),
+        borderColor: "#10B981", // green
+        backgroundColor: "rgba(16, 185, 129, 0.1)",
         tension: 0.4,
-        pointRadius: 5,
-        pointHoverRadius: 7,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+      },
+      {
+        label: "Max Price",
+        data: priceChart.map((entry) => entry.max_price),
+        borderColor: "#EF4444", // red
+        backgroundColor: "rgba(239, 68, 68, 0.1)",
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
       },
     ],
   };
@@ -84,13 +91,12 @@ const ProductSummary = () => {
       },
       title: {
         display: true,
-        text: "Price History Chart",
+        text: "Price History (Min/Max)",
       },
     },
   };
 
   if (loading) return <div className="text-center text-gray-500">Loading...</div>;
-
   if (error) return <div className="text-center text-red-600">{error}</div>;
 
   return (

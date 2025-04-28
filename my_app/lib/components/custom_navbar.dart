@@ -11,6 +11,7 @@ class CustomNavBar extends StatelessWidget {
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,
+      type: BottomNavigationBarType.fixed,
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.directions_bus),
@@ -19,6 +20,10 @@ class CustomNavBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.cleaning_services),
           label: 'Sanitation',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: 'Settings',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.logout),

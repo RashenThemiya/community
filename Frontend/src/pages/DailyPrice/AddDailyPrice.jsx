@@ -26,10 +26,13 @@ const AddDailyPrice = () => {
     fetchProducts();
   }, []);
 
-  const handlePriceChange = (productId, value) => {
+  const handlePriceChange = (productId, field, value) => {
     setPrices((prev) => ({
       ...prev,
-      [productId]: value,
+      [productId]: {
+        ...prev[productId],
+        [field]: value,
+      },
     }));
   };
 
@@ -39,17 +42,17 @@ const AddDailyPrice = () => {
     setError(null);
     setSuccess(null);
 
-    // Prepare data: only include products with entered prices
     const dataToSubmit = Object.entries(prices)
-      .filter(([_, price]) => price !== "")
-      .map(([product_id, price]) => ({
+      .filter(([_, value]) => value.min_price && value.max_price)
+      .map(([product_id, value]) => ({
         product_id,
-        price,
+        min_price: parseFloat(value.min_price),
+        max_price: parseFloat(value.max_price),
         date,
       }));
 
     if (dataToSubmit.length === 0) {
-      setError("Please enter at least one price.");
+      setError("Please enter at least one min/max price.");
       setSubmitting(false);
       return;
     }
@@ -72,8 +75,8 @@ const AddDailyPrice = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
-        <h2 className="text-2xl font-bold mb-6 text-center">Add Daily Prices</h2>
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-6xl">
+        <h2 className="text-2xl font-bold mb-6 text-center">Add Daily Price Ranges</h2>
 
         {success && <p className="text-green-500 text-sm mb-4 text-center">{success}</p>}
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
@@ -96,7 +99,8 @@ const AddDailyPrice = () => {
                 <tr>
                   <th className="px-4 py-2 text-left">Product</th>
                   <th className="px-4 py-2 text-left">Type</th>
-                  <th className="px-4 py-2 text-left">Price (Rs.)</th>
+                  <th className="px-4 py-2 text-left">Min Price (Rs.)</th>
+                  <th className="px-4 py-2 text-left">Max Price (Rs.)</th>
                 </tr>
               </thead>
               <tbody className="bg-white text-sm">
@@ -108,8 +112,21 @@ const AddDailyPrice = () => {
                       <input
                         type="number"
                         step="0.01"
-                        value={prices[product.id] || ""}
-                        onChange={(e) => handlePriceChange(product.id, e.target.value)}
+                        value={prices[product.id]?.min_price || ""}
+                        onChange={(e) =>
+                          handlePriceChange(product.id, "min_price", e.target.value)
+                        }
+                        className="w-full p-2 border border-gray-300 rounded-lg"
+                      />
+                    </td>
+                    <td className="px-4 py-2">
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={prices[product.id]?.max_price || ""}
+                        onChange={(e) =>
+                          handlePriceChange(product.id, "max_price", e.target.value)
+                        }
                         className="w-full p-2 border border-gray-300 rounded-lg"
                       />
                     </td>
@@ -124,7 +141,7 @@ const AddDailyPrice = () => {
             disabled={submitting}
             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300"
           >
-            {submitting ? "Saving..." : "Save All Prices"}
+            {submitting ? "Saving..." : "Save All Price Ranges"}
           </button>
 
           <button
