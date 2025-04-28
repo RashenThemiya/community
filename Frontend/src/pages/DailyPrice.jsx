@@ -1,8 +1,47 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { Skeleton } from "../components/Skeleton"; // Assume you create a simple Skeleton loader
+
+const DailyPriceCard = ({ item, navigate, t }) => {
+  return (
+    <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg hover:scale-[1.02] transition-transform duration-200 ease-in-out">
+      {item.product?.image ? (
+        <img
+          src={item.product.image}
+          alt={item.product?.name || "Product"}
+          className="h-32 w-full object-cover mb-4 rounded"
+        />
+      ) : (
+        <div className="h-32 w-full bg-gray-100 flex items-center justify-center mb-4 rounded text-gray-400 text-sm">
+          {t("dailyPrices.noImage", "No Image")}
+        </div>
+      )}
+
+      <h2 className="text-lg font-semibold text-gray-800 truncate">
+        {item.product?.name || "Unnamed Product"}
+      </h2>
+      <p className="text-gray-500 text-sm">{item.product?.type || "N/A"}</p>
+
+      <p className="mt-2 font-bold text-green-700">
+        {t("dailyPrices.priceRange", "Price Range")}: Rs. {item.min_price} - Rs. {item.max_price}
+      </p>
+
+      <p className="text-xs text-gray-400 mt-1">
+        {t("dailyPrices.date", "Date")}: {item.date}
+      </p>
+
+      <button
+        onClick={() => navigate(`/product/${item.product?.id}/chart`)}
+        className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+      >
+        {t("dailyPrices.history", "View Price History")}
+      </button>
+    </div>
+  );
+};
 
 const DailyPrice = () => {
   const { t } = useTranslation();
@@ -11,41 +50,41 @@ const DailyPrice = () => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPrices = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/prices/by-date/${date}`
-        );
-        const data = response.data;
+  const fetchPrices = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_BASE_URL}/api/prices/by-date/${date}`
+      );
+      const data = response.data;
 
-        if (Array.isArray(data)) {
-          setDailyPrices(data);
-        } else {
-          console.error("Expected an array but got:", data);
-          setDailyPrices([]);
-        }
-      } catch (error) {
-        console.error("Error fetching prices:", error);
+      if (Array.isArray(data)) {
+        setDailyPrices(data);
+      } else {
+        console.error("Expected an array but got:", data);
         setDailyPrices([]);
-      } finally {
-        setLoading(false);
       }
-    };
-
-    fetchPrices();
+    } catch (error) {
+      console.error("Error fetching prices:", error);
+      setDailyPrices([]);
+    } finally {
+      setLoading(false);
+    }
   }, [date]);
+
+  useEffect(() => {
+    fetchPrices();
+  }, [fetchPrices]);
 
   return (
     <div>
       <Navbar />
       <div className="container mx-auto px-4 py-6">
-        <h1 className="text-3xl font-bold text-center mb-6">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
           {t("dailyPrices.title", "Daily Product Prices")}
         </h1>
 
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-8">
           <input
             type="date"
             value={date}
@@ -55,50 +94,28 @@ const DailyPrice = () => {
         </div>
 
         {loading ? (
-          <p className="text-center text-gray-500">
-            {t("dailyPrices.loading", "Loading...")}
-          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, idx) => (
+              <Skeleton key={idx} />
+            ))}
+          </div>
         ) : dailyPrices.length === 0 ? (
-          <p className="text-center text-red-500">
+          <div className="flex flex-col items-center text-center text-gray-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-16 w-16 mb-4 text-gray-300"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M9 16h6M9 12h6m-7 8h8a2 2 0 002-2V8a2 2 0 00-2-2h-2l-2-3h-4l-2 3H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
             {t("dailyPrices.noData", "No prices available for this date.")}
-          </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {dailyPrices.map((item) => (
-              <div
-                key={item.id}
-                className="bg-white p-4 rounded-lg shadow-lg hover:shadow-xl transition duration-200 ease-in-out"
-              >
-                {item.product?.image ? (
-                  <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className="h-32 w-full object-cover mb-4 rounded"
-                  />
-                ) : (
-                  <div className="h-32 w-full bg-gray-100 flex items-center justify-center mb-4 rounded text-gray-400 text-sm">
-                    {t("dailyPrices.noImage", "No Image")}
-                  </div>
-                )}
-
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {item.product?.name || "Unnamed Product"}
-                </h2>
-                <p className="text-gray-600">{item.product?.type || "N/A"}</p>
-                <p className="mt-2 font-bold text-green-700">
-                  {t("dailyPrices.priceRange", "Price Range")}: Rs.{" "}
-                  {item.min_price} - Rs. {item.max_price}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {t("dailyPrices.date", "Date")}: {item.date}
-                </p>
-                <button
-                  onClick={() => navigate(`/product/${item.product?.id}/chart`)}
-                  className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out"
-                >
-                  {t("dailyPrices.history", "Price History")}
-                </button>
-              </div>
+              <DailyPriceCard key={item.id} item={item} navigate={navigate} t={t} />
             ))}
           </div>
         )}
