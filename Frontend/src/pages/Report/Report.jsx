@@ -9,8 +9,8 @@ const Report = () => {
     return (
         <div className="flex min-h-screen bg-gray-100">
             {/* Sidebar */}
-            <Sidebar />
-
+           <div><Sidebar />
+           </div> 
             {/* Main Content */}
             <div className="flex justify-center items-center flex-1 p-6">
                 <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">

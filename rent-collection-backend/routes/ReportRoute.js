@@ -85,7 +85,8 @@ router.get('/current-month-income', async (req, res) => {
       other_fine_paid: 0,
       other_operation_paid: 0,
       other_vat_paid: 0,
-      total_paid: 0, // <-- add this
+      total_paid: 0,
+      remaining: 0, // <-- add this
     };
     
 
@@ -147,6 +148,8 @@ router.get('/current-month-income', async (req, res) => {
       totals.other_operation_paid += opMap[shop_id]?.other || 0;
       totals.other_vat_paid += vatMap[shop_id]?.other || 0;
       totals.total_paid += paidForThisInvoice; // <-- Add this line
+      totals.remaining += remaining; // <-- THIS LINE to sum total remaining
+
 
     }
 
@@ -171,6 +174,8 @@ router.get('/current-month-income', async (req, res) => {
       other_vat_paid: totals.other_vat_paid,
       shop_balance: totals.shop_balance,
       total_paid: totals.total_paid, // <-- add this line
+      remaining: totals.remaining, // <-- ADD THIS
+
 
     });
 
