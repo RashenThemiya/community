@@ -14,7 +14,6 @@ const ViewDailyPrice = () => {
     const fetchDailyPrices = async () => {
       setLoading(true);
       try {
-        // Use the correct endpoint
         const response = await api.get(`/api/prices/by-date/${searchDate}`);
         setDailyPrices(response.data);
         setError(null);
@@ -36,7 +35,6 @@ const ViewDailyPrice = () => {
     const confirmed = window.confirm("Are you sure you want to delete this daily price?");
     if (confirmed) {
       try {
-        // Use the correct delete endpoint
         await api.delete(`/api/dailyprice/${id}`);
         setDailyPrices(dailyPrices.filter((price) => price.id !== id));
       } catch (err) {
@@ -85,7 +83,8 @@ const ViewDailyPrice = () => {
                   <th className="px-6 py-4 text-left text-sm font-medium">ID</th>
                   <th className="px-6 py-4 text-left text-sm font-medium">Date</th>
                   <th className="px-6 py-4 text-left text-sm font-medium">Item</th>
-                  <th className="px-6 py-4 text-left text-sm font-medium">Price</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium">Min Price</th>
+                  <th className="px-6 py-4 text-left text-sm font-medium">Max Price</th>
                   <th className="px-6 py-4 text-left text-sm font-medium">Actions</th>
                 </tr>
               </thead>
@@ -104,15 +103,21 @@ const ViewDailyPrice = () => {
                       >
                         {price.product?.name || "N/A"}
                       </td>
-                      <td className="px-6 py-4 text-sm">{price.amount}</td>
-                      <td className="px-6 py-4 text-sm">
+                      <td className="px-6 py-4 text-sm">Rs. {price.min_price}</td>
+                      <td className="px-6 py-4 text-sm">Rs. {price.max_price}</td>
+                      <td className="px-6 py-4 text-sm space-x-2">
                         <button
                           onClick={() => handleEdit(price.date, price.product.id)}
-                          className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200"
+                          className="bg-blue-600 text-white py-1 px-3 rounded-lg hover:bg-blue-700 transition duration-200"
                         >
                           Edit
                         </button>
-
+                        <button
+                          onClick={() => handleDelete(price.id)}
+                          className="bg-red-600 text-white py-1 px-3 rounded-lg hover:bg-red-700 transition duration-200"
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   ))}

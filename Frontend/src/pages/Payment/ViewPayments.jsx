@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import ExcelJS from 'exceljs';
 
 const ViewPayments = () => {
     const navigate = useNavigate();
@@ -37,6 +38,45 @@ const ViewPayments = () => {
         setFilteredPayments(filtered);
     }, [searchQuery, payments]);
 
+      // Export to Excel function
+      const exportToExcel = async () => {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Payments');
+
+        // Set headers
+        worksheet.columns = [
+            { header: 'Payment ID', key: 'payment_id', width: 15 },
+            { header: 'Shop ID', key: 'shop_id', width: 15 },
+            { header: 'Invoice ID', key: 'invoice_id', width: 20 },
+            { header: 'Amount Paid (LKR)', key: 'amount_paid', width: 20 },
+            { header: 'Payment Method', key: 'payment_method', width: 20 },
+            { header: 'Payment Date', key: 'payment_date', width: 20 },
+        ];
+
+        // Add rows
+        filteredPayments.forEach((payment) => {
+            worksheet.addRow({
+                payment_id: payment.payment_id,
+                shop_id: payment.shop_id,
+                invoice_id: payment.invoice_id || "N/A",
+                amount_paid: parseFloat(payment.amount_paid).toFixed(2),
+                payment_method: payment.payment_method,
+                payment_date: new Date(payment.payment_date).toLocaleDateString(),
+            });
+        });
+
+        // Download as Excel
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Payments.xlsx';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    };
+
     return (
         <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
@@ -50,6 +90,13 @@ const ViewPayments = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
+               
+                 <button
+                    onClick={exportToExcel}
+                    className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300 mb-4"
+                >
+                    Download as Excel
+                </button>
 
                 {loading && <p className="text-blue-500 text-center">Loading payments...</p>}
                 {error && <p className="text-red-500 text-center">{error}</p>}

@@ -1,7 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-
 const Price = sequelize.define("Price", {
     id: {
         type: DataTypes.INTEGER,
@@ -12,16 +11,18 @@ const Price = sequelize.define("Price", {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    price: {
+    min_price: {
         type: DataTypes.FLOAT,
-        allowNull: false
+        allowNull: false,
+    },
+    max_price: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
     },
     date: {
-        type: DataTypes.DATEONLY, // Stores only date
+        type: DataTypes.DATEONLY,
         allowNull: false
     }
 });
-
-// Define relationship: A Product has many Price records
 
 module.exports = Price;

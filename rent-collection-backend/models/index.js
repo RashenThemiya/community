@@ -12,6 +12,8 @@ const AuditTrail = require('./AuditTrail');
 const Product = require('./Product'); // Assuming you have a Product model
 const Price = require('./Price'); // Assuming you have a Price model
 
+
+
 Product.hasMany(Price, { foreignKey: "product_id", onDelete: "CASCADE" });
 Price.belongsTo(Product, { foreignKey: "product_id" });
 
@@ -77,4 +79,4 @@ sequelize.sync({ alter: false })
     .catch((err) => console.error("❌ Error syncing database:", err));
 
 // ✅ Export Models
-module.exports = { sequelize, Shop, ShopBalance, Fine, Invoice, OperationFee, Rent, Tenant, Vat, Payment, AuditTrail, Product, Price };
+module.exports = { sequelize, Shop, ShopBalance, Fine, Invoice, OperationFee, Rent, Tenant, Vat, Payment, AuditTrail, Product, Price};
