@@ -4,18 +4,18 @@ import api from "../../utils/axiosInstance";
 
 const EditShop = () => {
     const navigate = useNavigate();
-    const { id } = useParams(); // Get the shop ID from the URL
-    const [shop, setShop] = useState({}); // ✅ Start as an empty object
+    const { id } = useParams();
+    const [shop, setShop] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-    // Fetch the shop details when the page loads
     useEffect(() => {
         const fetchShop = async () => {
             try {
                 const response = await api.get(`/api/shops/${id}`);
-                setShop(response.data); // ✅ Ensure correct data is set
+                setShop(response.data);
             } catch (err) {
                 setError("Failed to load shop details.");
             } finally {
@@ -25,7 +25,6 @@ const EditShop = () => {
         fetchShop();
     }, [id]);
 
-    // Handle input field changes
     const handleChange = (e) => {
         setShop((prevShop) => ({
             ...prevShop,
@@ -33,17 +32,20 @@ const EditShop = () => {
         }));
     };
 
-    // Handle form submission
-    const handleSubmit = async (e) => {
+    const handleFormSubmit = (e) => {
         e.preventDefault();
+        setShowConfirmModal(true);
+    };
+
+    const confirmUpdate = async () => {
+        setShowConfirmModal(false);
         setLoading(true);
 
         try {
             await api.put(`/api/shops/${id}`, shop);
             setSuccess("Shop updated successfully! Redirecting...");
-
             setTimeout(() => {
-                navigate("/view-shops"); // Redirect after success
+                navigate("/view-shops");
             }, 2000);
         } catch (err) {
             setError("Failed to update shop.");
@@ -52,21 +54,43 @@ const EditShop = () => {
         }
     };
 
-    if (loading) return <div className="text-center">Loading...</div>;
+    if (loading && !success) return <div className="text-center">Loading...</div>;
     if (error) return <div className="text-center text-red-500">{error}</div>;
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div className="relative flex justify-center items-center min-h-screen bg-gray-100">
+            {/* Transparent background overlay */}
+            {showConfirmModal && (
+                <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-40">
+                    <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-sm z-50">
+                        <h3 className="text-xl font-bold mb-4 text-center">Confirm Update</h3>
+                        <p className="text-gray-600 mb-6 text-center">Are you sure you want to update this shop?</p>
+                        <div className="flex justify-around">
+                            <button
+                                onClick={confirmUpdate}
+                                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
+                            >
+                                Yes, Update
+                            </button>
+                            <button
+                                onClick={() => setShowConfirmModal(false)}
+                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className={`bg-white p-8 rounded-lg shadow-lg w-full max-w-md ${showConfirmModal ? "blur-sm" : ""}`}>
                 <h2 className="text-2xl font-bold mb-6 text-center">
-                    Editing Shop Id- {id} - Current Name-{shop.shop_name || "Loading..."}
+                    Editing Shop Id- {id} - Current Name- {shop.shop_name || "Loading..."}
                 </h2>
 
+                {success && <p className="text-green-500 text-sm mb-4 text-center">{success}</p>}
 
-                {/* Show success message */}
-                {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleFormSubmit} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Shop Name</label>
                         <input
