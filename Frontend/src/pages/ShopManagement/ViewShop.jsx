@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ Import ConfirmWrapper
 
 const ViewShops = () => {
     const navigate = useNavigate();
@@ -8,6 +9,7 @@ const ViewShops = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [confirmDeleteShopId, setConfirmDeleteShopId] = useState(null); // ✅ For tracking which shop to delete
 
     // Fetch all shops from the backend
     useEffect(() => {
@@ -29,21 +31,15 @@ const ViewShops = () => {
         shop.shop_id.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Handle edit shop action
-    const handleEditShop = (shopId) => {
-        navigate(`/edit-shop/${shopId}`);
-    };
-
     // Handle delete shop action
     const handleDeleteShop = async (shopId) => {
-        const confirmation = window.confirm("Are you sure you want to delete this shop?");
-        if (confirmation) {
-            try {
-                await api.delete(`/api/shops/${shopId}`);
-                setShops(shops.filter((shop) => shop.shop_id !== shopId));
-            } catch (err) {
-                setError(err.response?.data?.message || "Failed to delete shop.");
-            }
+        try {
+            await api.delete(`/api/shops/${shopId}`);
+            setShops(shops.filter((shop) => shop.shop_id !== shopId));
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to delete shop.");
+        } finally {
+            setConfirmDeleteShopId(null);
         }
     };
 
@@ -100,12 +96,13 @@ const ViewShops = () => {
                                                 Edit
                                             </button>
 
-                                            <button
-                                                onClick={() => handleDeleteShop(shop.shop_id)}
-                                                className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none transition duration-200 ml-2"
-                                            >
-                                                Delete
-                                            </button>
+                                            <ConfirmWrapper onConfirm={() => handleDeleteShop(shop.shop_id)}>
+                                                <button
+                                                    className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 focus:outline-none transition duration-200 ml-2"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </ConfirmWrapper>
                                         </td>
                                     </tr>
                                 ))}

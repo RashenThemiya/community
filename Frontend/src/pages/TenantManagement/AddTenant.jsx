@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ added ConfirmWrapper import
 
 const AddTenant = () => {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ const AddTenant = () => {
     const [availableShops, setAvailableShops] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [showConfirm, setShowConfirm] = useState(false); // ✅ added confirm state
 
     // Fetch available shop IDs
     useEffect(() => {
@@ -47,8 +49,7 @@ const AddTenant = () => {
         setTenant({ ...tenant, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setLoading(true);
         setError(null);
 
@@ -84,12 +85,17 @@ const AddTenant = () => {
         }
     };
 
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        setShowConfirm(true); // ✅ open confirm popup first
+    };
+
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">Add New Tenant</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleFormSubmit} className="space-y-4">
                     <input type="text" name="name" placeholder="Full Name" value={tenant.name} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" required />
                     <input type="text" name="contact" placeholder="Contact Number" value={tenant.contact} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" required />
                     <input type="email" name="email" placeholder="Email Address" value={tenant.email} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" required />
@@ -109,10 +115,31 @@ const AddTenant = () => {
                         )}
                     </select>
 
-                    <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300" disabled={loading}>
-                        {loading ? "Adding..." : "Add Tenant"}
-                    </button>
-                    <button type="button" onClick={() => navigate("/tenant-management")} className="w-full mt-2 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition duration-300">
+                    {/* ✅ ConfirmWrapper wrapping Add Tenant button */}
+                    <ConfirmWrapper
+                        open={showConfirm}
+                        message="Are you sure you want to add this tenant?"
+                        onConfirm={() => {
+                            setShowConfirm(false);
+                            handleSubmit();
+                        }}
+                        onCancel={() => setShowConfirm(false)}
+                    >
+                        <button
+                            type="submit"
+                            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                            disabled={loading}
+                        >
+                            {loading ? "Adding..." : "Add Tenant"}
+                        </button>
+                    </ConfirmWrapper>
+
+                    {/* Cancel button (✅ unchanged) */}
+                    <button
+                        type="button"
+                        onClick={() => navigate("/tenant-management")}
+                        className="w-full mt-2 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+                    >
                         Cancel
                     </button>
                 </form>
