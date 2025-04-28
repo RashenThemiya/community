@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ import ConfirmWrapper
 
 const MakePayment = () => {
     const navigate = useNavigate();
@@ -30,10 +31,6 @@ const MakePayment = () => {
             setError("Please fill all fields before submitting.");
             return;
         }
-
-        // Confirmation popup
-        const isConfirmed = window.confirm("Are you sure you want to proceed with this payment?");
-        if (!isConfirmed) return;
 
         setLoading(true);
 
@@ -124,13 +121,16 @@ const MakePayment = () => {
                         </select>
                     </div>
 
-                    <button
-                        type="submit"
-                        className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
-                        disabled={loading}
-                    >
-                        {loading ? "Processing..." : "Process Payment"}
-                    </button>
+                    {/* ✅ Wrap just the button inside ConfirmWrapper */}
+                    <ConfirmWrapper message="Are you sure you want to process this payment?">
+                        <button
+                            type="submit"
+                            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Process Payment"}
+                        </button>
+                    </ConfirmWrapper>
                 </form>
 
                 <button
