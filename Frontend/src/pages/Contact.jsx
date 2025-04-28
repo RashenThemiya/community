@@ -1,31 +1,54 @@
+// src/pages/Contact.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const Contact = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
-      {/* Back to Home Link */}
-      <Link to="/" className="absolute top-4 left-4 font-medium">
-        &lt; Back to Home Page
-      </Link>
+    <div className="bg-gray-50 min-h-screen">
+      {/* Keep Navbar unchanged */}
+      <Navbar />
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Contact</h1>
+      {/* Contact Page Content */}
+      <div className="flex justify-center items-center min-h-screen py-10">
+        <div className="bg-white shadow-xl rounded-3xl p-8 max-w-lg w-full mx-auto flex flex-col items-center space-y-8">
+          <h1 className="text-4xl font-extrabold text-gray-800 mb-8">Contact Us</h1>
 
-      <div className="bg-white shadow-lg rounded-2xl p-8 flex flex-col items-center max-w-sm w-full">
-        <img
-          src="https://via.placeholder.com/150"
-          alt="Profile"
-          className="w-32 h-32 rounded-full object-cover mb-6 border-4 border-blue-500"
-        />
+          {/* Profile Image */}
+          <img
+            src="https://via.placeholder.com/150"
+            alt="Profile"
+            className="w-32 h-32 rounded-full object-cover mb-6 border-4 border-blue-500"
+          />
 
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-semibold">Chris Wijerathna</h2>
-          <p className="font-medium">Manager</p>
-          <div className="mt-4 text-gray-600 text-sm space-y-1">
-            <p>Email: <a href="mailto:dambulladec@gmail.com" className="text-blue-500 hover:underline">dambulladec@gmail.com</a></p>
-            <p>Phone: <a href="tel:+94662285181" className="text-blue-500 hover:underline">+94 66 228 5181</a></p>
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-semibold text-gray-800">Chris Wijerathna</h2>
+            <p className="text-lg font-medium text-gray-600">Manager</p>
+
+            <div className="space-y-2">
+              <p className="text-lg text-gray-700">
+                <span className="font-semibold">Phone:</span>{" "}
+                <span className="text-blue-500">+94 66 228 5181</span>
+              </p>
+              <p className="text-lg text-gray-700">
+                <span className="font-semibold">Email:</span>{" "}
+                <span className="text-blue-500">dambulladec@gmail.com</span>
+              </p>
+            </div>
+
+            {/* Address Section */}
+            <div className="space-y-4 mt-8">
+              <p className="text-lg text-gray-700">
+                <span className="font-semibold">Office Address:</span>
+                <span className="text-gray-600"> 123 Business St., City, Country</span>
+              </p>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-gray-800 text-white py-4 text-center w-full">
+        <p>&copy; 2025 Precious Center. All rights reserved.</p>
       </div>
     </div>
   );
