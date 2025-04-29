@@ -5,6 +5,8 @@ import InvoiceTable from "./components/InvoiceTable";
 import PaymentList from "./components/PaymentList";
 import TenantDetails from "./components/TenantDetails";
 
+import { exportShopSummaryExcel, exportPaymentsExcel, exportInvoicesExcel } from "../../utils/exportExcel.js"; 
+
 const ShopSummary = () => {
     const { shopId } = useParams();
     const navigate = useNavigate();
@@ -31,18 +33,41 @@ const ShopSummary = () => {
         fetchShopSummary();
     }, [shopId]);
 
+    const handleExportSummary = () => {
+        if (shop) {
+            exportShopSummaryExcel(shop);
+        }
+    };
+
+    const handleExportPayments = () => {
+        if (shop?.Payments) {
+            exportPaymentsExcel(shop.Payments, shop.shop_name);
+        }
+    };
+
+    const handleExportInvoices = () => {
+        if (shop?.Invoices && shop?.Payments) {
+          exportInvoicesExcel(
+            shop.Invoices,
+            shop.shop_name,
+            shop.Payments
+          );
+        }
+      };
+      
+
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100 py-8">
             <div className="bg-white shadow-lg rounded-lg w-full max-w-7xl p-6 space-y-6">
-                {/* Back Button at the Top */}
+                
+                {/* Back Button */}
                 <button
-                    onClick={() => navigate(-1)}  // This will go back to the previous page
+                    onClick={() => navigate(-1)}
                     className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-300 transition duration-200"
                 >
                     ← Back
                 </button>
 
-                
                 {/* Shop Balance */}
                 <div className="bg-green-100 text-green-800 text-center text-xl font-semibold py-3 rounded-lg shadow-md">
                     Shop Balance: LKR {shop?.ShopBalance?.balance_amount || "0.00"}
@@ -56,7 +81,7 @@ const ShopSummary = () => {
                     <div className="text-center text-red-600">{error}</div>
                 ) : (
                     <>
-                        {/* Shop Details & Tenant Details */}
+                        {/* Shop Details and Tenant Details */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-gray-50 p-4 rounded-lg shadow-md">
                                 <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">Shop Details</h3>
@@ -68,13 +93,24 @@ const ShopSummary = () => {
                                     <p><strong>VAT Rate:</strong> {shop.vat_rate}%</p>
                                     <p><strong>Operation Fee:</strong> LKR {shop.operation_fee}</p>
                                 </div>
+
+                                {/* Export Shop Summary Button */}
+                                <div className="mt-4">
+                                    <button
+                                        onClick={handleExportSummary}
+                                        className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-200"
+                                    >
+                                        Export Shop Summary
+                                    </button>
+                                </div>
                             </div>
+
                             <TenantDetails tenant={shop.Tenant} />
                         </div>
 
-                        {/* Tabs for Payments & Invoices */}
+                        {/* Payments and Invoices Tabs */}
                         <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-                            <div className="flex space-x-4 border-b pb-2">
+                            <div className="flex space-x-4 border-b pb-2 mb-4">
                                 <button
                                     onClick={() => setActiveTab("payments")}
                                     className={`px-6 py-2 text-lg font-semibold transition duration-200 ${
@@ -97,13 +133,32 @@ const ShopSummary = () => {
                                 </button>
                             </div>
 
-                            {/* Tab Content with Fixed Table Scroll */}
+                            {/* Export Payments or Invoices Buttons */}
+                            <div className="flex justify-end mb-4">
+                                {activeTab === "payments" && (
+                                    <button
+                                        onClick={handleExportPayments}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-200"
+                                    >
+                                        Export Payments
+                                    </button>
+                                )}
+                                {activeTab === "invoices" && (
+                                    <button
+                                        onClick={handleExportInvoices}
+                                        className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition duration-200"
+                                    >
+                                        Export Invoices
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Content */}
                             <div className="mt-4 max-h-64 overflow-y-auto">
                                 {activeTab === "payments" ? (
                                     <PaymentList payments={shop.Payments} />
                                 ) : (
                                     <InvoiceTable shop={shop} payments={shop.Payments} />
-
                                 )}
                             </div>
                         </div>
