@@ -12,7 +12,7 @@ const dayjs = require('dayjs');
 async function applyFineToAllInvoices() {
     try {
         // Get the threshold date (17 days ago)
-        const fineThresholdDate = dayjs().subtract(17, 'days').toDate();
+        const fineThresholdDate = dayjs().subtract(15, 'days').toDate();
 
         // Fetch all invoices that are "Unpaid", "Partially Paid", or "Arrest" and older than 17 days
         const invoices = await Invoice.findAll({
