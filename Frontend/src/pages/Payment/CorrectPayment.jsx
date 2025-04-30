@@ -1,5 +1,6 @@
 import { useState } from "react";
-import api from "../../utils/axiosInstance"; // Ensure this points to your axios setup
+import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper";
 
 const CorrectPayment = () => {
     const [formData, setFormData] = useState({
@@ -18,13 +19,11 @@ const CorrectPayment = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setLoading(true);
         setError(null);
         setSuccess(null);
 
-        // Validate required fields
         if (!formData.shop_id || !formData.actual_amount || !formData.admin_put_amount) {
             setError("Shop ID, Actual Amount, and Admin Input Amount are required.");
             setLoading(false);
@@ -32,14 +31,13 @@ const CorrectPayment = () => {
         }
 
         try {
-            const token = localStorage.getItem("token"); // Get token from local storage
+            const token = localStorage.getItem("token");
             if (!token) {
                 setError("Unauthorized: Please log in first.");
                 setLoading(false);
                 return;
             }
 
-            // Construct request body without invoice_id if it's empty
             const { invoice_id, ...payload } = formData;
             if (invoice_id.trim() !== "") {
                 payload.invoice_id = invoice_id;
@@ -47,10 +45,10 @@ const CorrectPayment = () => {
 
             const response = await api.post(
                 "api/paymentscorrection/correct-payment/",
-                payload,  // Send only the required fields
+                payload,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,  // Include Bearer token
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -63,7 +61,7 @@ const CorrectPayment = () => {
                     actual_amount: "",
                     admin_put_amount: "",
                     edit_reason: "",
-                }); // Reset form
+                });
             } else {
                 setError(response.data.message || "Payment correction failed.");
             }
@@ -82,7 +80,7 @@ const CorrectPayment = () => {
                 {error && <p className="text-red-500 text-center">{error}</p>}
                 {success && <p className="text-green-500 text-center">{success}</p>}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
                     <input
                         type="text"
                         name="invoice_id"
@@ -125,16 +123,19 @@ const CorrectPayment = () => {
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
-                    
-                    <button
-                        type="submit"
-                        className={`w-full py-2 rounded-lg transition duration-300 ${
-                            loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600 text-white"
-                        }`}
-                        disabled={loading}
-                    >
-                        {loading ? "Processing..." : "Submit Correction"}
-                    </button>
+
+                    {/* ✅ ConfirmWrapper handles confirmation BEFORE running handleSubmit */}
+                    <ConfirmWrapper message="Are you sure you want to submit this correction?" onConfirm={handleSubmit}>
+                        <button
+                            type="button"
+                            className={`w-full py-2 rounded-lg transition duration-300 ${
+                                loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600 text-white"
+                            }`}
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Submit Correction"}
+                        </button>
+                    </ConfirmWrapper>
                 </form>
             </div>
         </div>
