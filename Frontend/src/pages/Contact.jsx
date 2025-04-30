@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import axios from "axios";
 
 const Contact = () => {
@@ -68,72 +69,74 @@ const Contact = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-100 border-t py-12 mt-10">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row justify-between items-start gap-12">
-          <div >
-            <div className="flex items-center space-x-3 mb-4">
-              <img src="/images/logo.jpg" alt="Gov Logo" className="w-10 h-10" />
-              <p className="font-semibold text-center">
-                Dedicated Economic Center<br />Dambulla
-              </p>
+
+      <div className="max-w-7xl mx-auto px-4 flex flex-col lg:flex-row justify-between items-start gap-12">
+        <div >
+          <div className="flex items-center space-x-3 mb-4">
+            <img src="/images/logo.jpg" alt="Gov Logo" className="w-10 h-10" />
+            <p className="font-semibold text-center">
+              Dedicated Economic Center<br />Dambulla
+            </p>
 
 
-            </div>
-
-            <div className="mt-4 flex gap-4 text-gray-600 text-xl justify-center ">
-              <a href="#" aria-label="Facebook"><i className="fab fa-facebook-square"></i></a>
-              <a href="#" aria-label="Twitter"><i className="fab fa-twitter-square"></i></a>
-              <a href="#" aria-label="LinkedIn"><i className="fab fa-linkedin"></i></a>
-            </div>
-
-            {/* Weather Section - Enhanced */}
-            <div className="mt-6 w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-lg pt-5 pb-8">
-              <h3 className="text-xl font-bold text-gray-700 mb-3">Dambulla Weather</h3>
-              {loading ? (
-                <p className="text-sm text-gray-500">Loading...</p>
-              ) : error ? (
-                <p className="text-sm text-red-500">{error}</p>
-              ) : weather ? (
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-                    alt="Weather Icon"
-                    className="w-14 h-14"
-                  />
-                  <div>
-                    <p className="text-2xl font-semibold text-gray-800">{weather.main.temp}°C</p>
-                    <p className="capitalize text-sm text-gray-500">{weather.weather[0].description}</p>
-                  </div>
-                </div>
-              ) : null}
-            </div>
           </div>
 
-          {/* Right Column */}
-          <div className="grid grid-cols-2 gap-12 text-base text-gray-700">
-            <div>
-              <h3 className="font-bold text-lg mb-3">Main Economic Centers</h3>
-              <ul className="space-y-2">
-                <li>Dambulla - <span className="text-red-500">0662 286 181</span></li>
-                <li>Nuwara Eliya - <span className="text-red-500">0522 231 176</span></li>
-                <li>Narahenpita - <span className="text-red-500">0112 696 742</span></li>
-                <li>Welisara - <span className="text-red-500">0112 981 896</span></li>
-                <li>Veyangoda - <span className="text-red-500">0332 296 914</span></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold text-lg mb-3">Regional Economic Centers</h3>
-              <ul className="space-y-2">
-                <li>Ratmalana - <span className="text-red-500">0112 709 800</span></li>
-                <li>Meegoda - <span className="text-red-500">0112 830 816</span></li>
-                <li>Kandeketiya - <span className="text-red-500">0714 531 993</span></li>
-                <li>Kepptipola - <span className="text-red-500">0572 280 208</span></li>
-              </ul>
-            </div>
+          <div className="mt-4 flex gap-4 text-gray-600 text-xl justify-center ">
+            <a href="#" aria-label="Facebook"><i className="fab fa-facebook-square"></i></a>
+            <a href="#" aria-label="Twitter"><i className="fab fa-twitter-square"></i></a>
+            <a href="#" aria-label="LinkedIn"><i className="fab fa-linkedin"></i></a>
+          </div>
+
+          {/* Weather Section - Enhanced */}
+          <div className="mt-6 w-80 rounded-lg border border-gray-200 bg-white p-4 shadow-lg pt-5 pb-8 mb-5">
+            <h3 className="text-xl font-bold text-gray-700 mb-3">Dambulla Weather</h3>
+            {loading ? (
+              <p className="text-sm text-gray-500">Loading...</p>
+            ) : error ? (
+              <p className="text-sm text-red-500">{error}</p>
+            ) : weather ? (
+              <div className="flex items-center space-x-4">
+                <img
+                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
+                  alt="Weather Icon"
+                  className="w-14 h-14"
+                />
+                <div>
+                  <p className="text-2xl font-semibold text-gray-800">{weather.main.temp}°C</p>
+                  <p className="capitalize text-sm text-gray-500">{weather.weather[0].description}</p>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
-      </footer>
+
+        {/* Right Column */}
+        <div className="grid grid-cols-2 gap-12 text-base text-gray-700 " >
+          <div>
+            <h3 className="font-bold text-lg mb-3">Main Economic Centers</h3>
+            <ul className="space-y-2">
+              <li>Dambulla - <span className="text-red-500">0662 286 181</span></li>
+              <li>Nuwara Eliya - <span className="text-red-500">0522 231 176</span></li>
+              <li>Narahenpita - <span className="text-red-500">0112 696 742</span></li>
+              <li>Welisara - <span className="text-red-500">0112 981 896</span></li>
+              <li>Veyangoda - <span className="text-red-500">0332 296 914</span></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-bold text-lg mb-3">Regional Economic Centers</h3>
+            <ul className="space-y-2">
+              <li>Ratmalana - <span className="text-red-500">0112 709 800</span></li>
+              <li>Meegoda - <span className="text-red-500">0112 830 816</span></li>
+              <li>Kandeketiya - <span className="text-red-500">0714 531 993</span></li>
+              <li>Kepptipola - <span className="text-red-500">0572 280 208</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <Footer />
     </div>
+
+
   );
 };
 
