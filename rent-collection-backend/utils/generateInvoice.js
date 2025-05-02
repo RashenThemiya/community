@@ -5,6 +5,7 @@ const Vat = require("../models/VAT");
 const AuditTrail = require("../models/AuditTrail");
 const Shop = require("../models/Shop");
 const ShopBalance = require("../models/ShopBalance");
+
 const Fine = require("../models/Fine");  // Add this line
 const { applyFineToAllInvoices } = require('./applyFineToAllInvoices'); // Import it at the top
 const { 
@@ -12,7 +13,7 @@ const {
 } = require('../utils/processPayment');
 const { fetchAndCalculateDues } = require("./fetchAndCalculateDues");
 
-async function generateInvoice(shop_id, monthYear) {
+async function generateInvoice(shop_id, monthYear,adminName = "System") {
   try {
     await applyFineToAllInvoices();
     //  Fetch shop details
@@ -115,8 +116,8 @@ async function generateInvoice(shop_id, monthYear) {
       invoice_id: invoice.invoice_id,
       event_type: "Invoice Generated",
       event_description: `Invoice ${invoice.invoice_id} generated for shop ${shop_id}`,
-      user_actioned: "System", // Replace with actual user
-    });
+      user_actioned: adminName || "System",
+        });
 
     console.log(`✅ Invoice ${invoice.invoice_id} generated successfully.`);
     if (shopBalanceAmount  > 0) {
