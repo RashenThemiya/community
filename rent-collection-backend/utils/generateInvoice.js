@@ -6,7 +6,7 @@ const AuditTrail = require("../models/AuditTrail");
 const Shop = require("../models/Shop");
 const ShopBalance = require("../models/ShopBalance");
 const Fine = require("../models/Fine");  // Add this line
-
+const { applyFineToAllInvoices } = require('./applyFineToAllInvoices'); // Import it at the top
 const { 
   runInvoicePaymentProcessWithoutAddingToShopBalance
 } = require('../utils/processPayment');
@@ -14,6 +14,7 @@ const { fetchAndCalculateDues } = require("./fetchAndCalculateDues");
 
 async function generateInvoice(shop_id, monthYear) {
   try {
+    await applyFineToAllInvoices();
     //  Fetch shop details
     const shop = await Shop.findOne({ where: { shop_id } });
 
