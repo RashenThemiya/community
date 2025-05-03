@@ -11,19 +11,15 @@ const { runInvoicePaymentProcessWithoutAddingToShopBalance } = require('../utils
 
 async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amount, admin_put_amount, edit_reason = null }) {
     const t = await sequelize.transaction();
+    let newShopBalance = null; // Declare outside to use after commit
     try {
-        // Ensure amounts are properly parsed
         const actualAmount = isNaN(parseFloat(actual_amount)) ? 0 : parseFloat(actual_amount);
         const adminPutAmount = isNaN(parseFloat(admin_put_amount)) ? 0 : parseFloat(admin_put_amount);
         const missed_amount = actualAmount - adminPutAmount;
 
-        // Fetch or create Shop Balance
         let shopBalance = await ShopBalance.findOne({ where: { shop_id }, transaction: t });
         if (!shopBalance) {
-            shopBalance = await ShopBalance.create(
-                { shop_id, balance_amount: 0, last_updated: new Date() },
-                { transaction: t }
-            );
+            shopBalance = await ShopBalance.create({ shop_id, balance_amount: 0, last_updated: new Date() }, { transaction: t });
         }
 
         shopBalance.balance_amount = parseFloat(shopBalance.balance_amount) || 0;
@@ -37,31 +33,45 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
             if (!rent) throw new Error('Associated Rent not found');
 
             if (missed_amount > 0) {
-                // Refund any paid fine before deleting it
                 const fine = await Fine.findOne({ where: { invoice_id }, transaction: t });
-                if (fine && fine.status === 'Paid') {
-                    shopBalance.balance_amount += parseFloat(fine.amount) || 0;
+                if (fine) {
+                    if (fine.status === 'Paid' || fine.status === 'Partially Paid') {
+                        shopBalance.balance_amount += parseFloat(fine.paid_amount) || 0;
+            
+                        // Optional: audit trail for refunded fine
+                        await AuditTrail.create({
+                            shop_id,
+                            invoice_id,
+                            event_type: 'Correction',
+                            event_description: `Refunded fine of ${fine.amount} due to overpayment correction.`,
+                            old_value: fine.amount,
+                            new_value: 0,
+                            edit_reason,
+                            user_actioned: 'Admin'
+                        }, { transaction: t });
+                    }
+            
+                    // Always destroy the fine if there's a correction
+                    await Fine.destroy({ where: { invoice_id }, transaction: t });
                 }
-                await Fine.destroy({ where: { invoice_id }, transaction: t });
-
-                // Add missed amount to shop balance
+            
                 shopBalance.balance_amount += missed_amount;
-
-                // ✅ Add entry to Payment table for missed amount correction
+                await shopBalance.save({ transaction: t });
+            
                 await Payment.create(
                     {
                         shop_id,
                         invoice_id,
-                        amount_paid: missed_amount,  // Ensure this is always a valid number
+                        amount_paid: missed_amount,
                         payment_date: new Date(),
-                        payment_method: 'Correction Made',  // This is required to avoid the validation error
+                        payment_method: 'Correction Made',
                     },
                     { transaction: t }
                 );
-            } else if (missed_amount < 0) {
-                // Apply fine if invoice is older than 17 days and unpaid
+            }
+            else if (missed_amount < 0) {
                 const invoiceAge = dayjs().diff(dayjs(invoice.createdAt), 'day');
-                if (invoice.status !== 'Paid' && invoiceAge > 17) {
+                if (invoice.status !== 'Paid' && invoiceAge > 15) {
                     const unpaidAmount = parseFloat(rent.amount) - parseFloat(rent.paid_amount);
                     const fineAmount = unpaidAmount * 0.30;
                     await Fine.create({ invoice_id, shop_id, amount: fineAmount, status: 'Unpaid' }, { transaction: t });
@@ -71,14 +81,13 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
         } else {
             shopBalance.balance_amount += missed_amount;
 
-            // ✅ Add to Payment table if missed_amount > 0 and no invoice ID
             if (missed_amount > 0) {
                 await Payment.create(
                     {
                         shop_id,
-                        amount_paid: missed_amount,  // Fixed the amount field name and provided the correct value
+                        amount_paid: missed_amount,
                         payment_date: new Date(),
-                        payment_method: 'Correction Made',  // Correct payment method value
+                        payment_method: 'Correction Made',
                     },
                     { transaction: t }
                 );
@@ -89,18 +98,12 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
         shopBalance.last_updated = new Date();
         await shopBalance.save({ transaction: t });
 
-        // Run invoice payment process if shop balance is positive
-        if (shopBalance.balance_amount > 0) {
-            await runInvoicePaymentProcessWithoutAddingToShopBalance(shop_id);
-        }
+        newShopBalance = await ShopBalance.findOne({ where: { shop_id }, transaction: t });
 
-        let newShopBalance = await ShopBalance.findOne({ where: { shop_id }, transaction: t });
-
-        // Log Audit Trail
         await AuditTrail.create(
             {
                 shop_id,
-                invoice_id, 
+                invoice_id,
                 event_type: 'Correction',
                 event_description: `Corrected payment: actual=${actualAmount}, admin_put=${adminPutAmount}, difference=${missed_amount}`,
                 old_value: oldBalance,
@@ -111,13 +114,20 @@ async function handlePaymentCorrection({ invoice_id = null, shop_id, actual_amou
             { transaction: t }
         );
 
-        await t.commit();
-        return { success: true, message: 'Payment correction applied successfully' };
+        await t.commit(); // ✅ Commit first
     } catch (error) {
         await t.rollback();
         console.error('❌ Payment Correction Error:', error);
         return { success: false, message: error.message };
     }
+
+    // ✅ Now run outside transaction
+    if (newShopBalance.balance_amount > 0) {
+        await runInvoicePaymentProcessWithoutAddingToShopBalance(shop_id);
+    }
+
+    return { success: true, message: 'Payment correction applied successfully' };
 }
+
 
 module.exports = { handlePaymentCorrection };

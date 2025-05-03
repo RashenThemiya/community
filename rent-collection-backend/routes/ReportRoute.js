@@ -11,17 +11,31 @@ const VAT = require('../models/VAT');
 const ShopBalance = require('../models/ShopBalance');
 const { getPaymentsByShopAndInvoice } = require('../utils/reportUtils');
 
-
-// Route
-router.get('/current-month-income', async (req, res) => {
+router.get('/monthly-income', async (req, res) => {
   try {
-    const latestInvoice = await Invoice.findOne({ order: [['month_year', 'DESC']] });
-    if (!latestInvoice) return res.status(404).send('No invoices found.');
+    let { month, year } = req.query;
+    let selectedMonth, selectedYear, selectedMonthYear;
 
-    const latestMonthYear = new Date(latestInvoice.month_year);
-    const startOfPeriod = new Date(latestMonthYear.getFullYear(), latestMonthYear.getMonth(), 1);
-    const endOfPeriod = new Date(latestMonthYear.getFullYear(), latestMonthYear.getMonth() + 1, 0);
-    const latestMonthStr = `${latestMonthYear.getFullYear()}-${String(latestMonthYear.getMonth() + 1).padStart(2, '0')}`;
+    if (!month || !year) {
+      const latestInvoice = await Invoice.findOne({ order: [['month_year', 'DESC']] });
+      if (!latestInvoice) return res.status(404).send('No invoices found.');
+      selectedMonthYear = new Date(latestInvoice.month_year);
+      selectedMonth = selectedMonthYear.getMonth() + 1;
+      selectedYear = selectedMonthYear.getFullYear();
+    } else {
+      selectedMonth = parseInt(month);
+      selectedYear = parseInt(year);
+
+      if (isNaN(selectedMonth) || isNaN(selectedYear) || selectedMonth < 1 || selectedMonth > 12) {
+        return res.status(400).json({ success: false, message: 'Invalid month or year provided.' });
+      }
+
+      selectedMonthYear = new Date(selectedYear, selectedMonth - 1);
+    }
+
+    const startOfPeriod = new Date(selectedYear, selectedMonth - 1, 1);
+    const endOfPeriod = new Date(selectedYear, selectedMonth, 0);
+    const latestMonthStr = `${selectedYear}-${String(selectedMonth).padStart(2, '0')}`;
 
     const invoices = await Invoice.findAll({
       where: { month_year: { [Op.between]: [startOfPeriod, endOfPeriod] } },
@@ -36,10 +50,10 @@ router.get('/current-month-income', async (req, res) => {
       return map;
     }, {});
 
-    const [rentMap, rentCross] = await getPaymentsByShopAndInvoice(Rent, startOfPeriod, endOfPeriod, latestMonthYear);
-    const [fineMap, fineCross] = await getPaymentsByShopAndInvoice(Fine, startOfPeriod, endOfPeriod, latestMonthYear);
-    const [opMap, opCross] = await getPaymentsByShopAndInvoice(OperationFee, startOfPeriod, endOfPeriod, latestMonthYear);
-    const [vatMap, vatCross] = await getPaymentsByShopAndInvoice(VAT, startOfPeriod, endOfPeriod, latestMonthYear);
+    const [rentMap, rentCross] = await getPaymentsByShopAndInvoice(Rent, startOfPeriod, endOfPeriod, selectedMonthYear);
+    const [fineMap, fineCross] = await getPaymentsByShopAndInvoice(Fine, startOfPeriod, endOfPeriod, selectedMonthYear);
+    const [opMap, opCross] = await getPaymentsByShopAndInvoice(OperationFee, startOfPeriod, endOfPeriod, selectedMonthYear);
+    const [vatMap, vatCross] = await getPaymentsByShopAndInvoice(VAT, startOfPeriod, endOfPeriod, selectedMonthYear);
 
     const invoiceMapByShop = {};
     invoices.forEach(inv => {
@@ -48,7 +62,7 @@ router.get('/current-month-income', async (req, res) => {
     });
 
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Current Month Income');
+    const sheet = workbook.addWorksheet('Monthly Income');
 
     sheet.columns = [
       { header: 'Shop ID', key: 'shop_id' },
@@ -86,9 +100,8 @@ router.get('/current-month-income', async (req, res) => {
       other_operation_paid: 0,
       other_vat_paid: 0,
       total_paid: 0,
-      remaining: 0, // <-- add this
+      remaining: 0,
     };
-    
 
     for (const inv of invoices) {
       const shop_id = inv.shop_id;
@@ -105,7 +118,6 @@ router.get('/current-month-income', async (req, res) => {
 
       let remaining = parseFloat(inv.total_amount) - paidForThisInvoice;
       remaining = Math.max(remaining, 0);
-
       const shop_balance = balanceByShop[shop_id] || 0;
 
       sheet.addRow({
@@ -147,13 +159,10 @@ router.get('/current-month-income', async (req, res) => {
       totals.other_fine_paid += fineMap[shop_id]?.other || 0;
       totals.other_operation_paid += opMap[shop_id]?.other || 0;
       totals.other_vat_paid += vatMap[shop_id]?.other || 0;
-      totals.total_paid += paidForThisInvoice; // <-- Add this line
-      totals.remaining += remaining; // <-- THIS LINE to sum total remaining
-
-
+      totals.total_paid += paidForThisInvoice;
+      totals.remaining += remaining;
     }
 
-    // Excel Header Styling
     sheet.getRow(1).eachCell(cell => {
       cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
       cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0070C0' } };
@@ -161,7 +170,6 @@ router.get('/current-month-income', async (req, res) => {
       cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
     });
 
-    // Add Total Row
     const totalRow = sheet.addRow({
       shop_id: 'Total',
       rent_paid_this_month: totals.rent_paid_this_month,
@@ -173,10 +181,8 @@ router.get('/current-month-income', async (req, res) => {
       other_operation_paid: totals.other_operation_paid,
       other_vat_paid: totals.other_vat_paid,
       shop_balance: totals.shop_balance,
-      total_paid: totals.total_paid, // <-- add this line
-      remaining: totals.remaining, // <-- ADD THIS
-
-
+      total_paid: totals.total_paid,
+      remaining: totals.remaining,
     });
 
     totalRow.eachCell(cell => {
@@ -190,12 +196,10 @@ router.get('/current-month-income', async (req, res) => {
       };
     });
 
-    // Auto Width
     sheet.columns.forEach(column => {
       column.width = Math.max(15, column.header.length + 5);
     });
 
-    // Proof Section
     const proofStartRow = sheet.rowCount + 2;
     sheet.mergeCells(`A${proofStartRow}:H${proofStartRow}`);
     sheet.getCell(`A${proofStartRow}`).value = 'Mathematical Proof of Total Paid Calculation';
@@ -228,12 +232,10 @@ router.get('/current-month-income', async (req, res) => {
       });
     }
 
-    // Response
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=Current_Month_Income_Report.xlsx');
+    res.setHeader('Content-Disposition', `attachment; filename=Monthly_Income_Report_${latestMonthStr}.xlsx`);
     await workbook.xlsx.write(res);
     res.end();
-
   } catch (err) {
     console.error(err);
     res.status(500).send('Error generating report');
