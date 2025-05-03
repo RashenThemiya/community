@@ -155,6 +155,7 @@ const AddDailyPrice = () => {
       </div>
     </div>
   );
+
 };
 
 export default AddDailyPrice;
