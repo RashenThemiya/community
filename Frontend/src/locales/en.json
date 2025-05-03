@@ -10,8 +10,7 @@
     "subText": "Tell us your suggestions and allegations",
     "address": "Address",
     "email": "Email",
-    "phone1": "Phone 1",
-    "phone2": "Phone 2",
+    "phone": "Phone ",
     "mapTitle": "Location Map"
   },
   "weather": {
@@ -22,15 +21,16 @@
   "footer": {
     "mainCenters": "Main Centers",
     "regionalCenters": "Regional Centers",
+    "thambuththegama": "Thambuththegama",
     "dambulla": "Dambulla",
-    "nuwaraEliya": "Nuwara Eliya",
-    "narahenpita": "Narahenpita",
-    "welisara": "Welisara",
-    "veyangoda": "Veyangoda",
-    "ratmalana": "Ratmalana",
-    "meegoda": "Meegoda",
-    "kandeketiya": "Kandeketiya",
-    "kepptipola": "Kepptipola",
+    "nuwaraEliya": "Nuwara Eliya Dedicated Economic Center",
+    "narahenpita": "Narahenpita Dedicated Economic Center",
+    "welisara": "Welisara Dedicated Economic Center",
+    "veyangoda": "Veyangoda Dedicated Economic Center",
+    "ratmalana": "Ratmalana Dedicated Economic Center",
+    "meegoda": "Meegoda Dedicated Economic Center",
+    "kandeketiya": "Kandehandiya Dedicated Economic Center",
+    "kepptipola": "Keppetipola Economic Center",
     "center": "Dedicated Economic Center",
     "city": "Dambulla"
   }
