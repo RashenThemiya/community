@@ -30,18 +30,6 @@ const ViewDailyPrice = () => {
     navigate(`/edit-dailyprice/${date}/${productId}`);
   };
 
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this daily price?");
-    if (confirmed) {
-      try {
-        await api.delete(`/api/dailyprice/${id}`);
-        setDailyPrices(dailyPrices.filter((price) => price.id !== id));
-      } catch (err) {
-        setError(err.response?.data?.message || "Failed to delete.");
-      }
-    }
-  };
-
   const handleNavigateToProductSummary = (productId) => {
     navigate(`/product-summary/${productId}`);
   };
@@ -109,12 +97,6 @@ const ViewDailyPrice = () => {
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
                       >
                         Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(price.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
-                      >
-                        Delete
                       </button>
                     </td>
                   </tr>
