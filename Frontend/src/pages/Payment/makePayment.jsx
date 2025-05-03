@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ import ConfirmWrapper
-import { useAuth } from "../../context/AuthContext"; // ✅ import useAu
+import { useAuth } from "../../context/AuthContext"; // ✅ import useAuth
 import api from "../../utils/axiosInstance";
+
 const MakePayment = () => {
     const navigate = useNavigate();
     const { name } = useAuth(); // ✅ Get admin's name from context
@@ -34,6 +35,16 @@ const MakePayment = () => {
             return;
         }
 
+        // ✅ Check if paymentDate is in the future
+        const selectedDate = new Date(paymentDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (selectedDate > today) {
+            setError("Payment Date cannot be a future date.");
+            return;
+        }
+
         setLoading(true);
 
         const endpoint = type === "shop"
@@ -42,10 +53,10 @@ const MakePayment = () => {
 
         try {
             const response = await api.post(endpoint, {
-                amountPaid: parseFloat(amountPaid), 
+                amountPaid: parseFloat(amountPaid),
                 paymentMethod,
                 paymentDate,
-                adminName: name, // ✅ Include admin's name in request // ✅ Add paymentDate to request
+                adminName: name, // ✅ Include admin's name in request
             });
 
             setMessage("Payment processed successfully!");
@@ -54,7 +65,7 @@ const MakePayment = () => {
                 amountPaid: "",
                 paymentMethod: "Cash",
                 type: "shop",
-                paymentDate: "", // Reset the payment date after successful submission
+                paymentDate: "", // ✅ Reset payment date
             });
         } catch (err) {
             setError(err.response?.data?.message || "Failed to process payment. Please try again.");
@@ -63,13 +74,16 @@ const MakePayment = () => {
         }
     };
 
+    // ✅ Get today's date in YYYY-MM-DD format
+    const maxDate = new Date().toISOString().split("T")[0];
+
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">Make a Payment</h2>
-                
-                {/* Display admin's name */}
-                <p className="text-lg mb-4">Admin: {name}</p> {/* ✅ Display admin's name */}
+
+                {/* ✅ Display admin name */}
+                <p className="text-lg mb-4">Admin: {name}</p>
 
                 {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -129,7 +143,7 @@ const MakePayment = () => {
                         </select>
                     </div>
 
-                    {/* ✅ Add Payment Date Field */}
+                    {/* ✅ Payment Date Field with max date */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Payment Date</label>
                         <input
@@ -137,12 +151,12 @@ const MakePayment = () => {
                             name="paymentDate"
                             value={paymentData.paymentDate}
                             onChange={handleChange}
+                            max={maxDate} // ✅ Prevent future dates
                             className="w-full p-2 border border-gray-300 rounded-lg"
                             required
                         />
                     </div>
 
-                    {/* ✅ Wrap just the button inside ConfirmWrapper */}
                     <ConfirmWrapper message="Are you sure you want to process this payment?">
                         <button
                             type="submit"
