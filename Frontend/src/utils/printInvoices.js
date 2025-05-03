@@ -24,60 +24,89 @@ export const printInvoices = async (invoices) => {
             <img src="/images/logo.jpg" alt="Logo" style="height: 60px;" />
             <div style="text-align: center;">
               <h2 style="margin: 0; font-size: 14px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය</h2>
-              <h4 style="margin-top: 5px; font-size: 12px;">Monthly Rent Notice</h4>
+              <h3 style="margin: 0; font-size: 10px;">කෘෂිකර්ම රාජ්‍ය අමාත්‍යාංශය
+</h3>
+              <h4 style="margin-top: 5px; font-size: 7px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය
+</h4>
             </div>
           </div>
       
           <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9;">
-            <div><strong>Invoice No:</strong> ${invoice.invoice_id}</div>
-            <div><strong>Invoice Month:</strong> ${new Date(
-              invoice.month_year
-            ).toLocaleDateString("en-US", {
-              month: "long",
-              year: "numeric",
-            })}</div>
-            <div><strong>Accounting Date:</strong> ${new Date(
-              invoice.createdAt
-            ).toLocaleDateString()}</div>
-          </div>
-      
-          <div style="padding: 5px; background-color: #d0e7f9;">
-            <strong>Shop ID :</strong> ${invoice.shop_id}
-          </div>
-      
+            
+  <div>
+    <strong>Invoice No</strong><br/>
+    <span>බිල්පත් අංකය</span>: ${invoice.invoice_id}
+  </div>
+
+  <div>
+    <strong>Invoice Month</strong><br/>
+    <span>බිල්පත් මාසය</span>: ${new Date(
+      invoice.month_year
+    ).toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    })}
+  </div>
+
+  <div>
+    <strong>Accounting Date</strong><br/>
+    <span>ගිණුම් කල දිනය</span>: ${new Date(invoice.createdAt).toLocaleDateString()}
+  </div>
+</div>
+
+<div style="padding: 5px; background-color: #d0e7f9;">
+  <strong>Shop No</strong><br/>
+  <span>කඩ අංකය</span>: ${invoice.shop_id}
+</div>
+
           <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
             <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 65%;">
-              <h4 style="text-align: center; margin: 0 0 8px;">Statement of Account</h4>
+              <h3 style="text-align: center; margin: 0 0 8px;">Statement of Account / ගිණුම් ප්‍රකාශය
+</h3>
               <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                 <tr><td>Monthly Rent / මාසික කුලිය</td><td style="text-align: right;">LKR ${
                   invoice.rent_amount
                 }</td></tr>
-                <tr><td>Operation Fee</td><td style="text-align: right;">LKR ${
+                <tr><td>Operation Fee / මෙහෙයුම් ගාස්තුව
+</td><td style="text-align: right;">LKR ${
                   invoice.operation_fee
                 }</td></tr>
                 <tr><td>VAT / එකතු කල අගය මත බද්ද
  </td><td style="text-align: right;">LKR ${
                   invoice.vat_amount
                 }</td></tr>
-                <tr><td>Previous Balance</td><td style="text-align: right;">LKR ${
+                <tr><td>Previous Balance / පසුගිය මස අගය
+</td><td style="text-align: right;">LKR ${
                   invoice.previous_balance
                 }</td></tr>
-                <tr><td>Fines</td><td style="text-align: right;">LKR ${
+                <tr><td>Fines / දඩ</td><td style="text-align: right;">LKR ${
                   invoice.fines
                 }</td></tr>
-                <tr><td><strong>Total Arrears</strong></td><td style="text-align: right;"><strong>LKR ${
+                <tr><td>Total Arrears / හිඟ බදු කුලිය
+</td><td style="text-align: right;">LKR ${
                   invoice.total_arrears
-                }</strong></td></tr>
-                <tr><td><strong>Total Amount</strong></td><td style="text-align: right;"><strong>LKR ${
+                }</td></tr>
+                <tr style="border-top: 1px solid #000;"><td><strong>Total Amount / අය විය යුතු මුලු මුදල
+</strong></td><td style="text-align: right;"><strong>LKR ${
                   invoice.total_amount
                 }</strong></td></tr>
               </table>
             </div>
       
             <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 33%; font-size: 11px;">
-              <h5 style="margin-top: 0; margin-bottom: 5px;">Notes</h5>
-              <p style="color: red; margin: 0 0 5px;">Please ensure full payment is made before the 15th.</p>
-              <p style="margin: 0;">• Contact management for any queries.</p>
+          
+              <h4 style="color: red; margin: 0 0 5px; border-bottom: 1px solid black;">
+මෙම බිල්පතේ අයවිය යුතු මුලු මුදල මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30%ක බදු කුලියක් අය කරනු ලැබේ.</h4>
+
+              <div style="text-align: center;">
+  <p style="margin: 0;">
+    දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය<br/>
+    කළමනාකරණභාරය <br/>
+    නමට ලංකා බැංකු ජංගම ගිණුම් අංක 2603285 දරණ ගිණුමට ඔබ විසින් මුදල් <br/>
+    ගෙවීම් කළ යුතු අතර ඒ සඳහා මෙම බිල්පත අනිවාර්යයෙන්ම භාවිතා කල යුතුය
+  </p>
+</div>
+
             </div>
           </div>
 
@@ -88,7 +117,8 @@ export const printInvoices = async (invoices) => {
     <!-- Section 1: Contacts -->
     <div style="flex: 1; padding-right: 10px; border-right: 1px solid #000; display: flex; flex-direction: column; justify-content: space-between;">
       <div>
-        <p style="margin: 0;"><strong>Contacts</strong></p>
+        <p style="margin: 0;"><strong>විමසීම්
+</strong></p>
         <p style="margin: 5px 0 0;">Manager<br/>Management Office<br/>Dedicated Economic Center<br/>Dambulla<br/>Tel: 066-2285181 / 066-2285448<br/>Email: dambulladec@gmail.com</p>
       </div>
     </div>
@@ -96,11 +126,15 @@ export const printInvoices = async (invoices) => {
     <!-- Section 2: For Renter -->
     <div style="flex: 1.5; padding: 0 10px; border-right: 1px solid #000; display: flex; flex-direction: column; justify-content: space-between;">
       <div>
-        <p style="margin: 0;"><strong>For Renter Use</strong></p>
-        <p style="margin: 5px 0;">Amount Paid to Bank:</p>
+        <p style="margin: 0;"><strong>බදුකරුගේ ප්‍රයෝජනය සඳහා
+</strong></p>
+        <p style="margin: 5px 0;">බැංකුවට ගෙවූ මුදල
+: රු.
+</p>
       </div>
       <div style="text-align: center; margin-top: auto;">
-        <p style="margin: 0;">_______________________<br/><span style="font-size: 11px;">Renter Signature</span></p>
+        <p style="margin: 0;">_______________________<br/><span style="font-size: 11px;">බදුකරුගේ අත්සන
+ </span></p>
       </div>
     </div>
 
@@ -108,7 +142,7 @@ export const printInvoices = async (invoices) => {
     <div style="flex: 1.5; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;">
       <div>
         <p style="margin: 0;"><strong>Bank Use Only</strong></p>
-        <p style="margin: 5px 0;">Amount Received:</p>
+        <p style="margin: 5px 0;">Amount Received: Rs.</p>
       </div>
       <div style="text-align: center; margin-top: auto;">
         <p style="margin: 0;">_______________________<br/><span style="font-size: 11px;">Signature of Bank Cashier</span></p>
@@ -138,7 +172,7 @@ export const printInvoices = async (invoices) => {
         <hr style="margin: 20px 0; border: 1px dashed #aaa;" />
        <div class="half-page">
   <div class="scale-content">
-        <p style="text-align: right; font-size: 12px; font-weight: bold;" > Office Copy 2</p>
+        <p style="text-align: right; font-size: 12px; font-weight: bold;" > Office Copy </p>
     ${invoiceHTML}
   </div>
 </div>
