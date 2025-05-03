@@ -108,7 +108,11 @@ const EditProduct = () => {
               <option value="fruit">Fruit</option>
               <option value="vegetable">Vegetable</option>
               <option value="rice">Rice</option>
+              <option value="potatoes">Potatoes</option>
+              <option value="Leaf Vegetable">Leaf Vegetable</option>
+              <option value="Grain">Grain</option>
             </select>
+
           </div>
 
           <div>

@@ -9,7 +9,7 @@ const Invoice = sequelize.define('Invoice', {
     autoIncrement: false,
   },
   shop_id: {
-    type: DataTypes.STRING(6),
+    type: DataTypes.STRING(10),
     allowNull: false,
   },
   month_year: {

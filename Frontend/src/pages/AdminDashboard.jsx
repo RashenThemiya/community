@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
-    FaChartBar,
-    FaClock,
-    FaMoneyBillWave,
-    FaStore,
-    FaUsers,
+  FaChartBar,
+  FaClock,
+  FaMoneyBillWave,
+  FaStore,
+  FaUsers,
 } from "react-icons/fa";
 import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 import Sidebar from "../components/Sidebar";
@@ -123,10 +123,8 @@ const AdminDashboard = () => {
   const vatPaid = parseFloat(summary?.vatSums?.total_vat_paid) || 0;
   const fineAmount = parseFloat(summary?.fineSums?.total_fine_amount) || 0;
   const finePaid = parseFloat(summary?.fineSums?.total_fine_paid) || 0;
-  const opFeeAmount =
-    parseFloat(summary?.operationFeeSums?.total_operation_amount) || 0;
-  const opFeePaid =
-    parseFloat(summary?.operationFeeSums?.total_operation_paid) || 0;
+  const opFeeAmount = parseFloat(summary?.operationFeeSums?.total_operation_amount) || 0;
+  const opFeePaid = parseFloat(summary?.operationFeeSums?.total_operation_paid) || 0;
 
   const totalIncome = rentAmount + vatAmount + fineAmount + opFeeAmount;
   const totalCollectedIncome = rentPaid + vatPaid + finePaid + opFeePaid;
@@ -144,12 +142,11 @@ const AdminDashboard = () => {
     { name: "Partially Paid", value: invoiceCounts.partial_count, color: "#2196F3" },
     { name: "Arrest", value: invoiceCounts.arrest_count, color: "#FF9800" },
   ];
-  
-  // Ensure values are numbers and filter out zero values
+
   const invoiceData = rawInvoiceData
-    .map(item => ({ ...item, value: parseInt(item.value) || 0 }))
-    .filter(item => item.value > 0);
-  
+    .map((item) => ({ ...item, value: parseInt(item.value) || 0 }))
+    .filter((item) => item.value > 0);
+
   const incomeStats = [
     { title: "Total Income", value: formatCurrency(totalIncome), icon: <FaMoneyBillWave className="text-3xl text-green-700" /> },
     { title: "Collected Income", value: formatCurrency(totalCollectedIncome), icon: <FaMoneyBillWave className="text-3xl text-blue-600" /> },
@@ -179,22 +176,24 @@ const AdminDashboard = () => {
         <p className="text-gray-600 mt-2">Track and manage financial performance.</p>
 
         <div className="flex space-x-4 mt-4">
-          <select value={month} onChange={(e) => setMonth(parseInt(e.target.value))} className="p-2 border border-gray-300 rounded">
+          <select value={month} onChange={(e) => setMonth(parseInt(e.target.value))} className="p-2 border border-gray-300 rounded-md">
             {months.map((m) => (
               <option key={m.value} value={m.value}>{m.name}</option>
             ))}
           </select>
-          <select value={year} onChange={(e) => setYear(parseInt(e.target.value))} className="p-2 border border-gray-300 rounded">
+          <select value={year} onChange={(e) => setYear(parseInt(e.target.value))} className="p-2 border border-gray-300 rounded-md">
             {years.map((y) => (
               <option key={y} value={y}>{y}</option>
             ))}
           </select>
         </div>
 
-        <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-700">Income Overview</h2>
+        <h2 className="text-xl md:text-2xl font-bold mt-10 mb-4 bg-gradient-to-r from-blue-600 to-indigo-500 text-white px-4 py-2 rounded-lg shadow">
+          Income Overview
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {incomeStats.map((stat, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
+            <div key={index} className="bg-white p-6 rounded-2xl shadow-lg flex items-center space-x-4">
               {stat.icon}
               <div>
                 <h2 className="text-xl font-semibold text-gray-800">{stat.value}</h2>
@@ -204,10 +203,12 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-700">Detailed Stats</h2>
+        <h2 className="text-xl md:text-2xl font-bold mt-10 mb-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white px-4 py-2 rounded-lg shadow">
+          Detailed Stats
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {detailedStats.map((stat, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4">
+            <div key={index} className="bg-white p-6 rounded-2xl shadow-md flex items-center space-x-4">
               {stat.icon}
               <div>
                 <h2 className="text-xl font-semibold text-gray-800">{stat.value}</h2>
@@ -217,21 +218,48 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {invoiceData.some(item => item.value > 0) && (
-        <div>
-            <h2 className="text-2xl font-semibold mt-8 mb-4 text-gray-700">Invoice Status chart</h2>
-          <div className="bg-white p-6 rounded-lg shadow-md mt-6 flex justify-center min-h-[300px]">
-            
-            <PieChart width={400} height={300}>
-              <Pie data={invoiceData} cx="50%" cy="50%" outerRadius={100} dataKey="value" label>
-                {invoiceData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+        {invoiceData.length > 0 && (
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold mt-10 mb-4 bg-gradient-to-r from-green-600 to-teal-500 text-white px-4 py-2 rounded-lg shadow">
+              Invoice Status
+            </h2>
+            <div className="bg-white p-6 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <PieChart width={300} height={300}>
+                <Pie
+                  data={invoiceData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  innerRadius={50}
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {invoiceData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#fff",
+                    borderRadius: "10px",
+                    border: "1px solid #e5e7eb",
+                  }}
+                />
+              </PieChart>
+
+              <div className="space-y-4">
+                {invoiceData.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-gray-50 p-4 rounded-xl shadow-sm">
+                    <span className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
+                      {item.name}
+                    </span>
+                    <span className="text-sm font-semibold text-gray-900">{item.value}</span>
+                  </div>
                 ))}
-              </Pie>
-              <Tooltip />
-              <Legend formatter={(value, entry) => `${value} (${entry?.payload?.value ?? 0})`} />
-            </PieChart>
-          </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

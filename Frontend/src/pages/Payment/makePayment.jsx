@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ import ConfirmWrapper
+import { useAuth } from "../../context/AuthContext"; // ✅ import useAu
 import api from "../../utils/axiosInstance";
-
 const MakePayment = () => {
     const navigate = useNavigate();
+    const { name } = useAuth(); // ✅ Get admin's name from context
     const [paymentData, setPaymentData] = useState({
         referenceId: "",
         amountPaid: "",
         paymentMethod: "Cash",
         type: "shop",
+        paymentDate: "", // ✅ Add paymentDate to state
     });
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
@@ -23,17 +26,13 @@ const MakePayment = () => {
         setError(null);
         setMessage(null);
 
-        const { referenceId, amountPaid, paymentMethod, type } = paymentData;
+        const { referenceId, amountPaid, paymentMethod, type, paymentDate } = paymentData;
 
         // Basic validation
-        if (!referenceId.trim() || !amountPaid) {
+        if (!referenceId.trim() || !amountPaid || !paymentDate) {
             setError("Please fill all fields before submitting.");
             return;
         }
-
-        // Confirmation popup
-        const isConfirmed = window.confirm("Are you sure you want to proceed with this payment?");
-        if (!isConfirmed) return;
 
         setLoading(true);
 
@@ -45,6 +44,8 @@ const MakePayment = () => {
             const response = await api.post(endpoint, {
                 amountPaid: parseFloat(amountPaid), 
                 paymentMethod,
+                paymentDate,
+                adminName: name, // ✅ Include admin's name in request // ✅ Add paymentDate to request
             });
 
             setMessage("Payment processed successfully!");
@@ -53,6 +54,7 @@ const MakePayment = () => {
                 amountPaid: "",
                 paymentMethod: "Cash",
                 type: "shop",
+                paymentDate: "", // Reset the payment date after successful submission
             });
         } catch (err) {
             setError(err.response?.data?.message || "Failed to process payment. Please try again.");
@@ -65,6 +67,9 @@ const MakePayment = () => {
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">Make a Payment</h2>
+                
+                {/* Display admin's name */}
+                <p className="text-lg mb-4">Admin: {name}</p> {/* ✅ Display admin's name */}
 
                 {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -124,13 +129,29 @@ const MakePayment = () => {
                         </select>
                     </div>
 
-                    <button
-                        type="submit"
-                        className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
-                        disabled={loading}
-                    >
-                        {loading ? "Processing..." : "Process Payment"}
-                    </button>
+                    {/* ✅ Add Payment Date Field */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Payment Date</label>
+                        <input
+                            type="date"
+                            name="paymentDate"
+                            value={paymentData.paymentDate}
+                            onChange={handleChange}
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                            required
+                        />
+                    </div>
+
+                    {/* ✅ Wrap just the button inside ConfirmWrapper */}
+                    <ConfirmWrapper message="Are you sure you want to process this payment?">
+                        <button
+                            type="submit"
+                            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Process Payment"}
+                        </button>
+                    </ConfirmWrapper>
                 </form>
 
                 <button

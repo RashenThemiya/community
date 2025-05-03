@@ -4,12 +4,10 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const { i18n } = useTranslation();
 
     const handleLanguageChange = (lng) => {
         i18n.changeLanguage(lng);
-        setDropdownOpen(false);
     };
 
     return (
@@ -19,7 +17,8 @@ const Navbar = () => {
                 <div>
                     📢 Hotline: <span className="font-semibold">1919</span> | eGov Services Portal
                 </div>
-                <div className="space-x-4 hidden md:flex">
+                {/* Language buttons shown in all screen sizes */}
+                <div className="space-x-4 flex">
                     <button onClick={() => handleLanguageChange('en')} className="hover:underline">EN</button>
                     <button onClick={() => handleLanguageChange('si')} className="hover:underline">සිං</button>
                     <button onClick={() => handleLanguageChange('ta')} className="hover:underline">தமிழ்</button>
@@ -36,42 +35,16 @@ const Navbar = () => {
                             className="w-10 h-10"
                         />
                         <Link to="/" className="text-xl font-bold tracking-wide">
-                        දඹුල්ල විශේෂිත ආර්ථික මධ්යස්ථානය
+                            දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය
                         </Link>
                     </div>
 
+                    {/* Desktop Menu */}
                     <div className="hidden md:flex space-x-6 items-center font-medium">
                         <Link to="/" className="hover:text-yellow-400">Home</Link>
                         <Link to="/home-dailyprice" className="hover:text-yellow-400">Daily Price</Link>
                         <Link to="/contact" className="hover:text-yellow-400">Contact</Link>
                         <Link to="/login" className="hover:text-yellow-400">Login</Link>
-                        <div className="relative">
-                            <button onClick={() => setDropdownOpen(!dropdownOpen)} className="hover:text-yellow-400">
-                                Language
-                            </button>
-                            {dropdownOpen && (
-                                <div className="absolute z-10 right-0 mt-2 w-40 bg-white text-gray-900 rounded shadow-md">
-                                    <button
-                                        onClick={() => handleLanguageChange('en')}
-                                        className="block w-full px-4 py-2 text-left hover:bg-gray-200"
-                                    >
-                                        English
-                                    </button>
-                                    <button
-                                        onClick={() => handleLanguageChange('si')}
-                                        className="block w-full px-4 py-2 text-left hover:bg-gray-200"
-                                    >
-                                        සිංහල
-                                    </button>
-                                    <button
-                                        onClick={() => handleLanguageChange('ta')}
-                                        className="block w-full px-4 py-2 text-left hover:bg-gray-200"
-                                    >
-                                        தமிழ்
-                                    </button>
-                                </div>
-                            )}
-                        </div>
                     </div>
 
                     {/* Mobile menu toggle */}
@@ -93,14 +66,6 @@ const Navbar = () => {
                         <Link to="/home-dailyprice" className="block hover:text-yellow-400">Daily Price</Link>
                         <Link to="/contact" className="block hover:text-yellow-400">Contact</Link>
                         <Link to="/login" className="block hover:text-yellow-400">Login</Link>
-                        <div>
-                            <p className="text-sm text-gray-300 mb-1">Language</p>
-                            <div className="flex space-x-3">
-                                <button onClick={() => handleLanguageChange('en')} className="hover:underline">EN</button>
-                                <button onClick={() => handleLanguageChange('si')} className="hover:underline">සිං</button>
-                                <button onClick={() => handleLanguageChange('ta')} className="hover:underline">தமிழ்</button>
-                            </div>
-                        </div>
                     </div>
                 )}
             </nav>

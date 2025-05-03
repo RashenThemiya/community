@@ -18,7 +18,8 @@ const InvoiceTable = ({ shop,payments } ) => {
         invoice.invoice_id.toString().includes(searchTerm) || 
         new Date(invoice.month_year).toLocaleDateString().includes(searchTerm)
     )
-    .sort((a, b) => new Date(b.create_date) - new Date(a.create_date)); // Sorting by create_date in descending order
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Latest invoice first
+ // Sorting by create_date in descending order
 
 
     return (
@@ -43,12 +44,13 @@ const InvoiceTable = ({ shop,payments } ) => {
                         <tr className="bg-gray-200 text-gray-700">
                             <th className="border p-2">Invoice ID</th>
                             <th className="border p-2">Month</th>
-                            <th className="border p-2">Prev Balance</th>
+                            <th className="border p-2">Prev Shop Balance</th>
                             <th className="border p-2">Total Fine</th>
                             <th className="border p-2">Fine (Prev)</th>
                             <th className="border p-2">Rent</th>
                             <th className="border p-2">Operation Fee</th>
                             <th className="border p-2">VAT</th>
+                            <th className="border p-2">Total arrest</th>
                             <th className="border p-2">Total Amount</th>
                             <th className="border p-2">Total Paid</th>
                             <th className="border p-2">Remaining</th>
@@ -68,16 +70,18 @@ const InvoiceTable = ({ shop,payments } ) => {
                             ) || 0;
 
 // Define invoice period
-                                const invoiceDate = new Date(invoice.month_year);
-                                const startOfMonth = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth(), 1);
-                                const endOfMonth = new Date(invoiceDate.getFullYear(), invoiceDate.getMonth() + 1, 0);
+const invoiceCreated = new Date(invoice.createdAt);
+const nextInvoiceCreated = index > 0 ? new Date(invoices[index - 1].createdAt) : null;
+
+const startOfPeriod = invoiceCreated;
+const endOfPeriod = nextInvoiceCreated ? nextInvoiceCreated : new Date(); // fallback to now if it's the latest invoice
 
                                 // Filter payments made within the invoice month
                                 const invoicePayments = payments?.filter(payment => {
                                     const paymentDate = new Date(payment.payment_date);
-                                    return paymentDate >= startOfMonth && paymentDate <= endOfMonth;
+                                    return paymentDate >= startOfPeriod && paymentDate < endOfPeriod;
                                 }) || [];
-
+                                
                                 // Sum up amount_paid from filtered payments
                                 const totalPaid = invoicePayments.reduce((sum, p) => sum + parseFloat(p.amount_paid || 0), 0);
 
@@ -101,7 +105,7 @@ const InvoiceTable = ({ shop,payments } ) => {
                             const extraPayment = Math.max(0, overpaidAmount - finePaid);
 
                             // Remaining is only applicable if there's no extra payment
-                            const remainingAmount = extraPayment > 0 ? 0 : invoiceTotalAmount - invoiceTotalPaid;
+                            const remainingAmount = Math.max(0, invoiceTotalAmount - invoiceTotalPaid);
 
                                 
 
@@ -116,6 +120,7 @@ const InvoiceTable = ({ shop,payments } ) => {
                                         <td className="border p-2">LKR {invoice.rent_amount}</td>
                                         <td className="border p-2">LKR {invoice.operation_fee}</td>
                                         <td className="border p-2">LKR {invoice.vat_amount}</td>
+                                        <td className="border p-2">LKR {invoice.total_arrears}</td>
                                         <td className="border p-2 font-semibold">LKR {invoice.total_amount}</td>
                                         <td className="border p-2 text-green-600">LKR {totalPaid.toFixed(2)}</td>
                                         <td className="border p-2 text-red-600">LKR {remainingAmount.toFixed(2)}</td>

@@ -13,6 +13,7 @@ import EditDailyPrice from './pages/DailyPrice/EditDailyPrice';
 import ViewDailyPrice from './pages/DailyPrice/ViewDailyPrice';
 import Home from "./pages/Home";
 import Invoice from './pages/Invoice/Invoice';
+import Contact from './pages/Contact';
 import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import CorrectPayment from './pages/Payment/CorrectPayment';
@@ -52,6 +53,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/manager-dashboard" element={<ManagerDashboard />} />
             <Route path="/shop-management" element={<ShopManagement />} />
