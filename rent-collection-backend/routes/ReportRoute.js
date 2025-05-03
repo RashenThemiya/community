@@ -105,7 +105,15 @@ router.get('/monthly-income', async (req, res) => {
       total_paid: 0,
       remaining: 0,
       extra_payment: 0,
-      previous_balance:0, // ✅ Fix: add this line
+      previous_balance:0,
+      rent_amount:0,
+      operation_fee:0,
+      vat:0,
+      total_arrears:0,
+      total_amount:0,
+      total_fines:0,
+      total_previous_fines:0,
+       // ✅ Fix: add this line
     };
 
     for (const inv of invoices) {
@@ -204,6 +212,13 @@ router.get('/monthly-income', async (req, res) => {
       totals.other_vat_paid += vatMap[shop_id]?.other || 0;
       totals.total_paid += paidForThisInvoice;
       totals.remaining += remaining;
+      totals.rent_amount += parseFloat(inv.rent_amount);
+      totals.operation_fee += parseFloat(inv.operation_fee);
+      totals.vat += parseFloat(inv.vat_amount);
+      totals.total_arrears += adjusted_arrears;
+      totals.total_amount += parseFloat(inv.total_amount);
+      totals.total_fines += parseFloat(inv.fines);
+      totals.total_previous_fines += parseFloat(inv.previous_fines);
     }
 
     sheet.getRow(1).eachCell(cell => {
