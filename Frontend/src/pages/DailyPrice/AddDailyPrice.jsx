@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // Adjust path as necessary
 
 const AddDailyPrice = () => {
   const navigate = useNavigate();
@@ -36,8 +37,7 @@ const AddDailyPrice = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleConfirmSave = async () => {
     setSubmitting(true);
     setError(null);
     setSuccess(null);
@@ -61,7 +61,6 @@ const AddDailyPrice = () => {
       await api.post("/api/prices/update-multiple", dataToSubmit);
       setSuccess("Prices added/updated successfully!");
       setPrices({});
-
       setTimeout(() => navigate("/daily-price"), 2000);
     } catch (err) {
       setError("Failed to update prices.");
@@ -81,7 +80,7 @@ const AddDailyPrice = () => {
         {success && <p className="text-green-500 text-sm mb-4 text-center">{success}</p>}
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
             <input
@@ -136,13 +135,16 @@ const AddDailyPrice = () => {
             </table>
           </div>
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300"
-          >
-            {submitting ? "Saving..." : "Save All Price Ranges"}
-          </button>
+          {/* ✅ ConfirmWrapper around Save button */}
+          <ConfirmWrapper onConfirm={handleConfirmSave}>
+            <button
+              type="button"
+              disabled={submitting}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300"
+            >
+              {submitting ? "Saving..." : "Save All Price Ranges"}
+            </button>
+          </ConfirmWrapper>
 
           <button
             type="button"

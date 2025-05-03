@@ -73,18 +73,22 @@ const AddProduct = () => {
                         required
                     />
 
-                    <select
-                        name="type"
-                        value={product.type}
-                        onChange={handleChange}
-                        className="w-full p-2 border border-gray-300 rounded-lg"
-                        required
-                    >
-                        <option value="">Select Product Type</option>
-                        <option value="fruit">Fruit</option>
-                        <option value="vegetable">Vegetable</option>
-                        <option value="rice">Rice</option>
-                    </select>
+                <select
+                    name="type"
+                    value={product.type}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg"
+                    required
+                >
+                    <option value="">Select Product Type</option>
+                    <option value="fruit">Fruit</option>
+                    <option value="vegetable">Vegetable</option>
+                    <option value="rice">Rice</option>
+                    <option value="potatoes">Potatoes</option>
+                    <option value="Leaf Vegetable">Leaf Vegetable</option>
+                    <option value="Grain">Grain</option>
+                </select>
+
 
                     <input
                         type="file"
