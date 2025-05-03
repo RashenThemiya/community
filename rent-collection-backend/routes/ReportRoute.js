@@ -82,6 +82,8 @@ router.get('/monthly-income', async (req, res) => {
       { header: 'Fine Paid This Month', key: 'fine_paid_this_month' },
       { header: 'Operation Fee Paid This Month', key: 'operation_paid_this_month' },
       { header: 'VAT Paid This Month', key: 'vat_paid_this_month' },
+      { header: 'Extra Payment', key: 'extra_payment' }, // ✅ NEW
+      { header: 'Other Arrears Paid', key: 'other_arrears_paid' },
       { header: 'Other Month Rent Paid', key: 'other_rent_paid' },
       { header: 'Other Month Fine Paid', key: 'other_fine_paid' },
       { header: 'Other Month Operation Fee Paid', key: 'other_operation_paid' },
@@ -95,12 +97,15 @@ router.get('/monthly-income', async (req, res) => {
       fine_paid_this_month: 0,
       operation_paid_this_month: 0,
       vat_paid_this_month: 0,
+      other_arrears_paid: 0, // ❌ This is missing in your current snippet
       other_rent_paid: 0,
       other_fine_paid: 0,
       other_operation_paid: 0,
       other_vat_paid: 0,
       total_paid: 0,
       remaining: 0,
+      extra_payment: 0,
+      previous_balance:0, // ✅ Fix: add this line
     };
 
     for (const inv of invoices) {
@@ -109,16 +114,47 @@ router.get('/monthly-income', async (req, res) => {
       const currentIndex = shopInvoices.findIndex(i => i.invoice_id === inv.invoice_id);
       const nextInvoice = shopInvoices[currentIndex + 1];
 
-      const invStartDate = new Date(inv.createdAt);
-      const invEndDate = nextInvoice ? new Date(nextInvoice.createdAt) : null;
-
+      const invStartDate = new Date(inv.createdAt).toISOString();
+      const invEndDate = nextInvoice ? new Date(nextInvoice.createdAt).toISOString() : null;
+      
       const paidForThisInvoice = allPayments
-        .filter(p => p.shop_id === shop_id && new Date(p.payment_date) >= invStartDate && (!invEndDate || new Date(p.payment_date) < invEndDate))
-        .reduce((sum, p) => sum + parseFloat(p.amount_paid), 0);
+        .filter(payment => {
+          const paymentTime = new Date(payment.payment_date).toISOString();
+          return (
+            payment.shop_id === shop_id &&
+            paymentTime >= invStartDate &&
+            (invEndDate === null || paymentTime < invEndDate)
+          );
+        })
+        .reduce((sum, payment) => sum + parseFloat(payment.amount_paid), 0);
+        
+      let prevBalance = parseFloat(inv.previous_balance);
+
 
       let remaining = parseFloat(inv.total_amount) - paidForThisInvoice;
       remaining = Math.max(remaining, 0);
       const shop_balance = balanceByShop[shop_id] || 0;
+      let adjusted_arrears = parseFloat(inv.total_arrears);
+
+
+
+      let other_arrears_paid = 0; // ✅ Declare and initialize
+      let effective_shop_balance = shop_balance; // Clone before potential modification
+
+      if (prevBalance < 0) {
+        prevBalance = Math.abs(prevBalance);
+        adjusted_arrears=+ prevBalance;
+        if (effective_shop_balance > 0) {
+          effective_shop_balance = 0;
+        }
+      
+        let s_balance = Math.abs(effective_shop_balance);
+        other_arrears_paid = Math.max(prevBalance - s_balance, 0);
+
+      }
+      const absPreviousBalance = Math.max(0, parseFloat(inv.previous_balance));  // Take absolute value to ensure it's positive
+      
+      // Add negative shop_balance to total arrears
 
       sheet.addRow({
         shop_id,
@@ -126,10 +162,10 @@ router.get('/monthly-income', async (req, res) => {
         rent_amount: inv.rent_amount,
         operation_fee: inv.operation_fee,
         vat_amount: inv.vat_amount,
-        previous_balance: inv.previous_balance,
+        previous_balance: absPreviousBalance,
         fines: inv.fines,
         previous_fines: inv.previous_fines,
-        total_arrears: inv.total_arrears,
+        total_arrears: adjusted_arrears,
         total_amount: inv.total_amount,
         total_paid: paidForThisInvoice,
         remaining,
@@ -138,6 +174,10 @@ router.get('/monthly-income', async (req, res) => {
         fine_paid_this_month: fineMap[shop_id]?.current || 0,
         operation_paid_this_month: opMap[shop_id]?.current || 0,
         vat_paid_this_month: vatMap[shop_id]?.current || 0,
+        extra_payment: (paidForThisInvoice - inv.total_amount - (fineMap[shop_id]?.current || 0)) > 0
+  ? (paidForThisInvoice - inv.total_amount - (fineMap[shop_id]?.current || 0)).toFixed(2)
+  : 0,
+        other_arrears_paid, // ✅ NEW
         other_rent_paid: rentMap[shop_id]?.other || 0,
         other_fine_paid: fineMap[shop_id]?.other || 0,
         other_operation_paid: opMap[shop_id]?.other || 0,
@@ -149,12 +189,15 @@ router.get('/monthly-income', async (req, res) => {
           ...(vatCross[shop_id] || []),
         ].join(', '),
       });
-
+      totals.previous_balance += absPreviousBalance; // Add to the totals
       totals.shop_balance += shop_balance;
       totals.rent_paid_this_month += rentMap[shop_id]?.current || 0;
       totals.fine_paid_this_month += fineMap[shop_id]?.current || 0;
       totals.operation_paid_this_month += opMap[shop_id]?.current || 0;
       totals.vat_paid_this_month += vatMap[shop_id]?.current || 0;
+      totals.other_arrears_paid += other_arrears_paid;
+      const extraPayment = (paidForThisInvoice - inv.total_amount - (fineMap[shop_id]?.current || 0));
+      totals.extra_payment += extraPayment > 0 ? extraPayment : 0;
       totals.other_rent_paid += rentMap[shop_id]?.other || 0;
       totals.other_fine_paid += fineMap[shop_id]?.other || 0;
       totals.other_operation_paid += opMap[shop_id]?.other || 0;
@@ -172,10 +215,14 @@ router.get('/monthly-income', async (req, res) => {
 
     const totalRow = sheet.addRow({
       shop_id: 'Total',
+      previous_balance: totals.previous_balance,
       rent_paid_this_month: totals.rent_paid_this_month,
       fine_paid_this_month: totals.fine_paid_this_month,
       operation_paid_this_month: totals.operation_paid_this_month,
       vat_paid_this_month: totals.vat_paid_this_month,
+      other_arrears_paid: totals.other_arrears_paid, 
+      extra_payment: totals.extra_payment.toFixed(2),
+// ✅ NEW // ✅ NEW
       other_rent_paid: totals.other_rent_paid,
       other_fine_paid: totals.other_fine_paid,
       other_operation_paid: totals.other_operation_paid,
@@ -209,19 +256,19 @@ router.get('/monthly-income', async (req, res) => {
     const formulaRow = proofStartRow + 1;
     const valueRow = proofStartRow + 2;
     const resultRow = proofStartRow + 3;
-
     sheet.mergeCells(`A${formulaRow}:H${formulaRow}`);
     sheet.getCell(`A${formulaRow}`).value =
-      'Total Paid = Shop Balance + Rent Paid (Current) + Fine Paid (Current) + Operation Fee Paid (Current) + VAT Paid (Current) + Other Rent Paid + Other Fine Paid + Other Operation Paid + Other VAT Paid';
-
+      'Total Paid = Shop Balance + Rent Paid (Current) + Fine Paid (Current) + Operation Fee Paid (Current) + VAT Paid (Current) + Other Rent Paid + Other Fine Paid + Other Operation Paid + Other VAT Paid + Other Arrears Paid';
+    
     sheet.mergeCells(`A${valueRow}:H${valueRow}`);
     sheet.getCell(`A${valueRow}`).value =
-      `Total Paid = ${totals.shop_balance} + ${totals.rent_paid_this_month} + ${totals.fine_paid_this_month} + ${totals.operation_paid_this_month} + ${totals.vat_paid_this_month} + ${totals.other_rent_paid} + ${totals.other_fine_paid} + ${totals.other_operation_paid} + ${totals.other_vat_paid}`;
-
+      `Total Paid = ${totals.shop_balance} + ${totals.rent_paid_this_month} + ${totals.fine_paid_this_month} + ${totals.operation_paid_this_month} + ${totals.vat_paid_this_month} + ${totals.other_rent_paid} + ${totals.other_fine_paid} + ${totals.other_operation_paid} + ${totals.other_vat_paid} + ${totals.other_arrears_paid}`;
+    
     const totalPaidFinal = totals.shop_balance + totals.rent_paid_this_month + totals.fine_paid_this_month +
       totals.operation_paid_this_month + totals.vat_paid_this_month +
-      totals.other_rent_paid + totals.other_fine_paid + totals.other_operation_paid + totals.other_vat_paid;
-
+      totals.other_rent_paid + totals.other_fine_paid + totals.other_operation_paid + totals.other_vat_paid +
+      totals.other_arrears_paid;
+    
     sheet.mergeCells(`A${resultRow}:H${resultRow}`);
     sheet.getCell(`A${resultRow}`).value = `Total Paid = ${totalPaidFinal.toFixed(2)}`;
     sheet.getCell(`A${resultRow}`).font = { bold: true, size: 12 };
