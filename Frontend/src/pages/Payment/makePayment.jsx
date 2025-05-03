@@ -1,18 +1,22 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ import ConfirmWrapper
-import { useAuth } from "../../context/AuthContext"; // ✅ import useAu
+import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/axiosInstance";
+
 const MakePayment = () => {
     const navigate = useNavigate();
-    const { name } = useAuth(); // ✅ Get admin's name from context
+    const { name } = useAuth();
+
     const [paymentData, setPaymentData] = useState({
         referenceId: "",
         amountPaid: "",
         paymentMethod: "Cash",
         type: "shop",
-        paymentDate: "", // ✅ Add paymentDate to state
+        paymentDate: "",
+        paymentTime: "", // ✅ Add paymentTime
     });
+
     const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -26,10 +30,9 @@ const MakePayment = () => {
         setError(null);
         setMessage(null);
 
-        const { referenceId, amountPaid, paymentMethod, type, paymentDate } = paymentData;
+        const { referenceId, amountPaid, paymentMethod, type, paymentDate, paymentTime } = paymentData;
 
-        // Basic validation
-        if (!referenceId.trim() || !amountPaid || !paymentDate) {
+        if (!referenceId.trim() || !amountPaid || !paymentDate || !paymentTime) {
             setError("Please fill all fields before submitting.");
             return;
         }
@@ -40,12 +43,16 @@ const MakePayment = () => {
             ? `api/payments/by-shop/${referenceId.trim()}`
             : `api/payments/by-invoice/${referenceId.trim()}`;
 
+        // ✅ Combine date and time into a single ISO string
+        const combinedDateTime = new Date(`${paymentDate}T${paymentTime}`);
+        const isoPaymentDate = combinedDateTime.toISOString();
+
         try {
             const response = await api.post(endpoint, {
-                amountPaid: parseFloat(amountPaid), 
+                amountPaid: parseFloat(amountPaid),
                 paymentMethod,
-                paymentDate,
-                adminName: name, // ✅ Include admin's name in request // ✅ Add paymentDate to request
+                paymentDate: isoPaymentDate,
+                adminName: name,
             });
 
             setMessage("Payment processed successfully!");
@@ -54,7 +61,8 @@ const MakePayment = () => {
                 amountPaid: "",
                 paymentMethod: "Cash",
                 type: "shop",
-                paymentDate: "", // Reset the payment date after successful submission
+                paymentDate: "",
+                paymentTime: "", // ✅ Reset time too
             });
         } catch (err) {
             setError(err.response?.data?.message || "Failed to process payment. Please try again.");
@@ -67,9 +75,7 @@ const MakePayment = () => {
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">Make a Payment</h2>
-                
-                {/* Display admin's name */}
-                <p className="text-lg mb-4">Admin: {name}</p> {/* ✅ Display admin's name */}
+                <p className="text-lg mb-4">Admin: {name}</p>
 
                 {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
                 {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
@@ -129,7 +135,7 @@ const MakePayment = () => {
                         </select>
                     </div>
 
-                    {/* ✅ Add Payment Date Field */}
+                    {/* ✅ Payment Date Field */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Payment Date</label>
                         <input
@@ -142,7 +148,19 @@ const MakePayment = () => {
                         />
                     </div>
 
-                    {/* ✅ Wrap just the button inside ConfirmWrapper */}
+                    {/* ✅ Payment Time Field */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Payment Time</label>
+                        <input
+                            type="time"
+                            name="paymentTime"
+                            value={paymentData.paymentTime}
+                            onChange={handleChange}
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                            required
+                        />
+                    </div>
+
                     <ConfirmWrapper message="Are you sure you want to process this payment?">
                         <button
                             type="submit"
