@@ -48,9 +48,9 @@ const Contact = () => {
           <p className="text-gray-600 mb-6">{t("contact.subText")}</p>
           <ul className="space-y-4 text-gray-700">
             <li><strong>📍 {t("contact.address")}:</strong> {t("contact.addressDetails")}</li>
-            <li><strong>✉️ {t("contact.email")}:</strong> <a href="mailto:tmb.dec@gmail.com" className="text-blue-600">tmb.dec@gmail.com</a></li>
-            <li><strong>📞 {t("contact.phone1")}:</strong> <a href="tel:0252275171" className="text-blue-600">025-2275171</a></li>
-            <li><strong>📞 {t("contact.phone2")}:</strong> <a href="tel:0252275172" className="text-blue-600">025-2275172</a></li>
+            <li><strong>✉️ {t("contact.email")}:</strong> <a href="mailto:tmb.dec@gmail.com" className="text-blue-600">dambulladec@gmail.com</a></li>
+            <li><strong>📞 {t("contact.phone")}:</strong> <a href="tel:0252275171" className="text-blue-600">066-2285181</a></li>
+
           </ul>
         </div>
 
@@ -114,9 +114,9 @@ const Contact = () => {
           <div>
             <h3 className="font-bold text-lg mb-3">{t("footer.mainCenters")}</h3>
             <ul className="space-y-2">
-              <li>{t("footer.dambulla")} - <span className="text-red-500">0662 286 181</span></li>
-              <li>{t("footer.nuwaraEliya")} - <span className="text-red-500">0522 231 176</span></li>
-              <li>{t("footer.narahenpita")} - <span className="text-red-500">0112 696 742</span></li>
+              <li>{t("footer.thambuththegama")} - <span className="text-red-500">0252 275 171</span></li>
+              <li>{t("footer.nuwaraEliya")} - <span className="text-red-500">0522 223 176</span></li>
+              <li>{t("footer.narahenpita")} - <span className="text-red-500">0112 369 626</span></li>
               <li>{t("footer.welisara")} - <span className="text-red-500">0112 981 896</span></li>
               <li>{t("footer.veyangoda")} - <span className="text-red-500">0332 296 914</span></li>
             </ul>
@@ -126,7 +126,7 @@ const Contact = () => {
             <ul className="space-y-2">
               <li>{t("footer.ratmalana")} - <span className="text-red-500">0112 709 800</span></li>
               <li>{t("footer.meegoda")} - <span className="text-red-500">0112 830 816</span></li>
-              <li>{t("footer.kandeketiya")} - <span className="text-red-500">0714 531 993</span></li>
+              <li>{t("footer.kandeketiya")} - <span className="text-red-500">0717 453 193</span></li>
               <li>{t("footer.kepptipola")} - <span className="text-red-500">0572 280 208</span></li>
             </ul>
           </div>
