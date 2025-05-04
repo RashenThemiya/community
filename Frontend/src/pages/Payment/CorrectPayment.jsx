@@ -8,7 +8,7 @@ const CorrectPayment = () => {
         actual_amount: "",
         admin_put_amount: "",
         edit_reason: "",
-        payment_date: "", // added field
+        payment_date: "",
     });
 
     const [searchDate, setSearchDate] = useState("");
@@ -18,7 +18,8 @@ const CorrectPayment = () => {
     const [success, setSuccess] = useState(null);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     const fetchPayments = async () => {
@@ -36,12 +37,13 @@ const CorrectPayment = () => {
                 },
             });
 
-            if (response.data.success) {
+            if (response.data.success && response.data.data?.length > 0) {
                 setPayments(response.data.data);
             } else {
                 setError("No payments found.");
             }
         } catch (err) {
+            console.error(err);
             setError("Error fetching payments.");
         }
     };
@@ -49,11 +51,11 @@ const CorrectPayment = () => {
     const handlePaymentClick = (payment) => {
         setFormData({
             invoice_id: payment.invoice_id || "",
-            shop_id: payment.shop_id,
+            shop_id: payment.shop_id || "",
             actual_amount: "",
-            admin_put_amount: payment.amount_paid.toString(),
+            admin_put_amount: payment.amount_paid?.toString() || "",
             edit_reason: "",
-            payment_date: payment.payment_date?.split("T")[0] || "", // manually editable
+            payment_date: payment.payment_date?.split("T")[0] || "",
         });
         setSearchDate(payment.payment_date?.split("T")[0] || "");
     };
@@ -65,17 +67,9 @@ const CorrectPayment = () => {
         setSuccess(null);
 
         const { invoice_id, shop_id, actual_amount, admin_put_amount, edit_reason, payment_date } = formData;
-        console.log("Submit Payload Check:", {
-            invoice_id,
-            shop_id,
-            actual_amount,
-            admin_put_amount,
-            edit_reason,
-            payment_date,
-        });
-        
+
         if (!shop_id || !actual_amount || !admin_put_amount || !payment_date) {
-            setError("Shop ID, Actual Amount, Admin Input Amount, and Payment Date are required.");
+            setError("All required fields must be filled.");
             setLoading(false);
             return;
         }
@@ -88,14 +82,14 @@ const CorrectPayment = () => {
             payment_date,
         };
 
-        if (invoice_id.trim() !== "") {
+        if (invoice_id?.trim()) {
             payload.invoice_id = invoice_id;
         }
 
         try {
             const token = localStorage.getItem("token");
             const response = await api.post(
-                "api/paymentscorrection/correct-payment/",
+                "/api/paymentscorrection/correct-payment/",
                 payload,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -108,14 +102,14 @@ const CorrectPayment = () => {
                     actual_amount: "",
                     admin_put_amount: "",
                     edit_reason: "",
-                    payment_date: "",
+                    payment_date,
                 });
-                fetchPayments(); // Refresh payment list after correction
+                fetchPayments();
             } else {
                 setError(response.data.message || "Payment correction failed.");
             }
         } catch (err) {
-            setError(err.response?.data?.message || "An error occurred.");
+            setError(err.response?.data?.message || "An unexpected error occurred.");
         } finally {
             setLoading(false);
         }
@@ -131,18 +125,28 @@ const CorrectPayment = () => {
         }
     }, [error, success]);
 
+    const isSearchDisabled = !formData.shop_id || !searchDate;
+
     return (
         <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-3xl">
                 <h2 className="text-2xl font-bold mb-4 text-center">Correct Payment</h2>
 
-                {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>}
-                {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+                {success && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                        {success}
+                    </div>
+                )}
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {error}
+                    </div>
+                )}
 
-                {/* Search Payments */}
+                {/* Search Section */}
                 <div className="mb-4 space-y-2">
-                    <h3 className="text-lg font-semibold">Find Payments</h3>
-                    <input
+                <h3 className="text-lg font-semibold">Find Payments (Optional)</h3>
+                <input
                         type="text"
                         placeholder="Shop ID *"
                         value={formData.shop_id}
@@ -157,26 +161,27 @@ const CorrectPayment = () => {
                     />
                     <button
                         onClick={fetchPayments}
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+                        disabled={isSearchDisabled}
+                        className={`w-full py-2 rounded ${isSearchDisabled ? "bg-gray-300 cursor-not-allowed text-gray-600" : "bg-blue-500 hover:bg-blue-600 text-white"}`}
                     >
                         Search Payments
                     </button>
                 </div>
 
-                {/* Payment List */}
+                {/* List of Payments */}
                 {payments.length > 0 && (
                     <div className="mb-6">
                         <h4 className="font-semibold mb-2">Payments on {searchDate}:</h4>
                         <ul className="space-y-2 max-h-60 overflow-y-auto border p-2 rounded">
                             {payments.map((pmt) => (
                                 <li
-                                    key={pmt.payment_id}
+                                    key={pmt.payment_id || pmt.invoice_id || Math.random()}
                                     className="p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200"
                                     onClick={() => handlePaymentClick(pmt)}
                                 >
-                                    <strong>Invoice:</strong> {pmt.invoice_id || "N/A"} |
-                                    <strong> Amount:</strong> {pmt.amount_paid} |
-                                    <strong> Method:</strong> {pmt.payment_method}
+                                    <strong>Invoice:</strong> {pmt.invoice_id || "N/A"} |{" "}
+                                    <strong>Amount:</strong> {pmt.amount_paid} |{" "}
+                                    <strong>Method:</strong> {pmt.payment_method}
                                 </li>
                             ))}
                         </ul>
@@ -214,7 +219,6 @@ const CorrectPayment = () => {
                     <input
                         type="date"
                         name="payment_date"
-                        placeholder="Payment Date *"
                         value={formData.payment_date}
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
@@ -230,7 +234,7 @@ const CorrectPayment = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full py-2 rounded ${loading ? "bg-gray-400" : "bg-green-500 hover:bg-green-600 text-white"}`}
+                        className={`w-full py-2 rounded ${loading ? "bg-gray-400 text-white" : "bg-green-500 hover:bg-green-600 text-white"}`}
                     >
                         {loading ? "Processing..." : "Submit Correction"}
                     </button>
