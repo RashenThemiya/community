@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
-import { toast } from "react-hot-toast"; // ✅ Toast
 
-const ITEMS_PER_PAGE = 10; // ✅ Pagination: 10 tenants per page
+const ITEMS_PER_PAGE = 10;
 
 const ViewTenants = () => {
     const navigate = useNavigate();
@@ -12,6 +11,8 @@ const ViewTenants = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [confirmDeleteTenantId, setConfirmDeleteTenantId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
@@ -28,17 +29,26 @@ const ViewTenants = () => {
         fetchTenants();
     }, []);
 
-    const handleEditTenant = (tenantId) => {
-        navigate(`/edit-tenant/${tenantId}`);
-    };
+    useEffect(() => {
+        if (successMessage || error) {
+            const timer = setTimeout(() => {
+                setSuccessMessage(null);
+                setError(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, error]);
 
     const handleDeleteTenant = async (tenantId) => {
         try {
             await api.delete(`/api/tenants/${tenantId}`);
-            setTenants(prev => prev.filter((tenant) => tenant.tenant_id !== tenantId));
-            toast.success("Tenant deleted successfully!");
+            const deleted = tenants.find(t => t.tenant_id === tenantId);
+            setTenants(prev => prev.filter((t) => t.tenant_id !== tenantId));
+            setSuccessMessage(`✅ Tenant "${deleted?.name}" with ID "${deleted?.tenant_id}" deleted successfully!`);
         } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to delete tenant.");
+            setError(err.response?.data?.message || "Failed to delete tenant.");
+        } finally {
+            setConfirmDeleteTenantId(null);
         }
     };
 
@@ -58,27 +68,35 @@ const ViewTenants = () => {
             <div className="bg-white shadow-lg rounded-lg w-full max-w-6xl p-8">
                 <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">View All Tenants</h2>
 
-                <div className="mb-6">
-                    <input
-                        type="text"
-                        placeholder="Search by ID, Name, Contact, Email or Shop ID"
-                        value={searchQuery}
-                        onChange={(e) => {
-                            setSearchQuery(e.target.value);
-                            setCurrentPage(1); // Reset page to 1 on search
-                        }}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-700"
-                    />
-                </div>
+                <input
+                    type="text"
+                    placeholder="Search by ID, Name, Contact, Email or Shop ID"
+                    value={searchQuery}
+                    onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="w-full mb-6 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-700"
+                />
+
+                {/* Success Message */}
+                {successMessage && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-center">
+                        {successMessage}
+                    </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-center">
+                        ❌ {error}
+                    </div>
+                )}
 
                 {loading ? (
                     <div className="text-center text-gray-500">Loading...</div>
-                ) : error ? (
-                    <div className="text-center text-red-600">{error}</div>
                 ) : filteredTenants.length === 0 ? (
-                    <div className="text-center text-gray-500 py-10">
-                        No tenants found.
-                    </div>
+                    <div className="text-center text-gray-500 py-10">No tenants found.</div>
                 ) : (
                     <div className="overflow-x-auto rounded-lg">
                         <table className="min-w-full">
@@ -107,16 +125,16 @@ const ViewTenants = () => {
                                         </td>
                                         <td className="px-6 py-4 text-sm flex flex-wrap gap-2">
                                             <button
-                                                onClick={() => handleEditTenant(tenant.tenant_id)}
+                                                onClick={() => navigate(`/edit-tenant/${tenant.tenant_id}`)}
                                                 className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md text-sm"
                                             >
                                                 Edit
                                             </button>
-
-                                            <ConfirmWrapper onConfirm={() => handleDeleteTenant(tenant.tenant_id)}>
-                                                <button
-                                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
-                                                >
+                                            <ConfirmWrapper
+                                                message={`Are you sure you want to permanently delete tenant "${tenant.name}" with ID "${tenant.tenant_id}"?`}
+                                                onConfirm={() => handleDeleteTenant(tenant.tenant_id)}
+                                            >
+                                                <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm">
                                                     Delete
                                                 </button>
                                             </ConfirmWrapper>
@@ -150,7 +168,7 @@ const ViewTenants = () => {
                 )}
             </div>
 
-            {/* Floating "Back to Management" button */}
+            {/* Back Button */}
             <button
                 onClick={() => navigate("/tenant-management")}
                 className="fixed bottom-8 right-8 bg-gray-800 text-white py-3 px-6 rounded-full shadow-lg hover:bg-gray-900 transition duration-200"
@@ -161,7 +179,6 @@ const ViewTenants = () => {
     );
 };
 
-// Helper function to highlight search text
 function highlight(text, query) {
     if (!query) return text;
     const parts = text.split(new RegExp(`(${query})`, "gi"));

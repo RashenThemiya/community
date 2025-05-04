@@ -121,10 +121,12 @@ export const printInvoices = async (invoices) => {
 </div>
 
     <div >
+
       පසුගිය මස ගෙවූ මුදල : <br/>
       <span>LKR ${parseFloat(
         invoice.previous_payment_summary?.total_paid || 0
       ).toFixed(2)}</span>
+
     </div>
   
   </div>
