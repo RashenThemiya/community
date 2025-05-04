@@ -3,7 +3,7 @@ const axios = require('axios');
 
 const data = JSON.parse(fs.readFileSync('./test/payments_data.json')); // adjust path if needed
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjoyLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ2MjQ4MDE1LCJleHAiOjE3NDYyNTUyMTV9.t8dOGk0a_V1snm9ckAKgKaXDb73K-RVHoQyFlMF-jOs'; // Replace with actual token if needed
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjoyLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzQ2MzUzNjk4LCJleHAiOjE3NDYzNjA4OTh9.ZpLnI3oBOD0f9TWkF82m2U2JgD0oKxCiL6euo0Dczsc'; // Replace with actual token if needed
 const baseUrl = 'http://3.108.254.92:5000/api/payments'; // Replace with actual base URL
 
 const processPayments = async () => {

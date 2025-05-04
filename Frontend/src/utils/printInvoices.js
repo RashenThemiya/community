@@ -77,11 +77,11 @@ export const printInvoices = async (invoices) => {
  </td><td style="text-align: right;">LKR ${
                   invoice.vat_amount
                 }</td></tr>
-                <tr><td>Previous Balance / පසුගිය මස අගය
+                <tr><td>Current Shops Balance / වත්මන් සාප්පු ශේෂය
 </td><td style="text-align: right;">LKR ${
                   invoice.previous_balance
                 }</td></tr>
-                <tr><td>Fines / දඩ</td><td style="text-align: right;">LKR ${
+                <tr><td>Fines / සියලු දඩ</td><td style="text-align: right;">LKR ${
                   invoice.fines
                 }</td></tr>
                 <tr><td>Total Arrears / හිඟ බදු කුලිය
@@ -97,10 +97,10 @@ export const printInvoices = async (invoices) => {
 
 
 <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 15%;">
-  <h3 style="text-align: center; margin-bottom: 8px;">Previous Payment Details</h3>
+  <h3 style="text-align: center; margin-bottom: 8px;">Previous Invoice Details</h3>
   <div style=" font-size: 10px;">
     <div >
-      <strong>Previous Payment Date</strong><br/>
+      <strong>Last Payment Date</strong><br/>
       <span>
         ${invoice.previous_payment_summary?.last_payment_date
           ? new Date(invoice.previous_payment_summary.last_payment_date).toLocaleDateString()
@@ -108,12 +108,16 @@ export const printInvoices = async (invoices) => {
       </span>
     </div>
     <div >
-      <strong>Previous Paid Amount</strong><br/>
+      <strong>Paid Amount</strong><br/>
       <span>LKR ${parseFloat(invoice.previous_payment_summary?.total_paid || 0).toFixed(2)}</span>
     </div>
     <div >
-      <strong>Previous Balance</strong><br/>
+      <strong>Total Ammount</strong><br/>
       <span>LKR ${typeof invoice.previous_balance === 'number' ? invoice.previous_balance.toFixed(2) : '0.00'}</span>
+    </div>
+        <div >
+      <strong>Fine Ammount</strong><br/>
+      <span>LKR ${typeof invoice.previous_fines === 'number' ? invoice.previous_balance.toFixed(2) : '0.00'}</span>
     </div>
   </div>
 </div>
