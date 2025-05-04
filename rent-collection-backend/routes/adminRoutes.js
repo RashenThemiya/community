@@ -37,6 +37,27 @@ router.post("/register", authenticateUser, authorizeRole(["superadmin", "admin"]
     
   }
 });
+/**
+ * 🔐 Verify Admin Credentials (Re-authentication for sensitive actions)
+ * Route: POST /api/admin/verify
+ * Access: Logged-in Admins (or can be public if not requiring token)
+ */
+router.post("/verify", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const admin = await Admin.findOne({ where: { email } });
+    if (!admin) return res.status(401).json({ message: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+    res.status(200).json({ message: "Verification successful" });
+  } catch (err) {
+    console.error("Credential Verification Error:", err);
+    res.status(500).json({ message: "Error verifying credentials", error: err.message });
+  }
+});
 
 /**
  * 🔑 Admin Login
