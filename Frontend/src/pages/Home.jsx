@@ -10,10 +10,10 @@ import "slick-carousel/slick/slick.css";
 
 const Home = () => {
     const { t } = useTranslation();
-    const [clicked, setClicked] = useState(null);
+    const [clickedIndex, setClickedIndex] = useState(null);
 
-    const handleClick = (index) => {
-        setClicked(index);
+    const handleIconClick = (index) => {
+        setClickedIndex(index);
     };
 
     return (
@@ -45,7 +45,7 @@ const Home = () => {
             {/* Feature Section with 3D Pop and Click Highlight */}
             <div className="bg-green-50 py-10">
                 <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                    {[ 
+                    {[
                         { icon: "👨‍🌾", value: "10,000+", label: "Farmers" },
                         { icon: "🚗", value: "1,500+", label: "Vehicle Parking" },
                         { icon: "🥦", value: "2,500+", label: "Tons of Vegetables" },
@@ -53,18 +53,19 @@ const Home = () => {
                     ].map((item, index) => (
                         <div
                             key={index}
-                            onClick={() => handleClick(index)}  // Handle click
-                            className={`bg-white p-6 rounded-xl shadow-lg transform transition duration-300 hover:scale-105 active:scale-95 active:ring-4 active:ring-green-400 border border-gray-200 ${
-                                clicked === index ? "bg-lightgreen-500" : ""
-                            }`} // Apply light green on click
+                            onClick={() => handleIconClick(index)}
+                            className={`cursor-pointer p-6 rounded-xl transform transition duration-300 hover:scale-105 active:scale-95 border border-gray-200 ${
+                                clickedIndex === index ? "bg-green-100" : "bg-white"
+                            }`}
                             style={{
-                                perspective: "1000px",
                                 boxShadow: "0 10px 20px rgba(0,0,0,0.1)",
-                                backgroundColor: clicked === index ? "#d4edda" : "", // Light green when clicked
+                                perspective: "1000px",
                             }}
                         >
                             <div
-                                className={`text-4xl mb-2 transition-all duration-300 ${clicked === index ? "text-green-600" : ""}`} // Change icon color on click
+                                className={`text-4xl mb-2 transition-all duration-300 ${
+                                    clickedIndex === index ? "text-green-700" : ""
+                                }`}
                                 style={{ transform: "translateZ(10px)" }}
                             >
                                 {item.icon}
@@ -73,6 +74,31 @@ const Home = () => {
                             <p className="text-sm text-gray-700">{item.label}</p>
                         </div>
                     ))}
+                </div>
+            </div>
+
+            {/* Our Objectives Section */}
+            <div className="py-16 bg-white">
+                <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    {/* Left Side Image */}
+                    <div>
+                        <img
+                            src="/images/farmer1.jpg"
+                            alt="Farmer Working"
+                            className="w-full h-auto rounded-3xl"
+                        />
+                    </div>
+
+                    {/* Right Side Objectives */}
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-green-800 mb-4">Our Objectives</h2>
+                        <ul className="space-y-4 list-disc list-inside text-lg text-gray-700">
+                            <li>Vegetable prices being decided.</li>
+                            <li>Produce high quality vegetables</li>
+                            <li>Establishment of small scale industries.</li>
+                            <li>Avoid price haggling.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
