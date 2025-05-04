@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/axiosInstance";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const MakePayment = () => {
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ const MakePayment = () => {
         const { referenceId, amountPaid, paymentMethod, type, paymentDate, paymentTime } = paymentData;
 
         if (!referenceId.trim() || !amountPaid || !paymentDate || !paymentTime) {
-            setError("Please fill all fields before submitting.");
+            setError("All fields are required. Please complete the form.");
             return;
         }
 
@@ -55,7 +56,7 @@ const MakePayment = () => {
                 adminName: name,
             });
 
-            setMessage("✅ Payment processed successfully!");
+            setMessage("Payment processed successfully!");
             setPaymentData({
                 referenceId: "",
                 amountPaid: "",
@@ -65,7 +66,7 @@ const MakePayment = () => {
                 paymentTime: "",
             });
         } catch (err) {
-            setError(err.response?.data?.message || "❌ Failed to process payment. Please try again.");
+            setError(err.response?.data?.message || "Failed to process payment. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -76,7 +77,7 @@ const MakePayment = () => {
             const timer = setTimeout(() => {
                 setMessage(null);
                 setError(null);
-            }, 3000);
+            }, 4000);
             return () => clearTimeout(timer);
         }
     }, [message, error]);
@@ -90,9 +91,7 @@ const MakePayment = () => {
                 {/* Success Message */}
                 {message && (
                     <div className="flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4" role="alert">
-                        <svg className="w-5 h-5 mr-2 fill-current" viewBox="0 0 20 20">
-                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4l-3-3 1.4-1.4L9 11.2l4.6-4.6L15 8l-6 6z" />
-                        </svg>
+                        <FaCheckCircle className="mr-2 text-green-600 text-xl" />
                         <span className="font-medium">{message}</span>
                     </div>
                 )}
@@ -100,9 +99,7 @@ const MakePayment = () => {
                 {/* Error Message */}
                 {error && (
                     <div className="flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert">
-                        <svg className="w-5 h-5 mr-2 fill-current" viewBox="0 0 20 20">
-                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13H9v6h2V5zm0 8H9v2h2v-2z" />
-                        </svg>
+                        <FaTimesCircle className="mr-2 text-red-600 text-xl" />
                         <span className="font-medium">{error}</span>
                     </div>
                 )}
@@ -186,10 +183,10 @@ const MakePayment = () => {
                         />
                     </div>
 
-                    <ConfirmWrapper message="Are you sure you want to process this payment?">
+                    <ConfirmWrapper message="Confirm to process this payment. Once submitted, it cannot be changed.">
                         <button
                             type="submit"
-                            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
+                            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
                             disabled={loading}
                         >
                             {loading ? "Processing..." : "Process Payment"}
@@ -199,7 +196,7 @@ const MakePayment = () => {
 
                 <button
                     onClick={() => navigate(-1)}
-                    className="w-full mt-2 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+                    className="w-full mt-3 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition duration-300"
                 >
                     Back
                 </button>
