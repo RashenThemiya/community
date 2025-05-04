@@ -9,31 +9,93 @@ const router = express.Router();
 // Get all invoices with shop details and tenant (owner) information
 
 // Get all invoices with shop details and tenant information
+const { Op } = require('sequelize');
+const Payment = require('../models/Payment');
 router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
     try {
         const invoices = await Invoice.findAll({
             include: [
                 {
                     model: Shop,
-                    attributes: ['shop_name','location'],
+                    attributes: ['shop_name', 'location'],
                     include: [
                         {
                             model: Tenant,
-                            attributes: ['name', 'contact'] // Fetch tenant details via Shop
+                            attributes: ['name', 'contact']
                         }
                     ]
                 }
-            ]
+            ],
+            order: [['shop_id', 'ASC'], ['month_year', 'ASC']]
         });
 
-        res.status(200).json(invoices);
+        const enrichedInvoices = [];
+
+        for (let i = 0; i < invoices.length; i++) {
+            const currentInvoice = invoices[i];
+            const currentMonth = currentInvoice.month_year;
+
+            // 🔁 Find the previous invoice for this shop
+            const previousInvoice = [...invoices]
+                .reverse()
+                .find(inv =>
+                    inv.shop_id === currentInvoice.shop_id &&
+                    inv.month_year < currentMonth
+                );
+
+            const startDate = previousInvoice ? previousInvoice.month_year : new Date(0);
+            const endDate = currentMonth;
+
+            // 🔹 Payments in previous period
+            const previousPayments = await Payment.findAll({
+                where: {
+                    shop_id: currentInvoice.shop_id,
+                    payment_date: {
+                        [Op.gte]: startDate,
+                        [Op.lt]: endDate
+                    }
+                }
+            });
+
+            const previousTotalPaid = previousPayments.reduce((sum, p) => sum + parseFloat(p.amount_paid), 0);
+            const lastPreviousPaymentDate = previousPayments.length > 0
+                ? new Date(Math.max(...previousPayments.map(p => new Date(p.payment_date))))
+                : null;
+
+            // 🔹 Payments for the current invoice month
+            const currentPayments = await Payment.findAll({
+                where: {
+                    shop_id: currentInvoice.shop_id,
+                    payment_date: {
+                        [Op.gte]: currentMonth,
+                        [Op.lt]: new Date(new Date(currentMonth).setMonth(new Date(currentMonth).getMonth() + 1)) // end of current month
+                    }
+                }
+            });
+
+            const currentTotalPaid = currentPayments.reduce((sum, p) => sum + parseFloat(p.amount_paid), 0);
+
+            // 📦 Enrich the invoice
+            const invoiceData = {
+                ...currentInvoice.toJSON(),
+                previous_payment_summary: {
+                    total_paid: previousTotalPaid,
+                    last_payment_date: lastPreviousPaymentDate
+                },
+                
+                total_paid: currentTotalPaid , // 🟢 This is what your frontend needs
+                previous_invoice_total_amount: previousInvoice ? previousInvoice.total_amount : null  // 🟢 Add this
+            };
+
+            enrichedInvoices.push(invoiceData);
+        }
+
+        res.status(200).json(enrichedInvoices);
     } catch (error) {
+        console.error('Error fetching enriched invoices:', error);
         res.status(500).json({ message: 'Error fetching invoices', error: error.message });
     }
 });
-
-
-
 
 
 // Get invoice by ID (Admin & Superadmin)

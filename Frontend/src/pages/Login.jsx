@@ -36,7 +36,7 @@ const Login = () => {
             setName(name);
 
             // Redirect based on role
-            navigate(role === "admin" ? "/admin-dashboard" : "/manager-dashboard");
+            navigate("/admin-dashboard");
         } catch (error) {
             setError(error.response?.data?.message || "Login failed. Please try again.");
         } finally {

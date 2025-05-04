@@ -224,7 +224,7 @@ const AdminDashboard = () => {
               Invoice Status
             </h2>
             <div className="bg-white p-6 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              <PieChart width={300} height={300}>
+              <PieChart width={400} height={400} margin={{ left: 10 }}>
                 <Pie
                   data={invoiceData}
                   cx="50%"
