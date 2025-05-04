@@ -15,7 +15,7 @@ async function generateInvoicesForAllShops() {
 
         for (const shop of shops) {
             const shop_id = shop.shop_id;
-            const month_year = "2025-04"; // Change to the desired month
+            const month_year = "2025-06"; // Change to the desired month
 
             
             try {

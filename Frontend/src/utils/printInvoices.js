@@ -113,8 +113,9 @@ export const printInvoices = async (invoices) => {
     </div>
     <div >
       <strong>Total Ammount</strong><br/>
-      <span>LKR ${typeof invoice.previous_balance === 'number' ? invoice.previous_balance.toFixed(2) : '0.00'}</span>
+<span>LKR ${invoice.previous_invoice_total_amount ? parseFloat(invoice.previous_invoice_total_amount).toFixed(2) : '0.00'}</span>
     </div>
+    
         <div >
       <strong>Fine Ammount</strong><br/>
       <span>LKR ${typeof invoice.previous_fines === 'number' ? invoice.previous_balance.toFixed(2) : '0.00'}</span>
