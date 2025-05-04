@@ -111,8 +111,7 @@ async function processPayment(shopId, amountPaid, paymentMethod, paymentDate = n
 
 // Process individual invoice components (rent, VAT, etc.)
 async function processInvoicePayments(invoice, remainingBalance, t, paymentTimestamp) {
-    let allPaid = true;
-    let hasUnpaidOrPartial = false;
+  
 
     for (const model of [Rent, OperationFee, Vat, Fine]) {
         const records = await model.findAll({
@@ -149,12 +148,48 @@ async function processInvoicePayments(invoice, remainingBalance, t, paymentTimes
         }
     }
 
-    // Final invoice status update
-    if (allPaid && !hasUnpaidOrPartial) {
-        invoice.status = 'Paid';
-    } else if (hasUnpaidOrPartial) {
-        invoice.status = 'Partially Paid';
+let totalComponents = 0;
+let paidComponents = 0;
+let unpaidComponents = 0;
+let partiallyPaidComponents = 0;
+let arrestComponents = 0;
+
+for (const model of [Rent, OperationFee, Vat, Fine]) {
+    const components = await model.findAll({
+        where: { invoice_id: invoice.invoice_id },
+        transaction: t
+    });
+
+    for (const component of components) {
+        totalComponents++;
+
+        switch (component.status) {
+            case 'Paid':
+                paidComponents++;
+                break;
+            case 'Partially Paid':
+                partiallyPaidComponents++;
+                break;
+            case 'Unpaid':
+                unpaidComponents++;
+                break;
+            case 'Arrest':
+                arrestComponents++;
+                break;
+        }
     }
+}
+
+// 👇 Determine invoice status
+if (paidComponents === totalComponents) {
+    invoice.status = 'Paid';
+} else if (arrestComponents === totalComponents) {
+    invoice.status = 'Arrest';
+} else if (unpaidComponents + arrestComponents === totalComponents) {
+    invoice.status = 'Unpaid';
+} else {
+    invoice.status = 'Partially Paid';
+}
 
     await invoice.save({ transaction: t });
     return remainingBalance;

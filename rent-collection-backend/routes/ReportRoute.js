@@ -105,7 +105,15 @@ router.get('/monthly-income', async (req, res) => {
       total_paid: 0,
       remaining: 0,
       extra_payment: 0,
-      previous_balance:0, // ✅ Fix: add this line
+      previous_balance:0,
+      rent_amount:0,
+      operation_fee:0,
+      vat:0,
+      total_arrears:0,
+      total_amount:0,
+      fines:0,
+      previous_fines:0,
+       // ✅ Fix: add this line
     };
 
     for (const inv of invoices) {
@@ -113,21 +121,34 @@ router.get('/monthly-income', async (req, res) => {
       const shopInvoices = invoiceMapByShop[shop_id] || [];
       const currentIndex = shopInvoices.findIndex(i => i.invoice_id === inv.invoice_id);
       const nextInvoice = shopInvoices[currentIndex + 1];
-
-      const invStartDate = new Date(inv.createdAt).toISOString();
-      const invEndDate = nextInvoice ? new Date(nextInvoice.createdAt).toISOString() : null;
+      const invStart = new Date(inv.createdAt).getTime();
+      const invEnd = nextInvoice ? new Date(nextInvoice.createdAt).getTime() : Date.now();
       
+      // Normalize both shop_ids to lower case for comparison
       const paidForThisInvoice = allPayments
         .filter(payment => {
-          const paymentTime = new Date(payment.payment_date).toISOString();
-          return (
-            payment.shop_id === shop_id &&
-            paymentTime >= invStartDate &&
-            (invEndDate === null || paymentTime < invEndDate)
-          );
+          const paymentDate = new Date(payment.payment_date);
+          const paymentTime = paymentDate.getTime();
+      
+          // Check if payment is in the selected month and year
+          const isSameMonth =
+            paymentDate.getFullYear() === selectedYear &&
+            paymentDate.getMonth() + 1 === selectedMonth;
+      
+          // Normalize both shop_ids to lower case for comparison
+          const isSameShop = payment.shop_id.toLowerCase() === shop_id.toLowerCase();
+      
+          // Check if payment is within the invoice date range
+          const isInInvoiceRange = paymentTime >= invStart && paymentTime < invEnd;
+      
+          // Return the filter criteria
+          return isSameMonth && isSameShop && isInInvoiceRange;
         })
-        .reduce((sum, payment) => sum + parseFloat(payment.amount_paid), 0);
-        
+        .reduce((sum, payment) => sum + parseFloat(payment.amount_paid || 0), 0);
+      
+      console.log("Paid for this invoice:", paidForThisInvoice);
+      
+      
       let prevBalance = parseFloat(inv.previous_balance);
 
 
@@ -204,6 +225,13 @@ router.get('/monthly-income', async (req, res) => {
       totals.other_vat_paid += vatMap[shop_id]?.other || 0;
       totals.total_paid += paidForThisInvoice;
       totals.remaining += remaining;
+      totals.rent_amount += parseFloat(inv.rent_amount);
+      totals.operation_fee += parseFloat(inv.operation_fee);
+      totals.vat += parseFloat(inv.vat_amount);
+      totals.total_arrears += adjusted_arrears;
+      totals.total_amount += parseFloat(inv.total_amount);
+      totals.fines += parseFloat(inv.fines);
+      totals.previous_fines += parseFloat(inv.previous_fines);
     }
 
     sheet.getRow(1).eachCell(cell => {
@@ -220,7 +248,7 @@ router.get('/monthly-income', async (req, res) => {
       fine_paid_this_month: totals.fine_paid_this_month,
       operation_paid_this_month: totals.operation_paid_this_month,
       vat_paid_this_month: totals.vat_paid_this_month,
-      other_arrears_paid: totals.other_arrears_paid, 
+      other_arrears_paid: totals.other_arrears_paid || 0,
       extra_payment: totals.extra_payment.toFixed(2),
 // ✅ NEW // ✅ NEW
       other_rent_paid: totals.other_rent_paid,
@@ -230,6 +258,13 @@ router.get('/monthly-income', async (req, res) => {
       shop_balance: totals.shop_balance,
       total_paid: totals.total_paid,
       remaining: totals.remaining,
+      rent_amount: totals.rent_amount,
+      operation_fee: totals.operation_fee,
+      vat_amount: totals.vat,
+      total_arrears: totals.total_arrears,
+      total_amount: totals.total_amount,
+      fines: totals.fines,
+      previous_fines: totals.previous_fines,
     });
 
     totalRow.eachCell(cell => {
@@ -256,18 +291,24 @@ router.get('/monthly-income', async (req, res) => {
     const formulaRow = proofStartRow + 1;
     const valueRow = proofStartRow + 2;
     const resultRow = proofStartRow + 3;
-    sheet.mergeCells(`A${formulaRow}:H${formulaRow}`);
     sheet.getCell(`A${formulaRow}`).value =
-      'Total Paid = Shop Balance + Rent Paid (Current) + Fine Paid (Current) + Operation Fee Paid (Current) + VAT Paid (Current) + Other Rent Paid + Other Fine Paid + Other Operation Paid + Other VAT Paid + Other Arrears Paid';
-    
-    sheet.mergeCells(`A${valueRow}:H${valueRow}`);
+    'Total Paid = Rent Paid (Current) + Fine Paid (Current) + Operation Fee Paid (Current) + VAT Paid (Current) + Other Rent Paid + Other Fine Paid + Other Operation Paid + Other VAT Paid + Other Arrears Paid + Extra Payment - previous balance';
+
     sheet.getCell(`A${valueRow}`).value =
-      `Total Paid = ${totals.shop_balance} + ${totals.rent_paid_this_month} + ${totals.fine_paid_this_month} + ${totals.operation_paid_this_month} + ${totals.vat_paid_this_month} + ${totals.other_rent_paid} + ${totals.other_fine_paid} + ${totals.other_operation_paid} + ${totals.other_vat_paid} + ${totals.other_arrears_paid}`;
-    
-    const totalPaidFinal = totals.shop_balance + totals.rent_paid_this_month + totals.fine_paid_this_month +
-      totals.operation_paid_this_month + totals.vat_paid_this_month +
-      totals.other_rent_paid + totals.other_fine_paid + totals.other_operation_paid + totals.other_vat_paid +
-      totals.other_arrears_paid;
+    `Total Paid = ${totals.rent_paid_this_month.toFixed(2)} + ${totals.fine_paid_this_month.toFixed(2)} + ${totals.operation_paid_this_month.toFixed(2)} + ${totals.vat_paid_this_month.toFixed(2)} + ${totals.other_rent_paid.toFixed(2)} + ${totals.other_fine_paid.toFixed(2)} + ${totals.other_operation_paid.toFixed(2)} + ${totals.other_vat_paid.toFixed(2)} + ${totals.other_arrears_paid.toFixed(2)} + ${totals.extra_payment.toFixed(2)} - ${totals.previous_balance.toFixed(2)}`;
+  
+  const totalPaidFinal = 
+  totals.rent_paid_this_month +
+  totals.fine_paid_this_month +
+  totals.operation_paid_this_month +
+  totals.vat_paid_this_month +
+  totals.other_rent_paid +
+  totals.other_fine_paid +
+  totals.other_operation_paid +
+  totals.other_vat_paid +
+  totals.other_arrears_paid +
+  totals.extra_payment - totals.previous_balance;
+
     
     sheet.mergeCells(`A${resultRow}:H${resultRow}`);
     sheet.getCell(`A${resultRow}`).value = `Total Paid = ${totalPaidFinal.toFixed(2)}`;
