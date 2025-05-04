@@ -4,10 +4,10 @@ import React from 'react';
 
 const Footer = () => {
     return (
-        <footer className="bg-blue-950 text-white py-10">
+        <footer className="bg-green-700 text-white py-10">
             <div className="container mx-auto px-4">
                 {/* Main Footer Content */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-gray-300">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-lime-100">
                     {/* Office Details */}
                     <div>
                         <h4 className="text-lg font-semibold text-white mb-2">Office Details</h4>
@@ -46,7 +46,7 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Copyright */}
-                <div className="mt-8 border-t border-gray-700 pt-4 text-center text-gray-400 text-sm">
+                <div className="mt-8 border-t border-lime-200 pt-4 text-center text-lime-100 text-sm">
                     &copy; {new Date().getFullYear()} Dambulla Economic Center. All rights reserved.
                 </div>
             </div>
