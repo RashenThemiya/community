@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper";
 
 const AdminPanel = () => {
   const token = localStorage.getItem("token");
@@ -21,7 +22,6 @@ const AdminPanel = () => {
 
   const headers = { Authorization: `Bearer ${token}` };
 
-  // Decode token to get role
   useEffect(() => {
     if (token) {
       try {
@@ -137,15 +137,16 @@ const AdminPanel = () => {
               <option value="manager">Manager</option>
             </select>
           </div>
-          <button
-            onClick={handleRegister}
-            className={`mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-          >
-            {loading ? "Registering..." : "Register Admin"}
-          </button>
+          <ConfirmWrapper onConfirm={handleRegister}>
+            <button
+              className={`mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={loading}
+            >
+              {loading ? "Registering..." : "Register Admin"}
+            </button>
+          </ConfirmWrapper>
         </div>
 
         {/* ✅ Change Password */}
@@ -171,15 +172,16 @@ const AdminPanel = () => {
               }
             />
           </div>
-          <button
-            onClick={handlePasswordChange}
-            className={`mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-          >
-            {loading ? "Changing..." : "Change Password"}
-          </button>
+          <ConfirmWrapper onConfirm={handlePasswordChange}>
+            <button
+              className={`mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 ${
+                loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={loading}
+            >
+              {loading ? "Changing..." : "Change Password"}
+            </button>
+          </ConfirmWrapper>
         </div>
 
         {/* ✅ Admin List */}
