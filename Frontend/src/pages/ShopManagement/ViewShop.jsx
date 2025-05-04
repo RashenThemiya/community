@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
-import { toast } from "react-hot-toast"; // ✅ Assuming you have react-hot-toast installed
 
-const ITEMS_PER_PAGE = 10; // ✅ Pagination: 10 shops per page
+const ITEMS_PER_PAGE = 10;
 
 const ViewShops = () => {
     const navigate = useNavigate();
@@ -12,6 +11,7 @@ const ViewShops = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
     const [confirmDeleteShopId, setConfirmDeleteShopId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -29,13 +29,24 @@ const ViewShops = () => {
         fetchShops();
     }, []);
 
+    useEffect(() => {
+        if (successMessage || error) {
+            const timer = setTimeout(() => {
+                setSuccessMessage(null);
+                setError(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage, error]);
+
     const handleDeleteShop = async (shopId) => {
         try {
             await api.delete(`/api/shops/${shopId}`);
+            const deletedShop = shops.find(s => s.shop_id === shopId);
             setShops(prev => prev.filter((shop) => shop.shop_id !== shopId));
-            toast.success("Shop deleted successfully!");
+            setSuccessMessage(`✅ Shop "${deletedShop?.shop_name}" with ID "${deletedShop?.shop_id}" deleted successfully!`);
         } catch (err) {
-            toast.error(err.response?.data?.message || "Failed to delete shop.");
+            setError(err.response?.data?.message || "Failed to delete shop.");
         } finally {
             setConfirmDeleteShopId(null);
         }
@@ -62,20 +73,30 @@ const ViewShops = () => {
                         value={searchQuery}
                         onChange={(e) => {
                             setSearchQuery(e.target.value);
-                            setCurrentPage(1); // Reset to first page on search
+                            setCurrentPage(1);
                         }}
                         className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-700"
                     />
                 </div>
 
+                {/* Success Message */}
+                {successMessage && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-center">
+                        {successMessage}
+                    </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-center">
+                        ❌ {error}
+                    </div>
+                )}
+
                 {loading ? (
                     <div className="text-center text-gray-500">Loading...</div>
-                ) : error ? (
-                    <div className="text-center text-red-600">{error}</div>
                 ) : filteredShops.length === 0 ? (
-                    <div className="text-center text-gray-500 py-10">
-                        No shops found.
-                    </div>
+                    <div className="text-center text-gray-500 py-10">No shops found.</div>
                 ) : (
                     <div className="overflow-x-auto rounded-lg">
                         <table className="min-w-full">
@@ -111,14 +132,16 @@ const ViewShops = () => {
                                             >
                                                 Edit
                                             </button>
-
-                                            <ConfirmWrapper onConfirm={() => handleDeleteShop(shop.shop_id)}>
-                                                <button
-                                                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
-                                                >
-                                                    Delete
+                                            <ConfirmWrapper
+                                                message={`Are you sure you want to permanently delete the shop "${shop.shop_name}" with ID "${shop.shop_id}"? 
+                                                This action is irreversible and will remove all associated data, including the shop details and any related records.`}
+                                                onConfirm={() => handleDeleteShop(shop.shop_id)}
+                                            >
+                                                <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm transition duration-200">
+                                                    Delete Shop
                                                 </button>
                                             </ConfirmWrapper>
+
                                         </td>
                                     </tr>
                                 ))}
@@ -149,7 +172,7 @@ const ViewShops = () => {
                 )}
             </div>
 
-            {/* Floating "Back to Management" Button */}
+            {/* Floating Back Button */}
             <button
                 onClick={() => navigate("/shop-management")}
                 className="fixed bottom-8 right-8 bg-gray-800 text-white py-3 px-6 rounded-full shadow-lg hover:bg-gray-900 transition duration-200"
@@ -160,15 +183,12 @@ const ViewShops = () => {
     );
 };
 
-// Helper to highlight search text
 function highlight(text, query) {
     if (!query) return text;
     const parts = text.split(new RegExp(`(${query})`, "gi"));
-    return parts.map((part, index) =>
+    return parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ? (
-            <mark key={index} className="bg-yellow-200">
-                {part}
-            </mark>
+            <mark key={i} className="bg-yellow-200">{part}</mark>
         ) : (
             part
         )
