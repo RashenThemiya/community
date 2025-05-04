@@ -18,7 +18,7 @@ const TenantManagement = () => {
 
                 {/* Tenant Management Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-                    
+
                     {/* Add New Tenant */}
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
                         <h2 className="text-xl font-semibold mb-4">Add New Tenant</h2>
@@ -31,17 +31,7 @@ const TenantManagement = () => {
                         </button>
                     </div>
 
-                    {/* Edit Tenant Details */}
-                    <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-                        <h2 className="text-xl font-semibold mb-4">Edit Tenant</h2>
-                        <p className="text-gray-700 mb-4">Modify tenant information.</p>
-                        <button
-                            className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 w-full sm:w-auto"
-                            onClick={() => navigate("/edit-tenants")}
-                        >
-                            Edit Tenant
-                        </button>
-                    </div>
+
 
                     {/* View All Tenants */}
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">

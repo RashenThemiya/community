@@ -44,12 +44,13 @@ const InvoiceTable = ({ shop,payments } ) => {
                         <tr className="bg-gray-200 text-gray-700">
                             <th className="border p-2">Invoice ID</th>
                             <th className="border p-2">Month</th>
-                            <th className="border p-2">Prev Balance</th>
+                            <th className="border p-2">Prev Shop Balance</th>
                             <th className="border p-2">Total Fine</th>
                             <th className="border p-2">Fine (Prev)</th>
                             <th className="border p-2">Rent</th>
                             <th className="border p-2">Operation Fee</th>
                             <th className="border p-2">VAT</th>
+                            <th className="border p-2">Total arrest</th>
                             <th className="border p-2">Total Amount</th>
                             <th className="border p-2">Total Paid</th>
                             <th className="border p-2">Remaining</th>
@@ -104,7 +105,7 @@ const endOfPeriod = nextInvoiceCreated ? nextInvoiceCreated : new Date(); // fal
                             const extraPayment = Math.max(0, overpaidAmount - finePaid);
 
                             // Remaining is only applicable if there's no extra payment
-                            const remainingAmount = extraPayment > 0 ? 0 : invoiceTotalAmount - invoiceTotalPaid;
+                            const remainingAmount = Math.max(0, invoiceTotalAmount - invoiceTotalPaid);
 
                                 
 
@@ -119,6 +120,7 @@ const endOfPeriod = nextInvoiceCreated ? nextInvoiceCreated : new Date(); // fal
                                         <td className="border p-2">LKR {invoice.rent_amount}</td>
                                         <td className="border p-2">LKR {invoice.operation_fee}</td>
                                         <td className="border p-2">LKR {invoice.vat_amount}</td>
+                                        <td className="border p-2">LKR {invoice.total_arrears}</td>
                                         <td className="border p-2 font-semibold">LKR {invoice.total_amount}</td>
                                         <td className="border p-2 text-green-600">LKR {totalPaid.toFixed(2)}</td>
                                         <td className="border p-2 text-red-600">LKR {remainingAmount.toFixed(2)}</td>

@@ -169,9 +169,13 @@ const Invoice = () => {
                                 <th className="border p-2">Total Arrears</th>
                                 <th className="border p-2">Total Amount</th>
                                 <th className="border p-2">Status</th>
+                                <th className="border p-2">Total Paid</th>
+                                <th className="border p-2">Prev Total Paid</th>
+<th className="border p-2">Prev Payment Date</th>
+
                                 <th className="border p-2">Created At</th>
                                 <th className="border p-2">Shop name</th>
-                                <th className="border p-2">Address</th>
+                                
                                 <th className="border p-2">Tenant</th>
                             </tr>
                         </thead>
@@ -207,9 +211,23 @@ const Invoice = () => {
                                         <td className="border p-2">LKR {invoice.total_arrears}</td>
                                         <td className="border p-2">LKR {invoice.total_amount}</td>
                                         <td className={`border p-2 text-center font-bold ${getStatusClass(invoice.status)}`}>{invoice.status}</td>
+                                        <td className="border p-2">
+                                                    LKR {invoice.total_paid?.toFixed(2) || '0.00'}
+                                                    </td>                                        
+                                                    <td className="border p-2">
+                                                    LKR {invoice.previous_payment_summary?.total_paid?.toFixed(2) || '0.00'}
+                                                    </td>
+                                                    <td className="border p-2">
+                                                    {invoice.previous_payment_summary?.last_payment_date
+                                                        ? new Date(invoice.previous_payment_summary.last_payment_date).toLocaleDateString()
+                                                        : 'N/A'}
+                                                    </td>
+
+
+
                                         <td className="border p-2">{new Date(invoice.createdAt).toLocaleDateString()}</td>
                                         <td className="border p-2">{invoice.Shop?.shop_name || 'N/A'}</td>
-                                        <td className="border p-2">{invoice.Shop?.location || 'N/A'}</td>
+                                       
                                         <td className="border p-2">{invoice.Shop?.Tenant?.name || 'N/A'}</td>
                                     </tr>
                                 ))

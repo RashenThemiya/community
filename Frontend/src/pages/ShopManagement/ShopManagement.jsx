@@ -30,17 +30,7 @@ const ShopManagement = () => {
                         </button>
                     </div>
 
-                    {/* Edit Shop Details */}
-                    <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-                        <h2 className="text-xl font-semibold mb-4">Edit Shop</h2>
-                        <p className="text-gray-700 mb-4">Edit Shop Details.</p>
-                        <button
-                            className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 w-full sm:w-auto"
-                            onClick={() => navigate("/edit-shops")}
-                        >
-                            Edit Shop
-                        </button>
-                    </div>
+
 
                     {/* View All Shops */}
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">

@@ -1,9 +1,37 @@
-
 {
-    "home": {
-      "welcomeMessage": "Welcome to the Dambulla Dedicated Economic Center",
-      "description": "Our mission is to provide essential vegetables, fruits, and grains to Sri Lankans at affordable prices while ensuring fair returns to farmers, supporting waste-free, high-quality agriculture. We aim to uplift farmers’ incomes, strengthen Dambulla's wholesale trade, generate thousands of jobs, and revitalize domestic agriculture for national development."
-      
-    }
+  "home": {
+    "welcomeMessage": "Welcome to the Dambulla Dedicated Economic Center",
+    "description": "Our mission is to provide essential vegetables, fruits, and grains to Sri Lankans at affordable prices while ensuring fair returns to farmers, supporting waste-free, high-quality agriculture. We aim to uplift farmers’ incomes, strengthen Dambulla's wholesale trade, generate thousands of jobs, and revitalize domestic agriculture for national development."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "breadcrumb": "Home > Contact Us",
+    "talkToUs": "Talk to us",
+    "subText": "Tell us your suggestions and allegations",
+    "address": "Address",
+    "email": "Email",
+    "phone": "Phone ",
+    "mapTitle": "Location Map"
+  },
+  "weather": {
+    "title": "Dambulla Weather",
+    "loading": "Loading...",
+    "error": "Failed to fetch weather data. Please try again later."
+  },
+  "footer": {
+    "mainCenters": "Main Centers",
+    "regionalCenters": "Regional Centers",
+    "thambuththegama": "Thambuththegama",
+    "dambulla": "Dambulla",
+    "nuwaraEliya": "Nuwara Eliya Dedicated Economic Center",
+    "narahenpita": "Narahenpita Dedicated Economic Center",
+    "welisara": "Welisara Dedicated Economic Center",
+    "veyangoda": "Veyangoda Dedicated Economic Center",
+    "ratmalana": "Ratmalana Dedicated Economic Center",
+    "meegoda": "Meegoda Dedicated Economic Center",
+    "kandeketiya": "Kandehandiya Dedicated Economic Center",
+    "kepptipola": "Keppetipola Economic Center",
+    "center": "Dedicated Economic Center",
+    "city": "Dambulla"
   }
-  
+}
