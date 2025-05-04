@@ -51,21 +51,25 @@ const Setting = () => {
   const handleVerify = async (email, password) => {
     try {
       const res = await api.post("/api/admin/verify", { email, password });
-
+  
       if (res.status === 200) {
         toast.success("Verification successful");
+        setModalOpen(false); // ✅ Only close modal if verification is successful
+  
         if (pendingAction) {
-          pendingAction({ email, password }); // Call pending action with credentials
+          pendingAction({ email, password }); // Run the saved action
         }
       } else {
         toast.error("Verification failed");
+        // ❌ Don't close modal here
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Invalid credentials");
-    } finally {
-      setModalOpen(false);
+      // ❌ Don't close modal on error
     }
+    // ✅ Remove the `finally` block completely
   };
+  
 
   const openCredentialModal = (action) => {
     setPendingAction(() => action); // Save the intended action
