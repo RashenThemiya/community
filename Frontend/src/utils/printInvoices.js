@@ -19,7 +19,7 @@ export const printInvoices = async (invoices) => {
   const printableContent = invoices
     .map((invoice) => {
       const invoiceHTML = `
-        <div style="padding: 5px; font-size: 11px; font-family: Arial, sans-serif;">
+        <di style="padding: 5px; font-size: 11px; font-family: Arial, sans-serif;">
           <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
             <img src="/images/logo.jpg" alt="Logo" style="height: 60px;" />
             <div style="text-align: center;">
@@ -31,7 +31,7 @@ export const printInvoices = async (invoices) => {
             </div>
           </div>
       
-          <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9;">
+          <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9;font-size: 8px; ">
             
   <div>
     <strong>Invoice No</strong><br/>
@@ -52,15 +52,17 @@ export const printInvoices = async (invoices) => {
     <strong>Accounting Date</strong><br/>
     <span>ගිණුම් කල දිනය</span>: ${new Date(invoice.createdAt).toLocaleDateString()}
   </div>
-</div>
-
-<div style="padding: 5px; background-color: #d0e7f9;">
+  <div style="padding: 5px; background-color: #d0e7f9;">
   <strong>Shop No</strong><br/>
   <span>කඩ අංකය</span>: ${invoice.shop_id}
 </div>
+</div>
+
+
+
 
           <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
-            <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 65%;">
+            <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 60%;">
               <h3 style="text-align: center; margin: 0 0 8px;">Statement of Account / ගිණුම් ප්‍රකාශය
 </h3>
               <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
@@ -92,8 +94,39 @@ export const printInvoices = async (invoices) => {
                 }</strong></td></tr>
               </table>
             </div>
+
+
+<div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 15%;">
+  <h3 style="text-align: center; margin-bottom: 8px;">Previous Payment Details</h3>
+  <div style=" font-size: 10px;">
+    <div >
+      <strong>Previous Payment Date</strong><br/>
+      <span>
+        ${invoice.previous_payment_summary?.last_payment_date
+          ? new Date(invoice.previous_payment_summary.last_payment_date).toLocaleDateString()
+          : 'N/A'}
+      </span>
+    </div>
+    <div >
+      <strong>Previous Paid Amount</strong><br/>
+      <span>LKR ${parseFloat(invoice.previous_payment_summary?.total_paid || 0).toFixed(2)}</span>
+    </div>
+    <div >
+      <strong>Previous Balance</strong><br/>
+      <span>LKR ${typeof invoice.previous_balance === 'number' ? invoice.previous_balance.toFixed(2) : '0.00'}</span>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
       
-            <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 33%; font-size: 11px;">
+            <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 25%; font-size: 9px;">
           
               <h4 style="color: red; margin: 0 0 5px; border-bottom: 1px solid black;">
 මෙම බිල්පතේ අයවිය යුතු මුලු මුදල මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30%ක බදු කුලියක් අය කරනු ලැබේ.</h4>
@@ -139,13 +172,26 @@ export const printInvoices = async (invoices) => {
     </div>
 
     <!-- Section 3: Bank Cashier -->
-    <div style="flex: 1.5; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="flex: 1.5; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;border-right: 1px solid #000; ">
       <div>
         <p style="margin: 0;"><strong>Bank Use Only</strong></p>
         <p style="margin: 5px 0;">Amount Received: Rs.</p>
       </div>
       <div style="text-align: center; margin-top: auto;">
         <p style="margin: 0;">_______________________<br/><span style="font-size: 11px;">Signature of Bank Cashier</span></p>
+      </div>
+    </div>
+
+
+
+    <!-- Section 4: for market office -->
+    <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <p style="margin: 0;"><strong>For Market Office Use</strong></p>
+        
+      </div>
+      <div style="text-align: center; margin-top: auto;">
+        <p style="margin: 0;">_______________________<br/><span style="font-size: 11px;">Official Seal</span></p>
       </div>
     </div>
 
