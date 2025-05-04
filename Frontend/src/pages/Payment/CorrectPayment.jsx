@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const CorrectPayment = () => {
     const [formData, setFormData] = useState({
@@ -14,12 +17,13 @@ const CorrectPayment = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
 
+    const navigate = useNavigate(); // For back navigation
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setLoading(true);
         setError(null);
         setSuccess(null);
@@ -87,27 +91,40 @@ const CorrectPayment = () => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
                 <h2 className="text-2xl font-bold mb-4 text-center">Correct Payment</h2>
 
-                {/* Success Message */}
+                {/* Back to Main Button */}
+                <button
+                    onClick={() => navigate(-1)} // You can change -1 to a specific route like "/admin/dashboard"
+                    className="inline-flex items-center px-4 py-2 mb-6 text-sm font-medium text-blue-600 bg-blue-100 rounded-lg hover:bg-blue-200 hover:text-blue-800 transition-colors duration-200"
+                >
+                    <svg
+                        className="w-4 h-4 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Main
+                </button>
+
+
                 {success && (
                     <div className="flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4" role="alert">
-                        <svg className="w-5 h-5 mr-2 fill-current" viewBox="0 0 20 20">
-                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4l-3-3 1.4-1.4L9 11.2l4.6-4.6L15 8l-6 6z" />
-                        </svg>
+                        <FaCheckCircle className="mr-2 text-green-600 text-xl" />
                         <span className="font-medium">{success}</span>
                     </div>
                 )}
 
-                {/* Error Message */}
                 {error && (
                     <div className="flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert">
-                        <svg className="w-5 h-5 mr-2 fill-current" viewBox="0 0 20 20">
-                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13H9v6h2V5zm0 8H9v2h2v-2z" />
-                        </svg>
+                        <FaTimesCircle className="mr-2 text-red-600 text-xl" />
                         <span className="font-medium">{error}</span>
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
                     <input
                         type="text"
                         name="invoice_id"
@@ -151,14 +168,16 @@ const CorrectPayment = () => {
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
 
-                    <button
-                        type="submit"
-                        className={`w-full py-2 rounded-lg transition duration-300 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"
-                            }`}
-                        disabled={loading}
-                    >
-                        {loading ? "Processing..." : "Submit Correction"}
-                    </button>
+                    <ConfirmWrapper message="Are you sure you want to apply this correction? This action is irreversible." onConfirm={handleSubmit}>
+                        <button
+                            type="button"
+                            className={`w-full py-2 rounded-lg transition duration-300 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"
+                                }`}
+                            disabled={loading}
+                        >
+                            {loading ? "Processing..." : "Submit Correction"}
+                        </button>
+                    </ConfirmWrapper>
                 </form>
             </div>
         </div>
