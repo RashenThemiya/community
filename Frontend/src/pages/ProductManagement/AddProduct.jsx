@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // Adjust the path if needed
 
 const AddProduct = () => {
     const navigate = useNavigate();
@@ -19,8 +20,7 @@ const AddProduct = () => {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setLoading(true);
         setError(null);
 
@@ -35,7 +35,7 @@ const AddProduct = () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/products`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: formData,
             });
@@ -60,7 +60,9 @@ const AddProduct = () => {
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">Add New Product</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
+
+                {/* prevent default form submission */}
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
                     <input
                         type="text"
                         name="name"
@@ -95,13 +97,17 @@ const AddProduct = () => {
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
 
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
-                        disabled={loading}
-                    >
-                        {loading ? "Adding..." : "Add Product"}
-                    </button>
+                    {/* ConfirmWrapper only calls handleSubmit if user clicks Yes */}
+                    <ConfirmWrapper onConfirm={handleSubmit}>
+                        <button
+                            type="button"
+                            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                            disabled={loading}
+                        >
+                            {loading ? "Adding..." : "Add Product"}
+                        </button>
+                    </ConfirmWrapper>
+
                     <button
                         type="button"
                         onClick={() => navigate("/product-management")}
