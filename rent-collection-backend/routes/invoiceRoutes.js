@@ -85,10 +85,13 @@ router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async 
                 
                 total_paid: currentTotalPaid , // 🟢 This is what your frontend needs
                 previous_invoice_total_amount: previousInvoice ? previousInvoice.total_amount : null  // 🟢 Add this
+                
             };
+            console.log('Previous Invoice:', previousInvoice?.toJSON());
 
             enrichedInvoices.push(invoiceData);
         }
+       
 
         res.status(200).json(enrichedInvoices);
     } catch (error) {
