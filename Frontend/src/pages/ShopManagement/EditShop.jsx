@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { FiEdit3 } from "react-icons/fi";
 import api from "../../utils/axiosInstance";
-import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ Import
+import ConfirmWrapper from "../../components/ConfirmWrapper";
 
 const EditShop = () => {
     const navigate = useNavigate();
@@ -10,8 +11,9 @@ const EditShop = () => {
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
+    const [showSuccess, setShowSuccess] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [isConfirmed, setIsConfirmed] = useState(false);
 
     useEffect(() => {
         const fetchShop = async () => {
@@ -19,7 +21,7 @@ const EditShop = () => {
                 const response = await api.get(`/api/shops/${id}`);
                 setShop(response.data);
             } catch (err) {
-                setError("Failed to load shop details.");
+                setError("❌ Failed to load shop details.");
             } finally {
                 setInitialLoading(false);
             }
@@ -27,9 +29,16 @@ const EditShop = () => {
         fetchShop();
     }, [id]);
 
+    useEffect(() => {
+        if (error) {
+            const timer = setTimeout(() => setError(null), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
     const handleChange = (e) => {
-        setShop((prevShop) => ({
-            ...prevShop,
+        setShop((prev) => ({
+            ...prev,
             [e.target.name]: e.target.value,
         }));
     };
@@ -38,95 +47,76 @@ const EditShop = () => {
         setLoading(true);
         try {
             await api.put(`/api/shops/${id}`, shop);
-            setSuccess("Shop updated successfully! Redirecting...");
+            setShowSuccess(true);
             setTimeout(() => {
+                setShowSuccess(false);
                 navigate("/view-shops");
             }, 2000);
         } catch (err) {
-            setError("Failed to update shop.");
+            setError("❌ Failed to update shop.");
         } finally {
             setLoading(false);
+            setIsConfirmed(false);
         }
     };
 
+    const handleConfirm = () => {
+        setIsConfirmed(true);
+        handleUpdate();
+    };
+
+    const handleCancel = () => {
+        setIsConfirmed(false);
+        setShowConfirm(false);
+    };
+
     if (initialLoading) return <div className="text-center">Loading...</div>;
-    if (error) return <div className="text-center text-red-500">{error}</div>;
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">
-                    Editing Shop Id- {id} - Current Name- {shop.shop_name || "Loading..."}
+                    Edit Shop ID: {id} – {shop.shop_name || "Loading..."}
                 </h2>
 
-                {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-center">
+                        {error}
+                    </div>
+                )}
+
+                {showSuccess && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-center">
+                        ✅ Shop has been updated successfully!
+                    </div>
+                )}
 
                 <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Shop Name</label>
-                        <input
-                            type="text"
-                            name="shop_name"
-                            value={shop.shop_name || ""}
-                            onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Shop Location</label>
-                        <input
-                            type="text"
-                            name="location"
-                            value={shop.location || ""}
-                            onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Rent Amount</label>
-                        <input
-                            type="number"
-                            name="rent_amount"
-                            value={shop.rent_amount || ""}
-                            onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">VAT Rate</label>
-                        <input
-                            type="number"
-                            name="vat_rate"
-                            value={shop.vat_rate || ""}
-                            onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Operation Fee</label>
-                        <input
-                            type="number"
-                            name="operation_fee"
-                            value={shop.operation_fee || ""}
-                            onChange={handleChange}
-                            className="w-full p-2 border border-gray-300 rounded-lg"
-                            required
-                        />
-                    </div>
+                    {["shop_name", "location", "rent_amount", "vat_rate", "operation_fee"].map((field) => (
+                        <div key={field}>
+                            <label className="block text-sm font-medium text-gray-700 capitalize">
+                                {field.replace("_", " ")}
+                            </label>
+                            <input
+                                type={field.includes("amount") || field.includes("rate") ? "number" : "text"}
+                                name={field}
+                                value={shop[field] || ""}
+                                onChange={handleChange}
+                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                required
+                            />
+                        </div>
+                    ))}
 
-                    {/* ConfirmWrapper for Update */}
                     <ConfirmWrapper
                         open={showConfirm}
-                        message="Are you sure you want to update this shop?"
-                        onConfirm={() => {
-                            setShowConfirm(false);
-                            handleUpdate();
-                        }}
-                        onCancel={() => setShowConfirm(false)}
+                        onConfirm={handleConfirm}
+                        onCancel={handleCancel}
+                        message={`Update Confirmation for Shop ID: ${id}`}
+                        additionalInfo={`Are you sure you want to update "${shop.shop_name}" (ID: ${id})? This will immediately apply changes.`}
+                        confirmText="Yes, Update Shop"
+                        cancelText="No, Go Back"
+                        icon={<FiEdit3 />}
                     >
                         <button
                             type="button"
@@ -134,11 +124,10 @@ const EditShop = () => {
                             className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition duration-300"
                             disabled={loading}
                         >
-                            {loading ? "Updating..." : "Update"}
+                            {loading ? "Updating..." : "Update Shop"}
                         </button>
                     </ConfirmWrapper>
 
-                    {/* Cancel Button */}
                     <button
                         type="button"
                         onClick={() => navigate("/view-shops")}

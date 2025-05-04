@@ -26,9 +26,9 @@ const icons = {
 const typeColors = {
   notice: "border-yellow-400 bg-yellow-50 text-yellow-800",
   announcement: "border-green-400 bg-green-50 text-green-800",
-  news: "border-blue-400 bg-blue-50 text-blue-800",
-  event: "border-purple-400 bg-purple-50 text-purple-800",
-  default: "border-gray-300 bg-gray-50 text-gray-700",
+  news: "border-green-400 bg-green-50 text-green-800",  // Green theme for news as well
+  event: "border-green-400 bg-green-50 text-green-800",  // Green theme for event as well
+  default: "border-green-300 bg-green-50 text-green-700",  // Default green theme
 };
 
 const EconomicCenterNews = () => {
@@ -115,8 +115,8 @@ const EconomicCenterNews = () => {
   );
 
   return (
-    <section className="bg-gray-100 py-10 px-4 md:px-12">
-      <h2 className="text-4xl font-bold text-center mb-8 text-blue-800">
+    <section className="bg-green-100 py-10 px-4 md:px-12">
+      <h2 className="text-4xl font-bold text-center mb-8 text-green-800">
         Economic Center News
       </h2>
 
@@ -128,8 +128,8 @@ const EconomicCenterNews = () => {
             onClick={() => setActiveTab(type)}
             className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition ${
               activeTab === type
-                ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                ? "bg-green-600 text-white border-green-600 shadow-md"
+                : "bg-white text-green-700 border-green-300 hover:bg-green-100"
             }`}
           >
             {icons[type]}
@@ -143,17 +143,17 @@ const EconomicCenterNews = () => {
         <div className="flex justify-end items-center mb-4 gap-2 pr-4">
           <button
             onClick={() => sliderRef.current?.slickPrev()}
-            className="p-2 rounded-full bg-white shadow hover:bg-gray-200"
+            className="p-2 rounded-full bg-white shadow hover:bg-green-100"
             aria-label="Previous"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5 text-green-600" />
           </button>
           <button
             onClick={() => sliderRef.current?.slickNext()}
-            className="p-2 rounded-full bg-white shadow hover:bg-gray-200"
+            className="p-2 rounded-full bg-white shadow hover:bg-green-100"
             aria-label="Next"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 text-green-600" />
           </button>
         </div>
       )}

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import api from "../../utils/axiosInstance"; // Ensure this points to your axios setup
+import { useState, useEffect } from "react";
+import api from "../../utils/axiosInstance";
 
 const CorrectPayment = () => {
     const [formData, setFormData] = useState({
@@ -24,7 +24,6 @@ const CorrectPayment = () => {
         setError(null);
         setSuccess(null);
 
-        // Validate required fields
         if (!formData.shop_id || !formData.actual_amount || !formData.admin_put_amount) {
             setError("Shop ID, Actual Amount, and Admin Input Amount are required.");
             setLoading(false);
@@ -32,14 +31,13 @@ const CorrectPayment = () => {
         }
 
         try {
-            const token = localStorage.getItem("token"); // Get token from local storage
+            const token = localStorage.getItem("token");
             if (!token) {
                 setError("Unauthorized: Please log in first.");
                 setLoading(false);
                 return;
             }
 
-            // Construct request body without invoice_id if it's empty
             const { invoice_id, ...payload } = formData;
             if (invoice_id.trim() !== "") {
                 payload.invoice_id = invoice_id;
@@ -47,23 +45,23 @@ const CorrectPayment = () => {
 
             const response = await api.post(
                 "api/paymentscorrection/correct-payment/",
-                payload,  // Send only the required fields
+                payload,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,  // Include Bearer token
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
 
             if (response.data.success) {
-                setSuccess("Payment correction applied successfully!");
+                setSuccess("✅ Payment correction applied successfully!");
                 setFormData({
                     invoice_id: "",
                     shop_id: "",
                     actual_amount: "",
                     admin_put_amount: "",
                     edit_reason: "",
-                }); // Reset form
+                });
             } else {
                 setError(response.data.message || "Payment correction failed.");
             }
@@ -74,13 +72,40 @@ const CorrectPayment = () => {
         }
     };
 
+    useEffect(() => {
+        if (error || success) {
+            const timer = setTimeout(() => {
+                setError(null);
+                setSuccess(null);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, success]);
+
     return (
         <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl">
                 <h2 className="text-2xl font-bold mb-4 text-center">Correct Payment</h2>
 
-                {error && <p className="text-red-500 text-center">{error}</p>}
-                {success && <p className="text-green-500 text-center">{success}</p>}
+                {/* Success Message */}
+                {success && (
+                    <div className="flex items-center bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4" role="alert">
+                        <svg className="w-5 h-5 mr-2 fill-current" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4l-3-3 1.4-1.4L9 11.2l4.6-4.6L15 8l-6 6z" />
+                        </svg>
+                        <span className="font-medium">{success}</span>
+                    </div>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                    <div className="flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert">
+                        <svg className="w-5 h-5 mr-2 fill-current" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13H9v6h2V5zm0 8H9v2h2v-2z" />
+                        </svg>
+                        <span className="font-medium">{error}</span>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <input
@@ -125,12 +150,11 @@ const CorrectPayment = () => {
                         onChange={handleChange}
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
-                    
+
                     <button
                         type="submit"
-                        className={`w-full py-2 rounded-lg transition duration-300 ${
-                            loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600 text-white"
-                        }`}
+                        className={`w-full py-2 rounded-lg transition duration-300 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 text-white"
+                            }`}
                         disabled={loading}
                     >
                         {loading ? "Processing..." : "Submit Correction"}
