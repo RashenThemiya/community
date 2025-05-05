@@ -6,9 +6,20 @@ const Report = () => {
     const [month, setMonth] = useState(today.getMonth() + 1);
     const [year, setYear] = useState(today.getFullYear());
 
-    const handleDownload = () => {
-        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+    const handleDownloadReport1 = () => {
         const url = `${baseUrl}/api/report/monthly-income?month=${month}&year=${year}`;
+        window.open(url, "_blank");
+    };
+
+    const handleDownloadReport2 = () => {
+        const url = `${baseUrl}/api/report2/monthly-income?month=${month}&year=${year}`;
+        window.open(url, "_blank");
+    };
+
+    const handleDownloadReport3 = () => {
+        const url = `${baseUrl}/api/report3/monthly-income?month=${month}&year=${year}`;
         window.open(url, "_blank");
     };
 
@@ -31,12 +42,8 @@ const Report = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            {/* Sidebar */}
-            <div>
-                <Sidebar />
-            </div>
+           <div><Sidebar /></div> 
 
-            {/* Main Content */}
             <div className="flex justify-center items-center flex-1 p-6">
                 <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                     <h2 className="text-2xl font-bold mb-4 text-center">Download Monthly Income Report</h2>
@@ -63,12 +70,29 @@ const Report = () => {
                         </select>
                     </div>
 
-                    <button
-                        onClick={handleDownload}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-                    >
-                        Download Report
-                    </button>
+                    {/* Download Buttons */}
+                    <div className="space-y-3">
+                        <button
+                            onClick={handleDownloadReport1}
+                            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                        >
+                            Download Report 1
+                        </button>
+
+                        <button
+                            onClick={handleDownloadReport2}
+                            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
+                        >
+                            Download Report 2
+                        </button>
+
+                        <button
+                            onClick={handleDownloadReport3}
+                            className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-300"
+                        >
+                            Download Report 3
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,50 +1,13 @@
-import axios from "axios";
-import React, { useEffect, useState, useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Toaster, toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import Navbar from "../components/Navbar";
 import { Skeleton } from "../components/Skeleton";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import toast, { Toaster } from "react-hot-toast";
-
-const DailyPriceCard = ({ item, navigate, t }) => {
-  return (
-    <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg hover:scale-[1.02] transition-transform duration-200 ease-in-out">
-      {item.product?.image ? (
-        <img
-          src={item.product.image}
-          alt={item.product?.name || "Product"}
-          className="h-32 w-full object-cover mb-4 rounded"
-        />
-      ) : (
-        <div className="h-32 w-full bg-gray-100 flex items-center justify-center mb-4 rounded text-gray-400 text-sm">
-          {t("dailyPrices.noImage", "No Image")}
-        </div>
-      )}
-
-      <h2 className="text-lg font-semibold text-gray-800 truncate">
-        {item.product?.name || "Unnamed Product"}
-      </h2>
-      <p className="text-gray-500 text-sm">{item.product?.type || "N/A"}</p>
-
-      <p className="mt-2 font-bold text-green-700">
-        {t("dailyPrices.priceRange", "Price Range")}: Rs. {item.min_price} - Rs. {item.max_price}
-      </p>
-
-      <p className="text-xs text-gray-400 mt-1">
-        {t("dailyPrices.date", "Date")}: {item.date}
-      </p>
-
-      <button
-        onClick={() => navigate(`/product/${item.product?.id}/chart`)}
-        className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
-      >
-        {t("dailyPrices.history", "View Price History")}
-      </button>
-    </div>
-  );
-};
+import DailyPriceCard from './DailyPriceCard';
 
 const DailyPrice = () => {
   const { t } = useTranslation();
@@ -84,19 +47,24 @@ const DailyPrice = () => {
 
     // Title
     doc.setFontSize(18);
-    doc.text(`Daily Product Prices`, 105, 20, { align: "center" });
+    doc.text(`${t("dailyPrices.pdfTitle", "Daily Product Prices")}`, 105, 20, { align: "center" });
 
     // Subtitle (date)
     doc.setFontSize(12);
-    doc.text(`Date: ${date}`, 105, 30, { align: "center" });
+    doc.text(`${t("dailyPrices.date", "Date")}: ${date}`, 105, 30, { align: "center" });
 
     // Table
-    const tableColumn = ["Product Name", "Type", "Min Price (Rs.)", "Max Price (Rs.)"];
+    const tableColumn = [
+      t("dailyPrices.productName", "Product Name"),
+      t("dailyPrices.type", "Type"),
+      t("dailyPrices.minPrice", "Min Price (Rs.)"),
+      t("dailyPrices.maxPrice", "Max Price (Rs.)")
+    ];
     const tableRows = [];
 
     dailyPrices.forEach((item) => {
       tableRows.push([
-        item.product?.name || "Unnamed",
+        t(item.product?.name, item.product?.name || "Unnamed"),
         item.product?.type || "N/A",
         item.min_price,
         item.max_price
@@ -111,11 +79,11 @@ const DailyPrice = () => {
         fontSize: 10,
       },
       headStyles: {
-        fillColor: [52, 152, 219], // Blue Header
+        fillColor: [52, 152, 219],
         textColor: [255, 255, 255],
       },
       alternateRowStyles: {
-        fillColor: [240, 240, 240], // Light grey rows
+        fillColor: [240, 240, 240],
       },
       margin: { top: 40 },
     });
@@ -130,9 +98,7 @@ const DailyPrice = () => {
     }
 
     doc.save(`Daily_Prices_${date}.pdf`);
-
-    // Show toast after saving
-    toast.success("PDF downloaded successfully!");
+    toast.success(t("dailyPrices.pdfDownloaded", "PDF downloaded successfully!"));
   };
 
   return (

@@ -20,7 +20,7 @@ const ProductPriceChart = () => {
   const [priceData, setPriceData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('daily'); // 'daily', 'weekly', 'monthly'
+  const [filter, setFilter] = useState('daily');
   const [productName, setProductName] = useState('');
 
   useEffect(() => {
@@ -60,8 +60,8 @@ const ProductPriceChart = () => {
     setFilteredData(groupData());
   }, [priceData, filter]);
 
-  if (loading) return <p>Loading chart...</p>;
-  if (filteredData.length === 0) return <p>No price data available.</p>;
+  if (loading) return <p className="text-center mt-10 text-lg font-medium text-gray-600">Loading chart...</p>;
+  if (filteredData.length === 0) return <p className="text-center mt-10 text-lg font-medium text-red-500">No price data available.</p>;
 
   const chartData = {
     labels: filteredData.map(item => item.date),
@@ -69,8 +69,8 @@ const ProductPriceChart = () => {
       {
         label: 'Min Price (Rs)',
         data: filteredData.map(item => item.min_price),
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgb(239, 68, 68)',
+        backgroundColor: 'rgba(239, 68, 68, 0.2)',
         pointRadius: 4,
         tension: 0.4,
         fill: false,
@@ -78,8 +78,8 @@ const ProductPriceChart = () => {
       {
         label: 'Max Price (Rs)',
         data: filteredData.map(item => item.max_price),
-        borderColor: 'rgba(54, 162, 235, 1)',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.2)',
         pointRadius: 4,
         tension: 0.4,
         fill: false,
@@ -114,37 +114,32 @@ const ProductPriceChart = () => {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100">
       <Navbar />
-      <div style={{ width: '100%', height: '350px', padding: '10px' }}>
-        <h2 className="text-3xl font-bold text-center mb-6">
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           {productName} Price Chart
         </h2>
 
-        <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-          <label htmlFor="filter" style={{ fontSize: '16px', marginRight: '10px' }}>Filter: </label>
-          <select
-            id="filter"
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              borderRadius: '5px',
-              border: 'none',
-              fontSize: '14px',
-              cursor: 'pointer',
-              transition: 'background-color 0.3s',
-            }}
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-          </select>
+        <div className="flex justify-center gap-4 mb-6">
+          {['daily', 'weekly', 'monthly'].map((type) => (
+            <button
+              key={type}
+              onClick={() => setFilter(type)}
+              className={`px-4 py-2 rounded-md font-medium transition-all duration-300
+                ${filter === type
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-800 hover:bg-blue-500 hover:text-white'}
+              `}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
         </div>
 
-        <Line data={chartData} options={options} />
+        <div className="bg-white rounded-lg shadow-lg p-4 h-[400px]">
+          <Line data={chartData} options={options} />
+        </div>
       </div>
     </div>
   );
