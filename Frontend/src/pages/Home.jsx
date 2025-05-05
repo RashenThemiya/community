@@ -77,9 +77,9 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* Our Objectives Section - Updated */}
+            {/* Our Objectives Section - Title Aligned at Top and Justified */}
             <div className="py-16 bg-white">
-                <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                     {/* Left Side Image */}
                     <div>
                         <img
@@ -89,9 +89,14 @@ const Home = () => {
                         />
                     </div>
 
-                    {/* Right Side Objectives - Enhanced UI */}
+                    {/* Right Side Objectives */}
                     <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-green-800 mb-4">Our Objectives</h2>
+                        {/* Title moved to top */}
+                        <div>
+                            <h2 className="text-3xl font-bold text-green-800 mb-4 text-justify">
+                                Our Objectives
+                            </h2>
+                        </div>
                         <div className="space-y-6">
                             {[
                                 { icon: "💰", text: "Decide prices of vegetables." },
