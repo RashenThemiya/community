@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import ConfirmWrapper from "../../components/ConfirmWrapper";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/axiosInstance";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // adjust path if needed
 
-// Manually toggle this flag to control future date behavior
 const ALLOW_FUTURE_DATES = false;
 
 const MakePayment = () => {
@@ -29,8 +28,7 @@ const MakePayment = () => {
         setPaymentData({ ...paymentData, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setError(null);
         setMessage(null);
 
@@ -112,7 +110,8 @@ const MakePayment = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                {/* No onSubmit here */}
+                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Payment Type</label>
                         <select
@@ -192,7 +191,16 @@ const MakePayment = () => {
                         />
                     </div>
 
-                    <ConfirmWrapper message="Confirm to process this payment. Once submitted, it cannot be changed.">
+                    {/* Submit with confirmation */}
+                    <ConfirmWrapper
+                        message="Confirm Payment Submission"
+                        additionalInfo="This action is final and cannot be undone."
+                        onConfirm={handleSubmit}
+                        icon={<FaExclamationTriangle />}
+                        confirmText="Yes, Submit"
+                        cancelText="Cancel"
+                        buttonBackgroundColor="bg-green-600"
+                    >
                         <button
                             type="submit"
                             className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
