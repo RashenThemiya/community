@@ -27,7 +27,7 @@ const productRoutes = require('../routes/productRoutes'); // Import product rout
 const productPriceRoutes = require('../routes/productPriceRoute'); // Import product price routes
 const publicationRoutes = require('../routes/publicationRoutes'); 
 const ReportRoute        = require('../routes/ReportRoute')// Import publications routes
-const ReportRoute2        = require('../routes/ReportRouteb')// Import publications routes
+const ReportRoute2        = require('../routes/ReportRoutebb')// Import publications routes
 const ReportRoute3        = require('../routes/ReportRoutec')// Import publications routes
 const app = express();
 
