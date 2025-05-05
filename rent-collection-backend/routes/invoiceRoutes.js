@@ -36,12 +36,16 @@ router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async 
             const currentMonth = currentInvoice.month_year;
 
             // 🔁 Find the previous invoice for this shop
-            const previousInvoice = [...invoices]
-                .reverse()
-                .find(inv =>
-                    inv.shop_id === currentInvoice.shop_id &&
-                    inv.month_year < currentMonth
-                );
+            const previousInvoice = await Invoice.findOne({
+                where: {
+                    shop_id: currentInvoice.shop_id,
+                    month_year: {
+                        [Op.lt]: currentInvoice.month_year
+                    }
+                },
+                order: [['month_year', 'DESC']]
+            });
+            
 
             const startDate = previousInvoice ? previousInvoice.month_year : new Date(0);
             const endDate = currentMonth;
@@ -85,10 +89,13 @@ router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async 
                 
                 total_paid: currentTotalPaid , // 🟢 This is what your frontend needs
                 previous_invoice_total_amount: previousInvoice ? previousInvoice.total_amount : null  // 🟢 Add this
+                
             };
+            console.log('Previous Invoice:', previousInvoice?.toJSON());
 
             enrichedInvoices.push(invoiceData);
         }
+       
 
         res.status(200).json(enrichedInvoices);
     } catch (error) {
