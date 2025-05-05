@@ -46,9 +46,9 @@ const Home = () => {
             <div className="bg-green-50 py-10">
                 <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                     {[
-                        { icon: "👨‍🌾", value: "10,000+", label: "Farmers" },
-                        { icon: "🚗", value: "1,500+", label: "Vehicle Parking" },
-                        { icon: "🥦", value: "2,500+", label: "Tons of Vegetables" },
+                        { icon: "👨‍🌾", value: "10,000+", label: "Traders & Farmers Visit Daily" },
+                        { icon: "🚗", value: "1,500+", label: "Vehicles Recieved per Day" },
+                        { icon: "🥦", value: "2,500+", label: "Tons of Vegetables Exchanged Daily" },
                         { icon: "⏰", value: "5AM - 12MN", label: "Open Daily" },
                     ].map((item, index) => (
                         <div
@@ -77,9 +77,9 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* Our Objectives Section */}
+            {/* Our Objectives Section - Title Aligned at Top and Justified */}
             <div className="py-16 bg-white">
-                <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                     {/* Left Side Image */}
                     <div>
                         <img
@@ -91,13 +91,28 @@ const Home = () => {
 
                     {/* Right Side Objectives */}
                     <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-green-800 mb-4">Our Objectives</h2>
-                        <ul className="space-y-4 list-disc list-inside text-lg text-gray-700">
-                            <li>Vegetable prices being decided.</li>
-                            <li>Produce high quality vegetables</li>
-                            <li>Establishment of small scale industries.</li>
-                            <li>Avoid price haggling.</li>
-                        </ul>
+                        {/* Title moved to top */}
+                        <div>
+                            <h2 className="text-3xl font-bold text-green-800 mb-4 text-justify">
+                                Our Objectives
+                            </h2>
+                        </div>
+                        <div className="space-y-6">
+                            {[
+                                { icon: "💰", text: "Decide prices of vegetables." },
+                                { icon: "🥬", text: "Produce high quality vegetables." },
+                                { icon: "🏭", text: "Establishment of small scale industries." },
+                                { icon: "🤝", text: "Avoid price haggling." },
+                            ].map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-start space-x-4 p-4 bg-green-100 rounded-xl shadow-sm hover:shadow-md transition"
+                                >
+                                    <div className="text-2xl">{item.icon}</div>
+                                    <p className="text-lg text-gray-700">{item.text}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

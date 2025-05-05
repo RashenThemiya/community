@@ -8,9 +8,20 @@ const Report = () => {
     const [month, setMonth] = useState(today.getMonth() + 1);
     const [year, setYear] = useState(today.getFullYear());
 
-    const handleDownload = () => {
-        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+    const handleDownloadReport1 = () => {
         const url = `${baseUrl}/api/report/monthly-income?month=${month}&year=${year}`;
+        window.open(url, "_blank");
+    };
+
+    const handleDownloadReport2 = () => {
+        const url = `${baseUrl}/api/report2/monthly-income?month=${month}&year=${year}`;
+        window.open(url, "_blank");
+    };
+
+    const handleDownloadReport3 = () => {
+        const url = `${baseUrl}/api/report3/monthly-income?month=${month}&year=${year}`;
         window.open(url, "_blank");
     };
 
@@ -33,12 +44,8 @@ const Report = () => {
 
     return (
         <div className="flex min-h-screen bg-gray-100">
-            {/* Sidebar */}
-            <div>
-                <Sidebar />
-            </div>
+           <div><Sidebar /></div> 
 
-            {/* Main Content */}
             <div className="flex justify-center items-center flex-1 p-6">
                 <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                     <h2 className="text-2xl font-bold mb-4 text-center">Download Monthly Income Report</h2>
@@ -64,20 +71,44 @@ const Report = () => {
                             {getYearOptions()}
                         </select>
                     </div>
+<div className="space-y-3">
+    <ConfirmWrapper
+        onConfirm={handleDownloadReport1}
+        message="Confirm Download"
+        additionalInfo={`Download Report 1 for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
+        confirmText="Download"
+        cancelText="Cancel"
+        icon={<FaDownload />}
+        buttonBackgroundColor="bg-blue-600"
+    >
+        Download Report 1
+    </ConfirmWrapper>
 
-                    <ConfirmWrapper
-                        onConfirm={handleDownload}
-                        message="Confirm Download"
-                        additionalInfo={`Do you want to download the income report for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
-                        confirmText="Download"
-                        cancelText="Cancel"
-                        icon={<FaDownload />}
-                        buttonBackgroundColor="bg-blue-600"
-                    >
-                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">
-                            Download Report
-                        </button>
-                    </ConfirmWrapper>
+    <ConfirmWrapper
+        onConfirm={handleDownloadReport2}
+        message="Confirm Download"
+        additionalInfo={`Download Report 2 for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
+        confirmText="Download"
+        cancelText="Cancel"
+        icon={<FaDownload />}
+        buttonBackgroundColor="bg-green-600"
+    >
+        Download Report 2
+    </ConfirmWrapper>
+
+    <ConfirmWrapper
+        onConfirm={handleDownloadReport3}
+        message="Confirm Download"
+        additionalInfo={`Download Report 3 for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
+        confirmText="Download"
+        cancelText="Cancel"
+        icon={<FaDownload />}
+        buttonBackgroundColor="bg-purple-600"
+    >
+        Download Report 3
+    </ConfirmWrapper>
+</div>
+
                 </div>
             </div>
         </div>
