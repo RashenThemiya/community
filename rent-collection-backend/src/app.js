@@ -28,7 +28,7 @@ const productPriceRoutes = require('../routes/productPriceRoute'); // Import pro
 const publicationRoutes = require('../routes/publicationRoutes'); 
 const ReportRoute        = require('../routes/ReportRoute')// Import publications routes
 const ReportRoute2        = require('../routes/ReportRouteb')// Import publications routes
-
+const ReportRoute3        = require('../routes/ReportRoutec')// Import publications routes
 const app = express();
 
 app.use(cors({ origin: "*", credentials: true }));
@@ -48,6 +48,7 @@ app.use('/api/payments', paymentRoutes);  // Payment-related routes
 app.use('/api/paymentscorrection', paymentCorrection);
 app.use('/api/report', ReportRoute); // Report routes
 app.use('/api/report2', ReportRoute2);
+app.use('/api/report3', ReportRoute3); // Report routes
 
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/settings', settingRoutes); // Settings routes
