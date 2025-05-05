@@ -1,18 +1,18 @@
 import {
-    BellAlertIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-  } from "@heroicons/react/24/solid";
-  import React, { useState } from "react";
-  import EconomicCenterNews from "../components/EconomicCenterNews";
-  import FeatureCards from "../components/FeatureCards";
-  import Footer from "../components/Footer";
-  import Navbar from "../components/Navbar";
-  import NewsWidget from "../components/NewsWidget";
-  import ServiceSection from "../components/ServiceSection";
-  import WelcomeSection from "../components/WelcomeSection";
-  import MarketOperations from "../components/MarketOperations"; // ✅ Import the new component
-  
+  BellAlertIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/solid";
+import React, { useState } from "react";
+import EconomicCenterNews from "../components/EconomicCenterNews";
+import FeatureCards from "../components/FeatureCards";
+import Footer from "../components/Footer";
+import MarketOperations from "../components/MarketOperations"; // ✅ Import the new component
+import Navbar from "../components/Navbar";
+import NewsWidget from "../components/NewsWidget";
+import ServiceSection from "../components/ServiceSection";
+import VisionMission from "../components/VisionMission";
+import WelcomeSection from "../components/WelcomeSection";
   const Home = () => {
     const [isOpen, setIsOpen] = useState(false);
   
@@ -23,7 +23,9 @@ import {
       <div>
         <Navbar />
         <WelcomeSection />
+        
         <FeatureCards />
+        <VisionMission />
         <ServiceSection />
         <MarketOperations /> {/* ✅ Add this line to display the new section */}
         <EconomicCenterNews />
