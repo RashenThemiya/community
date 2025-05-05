@@ -77,7 +77,7 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* Our Objectives Section */}
+            {/* Our Objectives Section - Updated */}
             <div className="py-16 bg-white">
                 <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     {/* Left Side Image */}
@@ -89,15 +89,25 @@ const Home = () => {
                         />
                     </div>
 
-                    {/* Right Side Objectives */}
+                    {/* Right Side Objectives - Enhanced UI */}
                     <div className="space-y-6">
                         <h2 className="text-3xl font-bold text-green-800 mb-4">Our Objectives</h2>
-                        <ul className="space-y-4 list-disc list-inside text-lg text-gray-700">
-                            <li>Decide prices of vegetables.</li>
-                            <li>Produce high quality vegetables.</li>
-                            <li>Establishment of small scale industries.</li>
-                            <li>Avoid price haggling.</li>
-                        </ul>
+                        <div className="space-y-6">
+                            {[
+                                { icon: "💰", text: "Decide prices of vegetables." },
+                                { icon: "🥬", text: "Produce high quality vegetables." },
+                                { icon: "🏭", text: "Establishment of small scale industries." },
+                                { icon: "🤝", text: "Avoid price haggling." },
+                            ].map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-start space-x-4 p-4 bg-green-100 rounded-xl shadow-sm hover:shadow-md transition"
+                                >
+                                    <div className="text-2xl">{item.icon}</div>
+                                    <p className="text-lg text-gray-700">{item.text}</p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
