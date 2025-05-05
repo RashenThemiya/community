@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // Adjust the import path as needed
+import { FaDownload } from "react-icons/fa"; // Optional icon for confirmation dialog
 
 const Report = () => {
     const today = new Date();
@@ -63,12 +65,19 @@ const Report = () => {
                         </select>
                     </div>
 
-                    <button
-                        onClick={handleDownload}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                    <ConfirmWrapper
+                        onConfirm={handleDownload}
+                        message="Confirm Download"
+                        additionalInfo={`Do you want to download the income report for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
+                        confirmText="Download"
+                        cancelText="Cancel"
+                        icon={<FaDownload />}
+                        buttonBackgroundColor="bg-blue-600"
                     >
-                        Download Report
-                    </button>
+                        <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+                            Download Report
+                        </button>
+                    </ConfirmWrapper>
                 </div>
             </div>
         </div>
