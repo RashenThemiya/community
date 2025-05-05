@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // Adjust the import path as needed
+import { FaDownload } from "react-icons/fa"; // Optional icon for confirmation dialog
 
 const Report = () => {
     const today = new Date();
@@ -69,30 +71,44 @@ const Report = () => {
                             {getYearOptions()}
                         </select>
                     </div>
+<div className="space-y-3">
+    <ConfirmWrapper
+        onConfirm={handleDownloadReport1}
+        message="Confirm Download"
+        additionalInfo={`Download Report 1 for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
+        confirmText="Download"
+        cancelText="Cancel"
+        icon={<FaDownload />}
+        buttonBackgroundColor="bg-blue-600"
+    >
+        Download Report 1
+    </ConfirmWrapper>
 
-                    {/* Download Buttons */}
-                    <div className="space-y-3">
-                        <button
-                            onClick={handleDownloadReport1}
-                            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-                        >
-                            Download Report 1
-                        </button>
+    <ConfirmWrapper
+        onConfirm={handleDownloadReport2}
+        message="Confirm Download"
+        additionalInfo={`Download Report 2 for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
+        confirmText="Download"
+        cancelText="Cancel"
+        icon={<FaDownload />}
+        buttonBackgroundColor="bg-green-600"
+    >
+        Download Report 2
+    </ConfirmWrapper>
 
-                        <button
-                            onClick={handleDownloadReport2}
-                            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
-                        >
-                            Download Report 2
-                        </button>
+    <ConfirmWrapper
+        onConfirm={handleDownloadReport3}
+        message="Confirm Download"
+        additionalInfo={`Download Report 3 for ${new Date(0, month - 1).toLocaleString("default", { month: "long" })} ${year}?`}
+        confirmText="Download"
+        cancelText="Cancel"
+        icon={<FaDownload />}
+        buttonBackgroundColor="bg-purple-600"
+    >
+        Download Report 3
+    </ConfirmWrapper>
+</div>
 
-                        <button
-                            onClick={handleDownloadReport3}
-                            className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition duration-300"
-                        >
-                            Download Report 3
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
