@@ -46,9 +46,9 @@ const Home = () => {
             <div className="bg-green-50 py-10">
                 <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                     {[
-                        { icon: "👨‍🌾", value: "10,000+", label: "Farmers" },
-                        { icon: "🚗", value: "1,500+", label: "Vehicle Parking" },
-                        { icon: "🥦", value: "2,500+", label: "Tons of Vegetables" },
+                        { icon: "👨‍🌾", value: "10,000+", label: "Traders & Farmers Visit Daily" },
+                        { icon: "🚗", value: "1,500+", label: "Vehicles Recieved per Day" },
+                        { icon: "🥦", value: "2,500+", label: "Tons of Vegetables Exchanged Daily" },
                         { icon: "⏰", value: "5AM - 12MN", label: "Open Daily" },
                     ].map((item, index) => (
                         <div
@@ -93,8 +93,8 @@ const Home = () => {
                     <div className="space-y-6">
                         <h2 className="text-3xl font-bold text-green-800 mb-4">Our Objectives</h2>
                         <ul className="space-y-4 list-disc list-inside text-lg text-gray-700">
-                            <li>Vegetable prices being decided.</li>
-                            <li>Produce high quality vegetables</li>
+                            <li>Decide prices of vegetables.</li>
+                            <li>Produce high quality vegetables.</li>
                             <li>Establishment of small scale industries.</li>
                             <li>Avoid price haggling.</li>
                         </ul>
