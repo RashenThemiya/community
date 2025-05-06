@@ -91,7 +91,7 @@ router.get('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async 
                 previous_invoice_total_amount: previousInvoice ? previousInvoice.total_amount : null  // 🟢 Add this
                 
             };
-            console.log('Previous Invoice:', previousInvoice?.toJSON());
+            
 
             enrichedInvoices.push(invoiceData);
         }

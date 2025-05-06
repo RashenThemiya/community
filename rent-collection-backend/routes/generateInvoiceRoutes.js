@@ -13,12 +13,12 @@ function getCurrentMonthYear() {
   return `${year}-${month}`;
 }
 
-// 🔄 Generate invoices for all shops (admin/superadmin only)
-// 🔄 Generate invoices for all shops (admin/superadmin only)
+// 🔄 Generate invoices for all shops (superadmin only)
+
 router.post(
   "/generate-all",
   authenticateUser,
-  authorizeRole(["superadmin", "admin"]),
+  authorizeRole(["superadmin"]),
   async (req, res) => {
     try {
       const monthYear = getCurrentMonthYear();

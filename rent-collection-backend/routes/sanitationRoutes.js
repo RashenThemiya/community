@@ -8,7 +8,7 @@ const router = express.Router();
 /**
  * ✅ Issue a new sanitation ticket
  */
-router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin','tiketing']), async (req, res) => {
   const { price } = req.body;
 
   if (!price) {
