@@ -10,58 +10,80 @@ import {
   Users,
 } from 'lucide-react';
 import React from 'react';
-import treeAnimation from '../../public/Animation - 1746479551878.json';
-
-const items = [
-  {
-    icon: <Target className="text-green-700 w-6 h-6" />,
-    text: 'To directly contribute to fulfilling the vegetable and fruit needs of the Sri Lankan population by supplying essential vegetables, fruits, and grains that are clean and affordable.',
-  },
-  {
-    icon: <DollarSign className="text-green-700 w-6 h-6" />,
-    text: 'To protect traditional vegetable and fruit producers by offering fair and attractive prices for their produce.',
-  },
-  {
-    icon: <Leaf className="text-green-700 w-6 h-6" />,
-    text: 'To ensure the continuous production of high-quality, waste-free vegetables and fruits, thereby increasing the income of farmers and uplifting their living standards.',
-  },
-  {
-    icon: <Repeat className="text-green-700 w-6 h-6" />,
-    text: 'To revive the declining local agricultural industry.',
-  },
-  {
-    icon: <TrendingUp className="text-green-700 w-6 h-6" />,
-    text: 'To enhance the income of wholesale traders through a well-planned and systematic wholesale business, supporting the development of the Dambulla region.',
-  },
-  {
-    icon: <Users className="text-green-700 w-6 h-6" />,
-    text: 'To provide direct employment to over 5,000 people and indirect employment to more than 15,000, making Dambulla a key human resource hub for Sri Lanka.',
-  },
-];
+import { useTranslation } from 'react-i18next';
+import treeAnimation from '../assets/Animation - 1746479551878.json';
 
 const VisionMission = () => {
+  const { t } = useTranslation();
+
+  const items = [
+    {
+      icon: <Target className="text-green-700 w-6 h-6" />,
+      text: t('mission.1'),
+    },
+    {
+      icon: <DollarSign className="text-green-700 w-6 h-6" />,
+      text: t('mission.2'),
+    },
+    {
+      icon: <Leaf className="text-green-700 w-6 h-6" />,
+      text: t('mission.3'),
+    },
+    {
+      icon: <Repeat className="text-green-700 w-6 h-6" />,
+      text: t('mission.4'),
+    },
+    {
+      icon: <TrendingUp className="text-green-700 w-6 h-6" />,
+      text: t('mission.5'),
+    },
+    {
+      icon: <Users className="text-green-700 w-6 h-6" />,
+      text: t('mission.6'),
+    },
+  ];
+
+  // Fire-like glow animation as inline style
+  const glowStyle = {
+    animation: 'greenGlow 2s infinite ease-in-out',
+    borderRadius: '1rem',
+  };
+
   return (
     <section className="max-w-7xl mx-auto px-4 py-10">
+      <style>
+        {`
+          @keyframes greenGlow {
+            0% {
+              box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 15px #16a34a;
+            }
+            50% {
+              box-shadow: 0 0 15px #22c55e, 0 0 30px #16a34a, 0 0 45px #15803d;
+            }
+            100% {
+              box-shadow: 0 0 5px #22c55e, 0 0 10px #22c55e, 0 0 15px #16a34a;
+            }
+          }
+        `}
+      </style>
+
       <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-        
-        {/* Left Column: Vision + Animation */}
+        {/* Vision */}
         <motion.div
           className="bg-green-600 text-white rounded-2xl p-8 shadow-lg w-full lg:w-1/2 flex flex-col justify-between"
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ x: 0 }}
+          animate={{ x: -100 }}
+          transition={{ duration: 3, ease: 'easeInOut' }}
+          style={glowStyle}
         >
           <div className="flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <Eye className="w-8 h-8 text-white" />
-                <h2 className="text-3xl font-bold">Vision</h2>
+                <h2 className="text-3xl font-bold">{t('vision.title')}</h2>
               </div>
-              <p className="text-lg leading-relaxed">
-                Progress of the nation through peace of mind for the farming community.
-              </p>
+              <p className="text-lg leading-relaxed">{t('vision.text')}</p>
             </div>
-
             <div className="mt-8">
               <Lottie
                 animationData={treeAnimation}
@@ -72,17 +94,20 @@ const VisionMission = () => {
           </div>
         </motion.div>
 
-        {/* Right Column: Mission */}
+        {/* Mission */}
         <motion.div
           className="bg-white rounded-2xl p-8 shadow-md w-full lg:w-1/2 border border-green-100 flex flex-col justify-between"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+          initial={{ x: 0 }}
+          animate={{ x: 100 }}
+          transition={{ duration: 3, ease: 'easeInOut' }}
+          style={glowStyle}
         >
           <div>
             <div className="flex items-center gap-3 mb-4">
               <Target className="text-green-700 w-8 h-8" />
-              <h2 className="text-3xl font-bold text-green-800">Mission</h2>
+              <h2 className="text-3xl font-bold text-green-800">
+                {t('mission.title')}
+              </h2>
             </div>
             <ul className="space-y-5 text-gray-700">
               {items.map((item, index) => (
