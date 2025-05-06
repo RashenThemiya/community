@@ -63,9 +63,22 @@
           "description": "Large-scale advertising boards in Dambulla, Kapetipola, and Meegoda will be used to prevent price manipulation and ensure that prices remain fair for all stakeholders."
         }
       ]
-    }
-  
-  
-  
+    },
+    
+      "vision": {
+        "title": "Vision",
+        "text": "Progress of the nation through peace of mind for the farming community."
+      },
+      "mission": {
+        "title": "Mission",
+        "1": "To directly contribute to fulfilling the vegetable and fruit needs of the Sri Lankan population by supplying essential vegetables, fruits, and grains that are clean and affordable.",
+        "2": "To protect traditional vegetable and fruit producers by offering fair and attractive prices for their produce.",
+        "3": "To ensure the continuous production of high-quality, waste-free vegetables and fruits, thereby increasing the income of farmers and uplifting their living standards.",
+        "4": "To revive the declining local agricultural industry.",
+        "5": "To enhance the income of wholesale traders through a well-planned and systematic wholesale business, supporting the development of the Dambulla region.",
+        "6": "To provide direct employment to over 5,000 people and indirect employment to more than 15,000, making Dambulla a key human resource hub for Sri Lanka."
+      }
+    
+     
   
 }
