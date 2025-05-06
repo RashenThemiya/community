@@ -10,7 +10,7 @@ const router = express.Router();
 /**
  * ✅ Issue a new vehicle ticket
  */
-router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin','tiketing']), async (req, res) => {
   const { vehicleNumber, vehicleType, ticketPrice } = req.body;
 
   if (!vehicleNumber || !vehicleType || !ticketPrice) {
