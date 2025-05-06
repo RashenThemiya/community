@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import ConfirmWrapper from "../../components/ConfirmWrapper";
 import ExcelJS from "exceljs";
 
 const ViewPayments = () => {
@@ -52,10 +53,10 @@ const ViewPayments = () => {
   }, [searchQuery, payments]);
 
   // Export to Excel function
-const exportToExcel = async () => {
+  const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Payments");
-  
+
     // Set headers
     worksheet.columns = [
       { header: "Payment ID", key: "payment_id", width: 15 },
@@ -65,7 +66,7 @@ const exportToExcel = async () => {
       { header: "Payment Method", key: "payment_method", width: 20 },
       { header: "Payment Date", key: "payment_date", width: 20 },
     ];
-  
+
     // Highlight headers
     worksheet.getRow(1).eachCell((cell) => {
       cell.font = { bold: true, color: { argb: 'FFFFFFFF' } }; // Bold + white text
@@ -76,7 +77,7 @@ const exportToExcel = async () => {
       };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
-  
+
     // Add payment rows
     filteredPayments.forEach((payment) => {
       worksheet.addRow({
@@ -88,12 +89,12 @@ const exportToExcel = async () => {
         payment_date: new Date(payment.payment_date).toLocaleDateString(),
       });
     });
-  
+
     // Add Total row
     const totalAmount = filteredPayments.reduce((sum, payment) => {
       return sum + parseFloat(payment.amount_paid || 0);
     }, 0);
-  
+
     const totalRow = worksheet.addRow({
       payment_id: '',
       shop_id: '',
@@ -102,18 +103,18 @@ const exportToExcel = async () => {
       payment_method: '',
       payment_date: '',
     });
-  
+
     // Style Total row
     totalRow.eachCell((cell) => {
       cell.font = { bold: true };
     });
-  
+
     // Download as Excel
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-  
+
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -121,22 +122,22 @@ const exportToExcel = async () => {
     a.click();
     window.URL.revokeObjectURL(url);
   };
-  
+
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
-      <div className="flex items-center justify-start mb-4 relative">
-  <button
-    onClick={() => navigate(-1)}
-    className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300"
-  >
-    Back
-  </button>
-  <h2 className="text-2xl font-bold text-center absolute left-1/2 transform -translate-x-1/2">
-    All Payments
-  </h2>
-</div>
+        <div className="flex items-center justify-start mb-4 relative">
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300"
+          >
+            Back
+          </button>
+          <h2 className="text-2xl font-bold text-center absolute left-1/2 transform -translate-x-1/2">
+            All Payments
+          </h2>
+        </div>
 
 
 
@@ -213,16 +214,24 @@ const exportToExcel = async () => {
             </table>
           </div>
         )}
-        <div style={{ display: "flex", justifyContent: "space-between",marginTop: "20px" }}>
-        <button
-  onClick={exportToExcel}
-  className="ml-auto block bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mb-4"
->
-  Download as Excel
-</button>
-</div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
+          <ConfirmWrapper
+            onConfirm={exportToExcel}
+            message="Are you sure you want to download the payments?"
+            additionalInfo="This will export all filtered records as an Excel file."
+            confirmText="Download"
+            cancelText="Cancel"
+            buttonBackgroundColor="bg-green-500"
+            icon={<span role="img" aria-label="download">📥</span>}
+          >
+            <button className="ml-auto block bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition duration-300 mb-4">
+              Download as Excel
+            </button>
+          </ConfirmWrapper>
 
-     
+        </div>
+
+
       </div>
     </div>
   );

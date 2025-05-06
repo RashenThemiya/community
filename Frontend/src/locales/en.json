@@ -1,4 +1,7 @@
-{
+{      "beans": "beans",
+"nadu rice": "nadu rice",
+"carrot": "carrot",
+"sugar": "sugar",
   "home": {
     "welcomeMessage": "Welcome to the Dambulla Dedicated Economic Center",
     "description": "Our mission is to provide essential vegetables, fruits, and grains to Sri Lankans at affordable prices while ensuring fair returns to farmers, supporting waste-free, high-quality agriculture. We aim to uplift farmers’ incomes, strengthen Dambulla's wholesale trade, generate thousands of jobs, and revitalize domestic agriculture for national development."
@@ -33,5 +36,36 @@
     "kepptipola": "Keppetipola Economic Center",
     "center": "Dedicated Economic Center",
     "city": "Dambulla"
-  }
+  },
+  
+    "ServiceSection": {
+      "sectionTitle": "Our Services",
+      "sectionDescription": "Our services at the Dambulla Special Economic Center work towards enhancing the economic growth and agricultural sustainability of farmers. Our primary objectives are to provide better prices for farmers, promote collective growth for agricultural production, and deliver high-quality products. Additionally, we fully implement new technological methods, start small industries, and establish price determination systems. Through our services, we aim to ensure the safety of farmers and provide high-quality products to consumers.",
+      "services": [
+        {
+          "icon": "💰",
+          "title": "Determining Vegetable Prices",
+          "description": "The vegetable prices at the Dambulla Special Economic Center are determined based on supply and demand principles. In some cases, farmers are unable to cover their production costs, putting them in a difficult situation. Since the price determination is solely based on supply and demand, management has limited control over the prices. Therefore, we are taking several steps to stabilize vegetable prices."
+        },
+        {
+          "icon": "🥬",
+          "title": "Ensuring High-Quality Vegetable Production",
+          "description": "We aim to achieve high yields from very small land areas and ensure that farmers maintain high-quality vegetable production, ensuring better crop yields for them."
+        },
+        {
+          "icon": "🏭",
+          "title": "Establishing Small Industries",
+          "description": "We focus on establishing small industries to prevent excess production from reaching the market, ensuring that products are processed locally and the market is balanced."
+        },
+        {
+          "icon": "🤝",
+          "title": "Preventing Price Manipulation",
+          "description": "Large-scale advertising boards in Dambulla, Kapetipola, and Meegoda will be used to prevent price manipulation and ensure that prices remain fair for all stakeholders."
+        }
+      ]
+    }
+  
+  
+  
+  
 }

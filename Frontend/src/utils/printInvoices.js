@@ -111,20 +111,17 @@ export const printInvoices = async (invoices) => {
 
    <div>
   පසුගිය මස ගෙවීමට තිබූ මුලු මුදල : 
-  <span>
-    LKR ${
-      typeof invoice.previous_invoice_total_amount === "number"
-        ? invoice.previous_invoice_total_amount.toFixed(2)
-        : "0.00"
-    }
-  </span>
+<span>LKR ${invoice.previous_invoice_total_amount ? parseFloat(invoice.previous_invoice_total_amount).toFixed(2) : '0.00'}</span>
+
 </div>
 
     <div >
+
       පසුගිය මස ගෙවූ මුදල : <br/>
       <span>LKR ${parseFloat(
         invoice.previous_payment_summary?.total_paid || 0
       ).toFixed(2)}</span>
+
     </div>
   
   </div>

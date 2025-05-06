@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { FiEdit3 } from "react-icons/fi";
 import api from "../../utils/axiosInstance";
-import ConfirmWrapper from "../../components/ConfirmWrapper"; // ✅ Import
+import ConfirmWrapper from "../../components/ConfirmWrapper";
 
 const EditTenant = () => {
     const navigate = useNavigate();
@@ -19,7 +20,7 @@ const EditTenant = () => {
                 const response = await api.get(`/api/tenants/${id}`);
                 setTenant(response.data);
             } catch (err) {
-                setError("Failed to load tenant details.");
+                setError("❌ Failed to load tenant details.");
             } finally {
                 setInitialLoading(false);
             }
@@ -27,10 +28,20 @@ const EditTenant = () => {
         fetchTenant();
     }, [id]);
 
+    useEffect(() => {
+        if (error || success) {
+            const timer = setTimeout(() => {
+                setError(null);
+                setSuccess(null);
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [error, success]);
+
     const handleChange = (e) => {
         setTenant((prevTenant) => ({
             ...prevTenant,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         }));
     };
 
@@ -38,28 +49,37 @@ const EditTenant = () => {
         setLoading(true);
         try {
             await api.put(`/api/tenants/${id}`, tenant);
-            setSuccess("Tenant updated successfully! Redirecting...");
+            setSuccess("✅ Tenant updated successfully! Redirecting...");
             setTimeout(() => {
                 navigate("/view-tenants");
             }, 2000);
         } catch (err) {
-            setError("Failed to update tenant.");
+            setError("❌ Failed to update tenant.");
         } finally {
             setLoading(false);
         }
     };
 
     if (initialLoading) return <div className="text-center">Loading...</div>;
-    if (error) return <div className="text-center text-red-500">{error}</div>;
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
                 <h2 className="text-2xl font-bold mb-6 text-center">
-                    Editing Tenant Id- {id} - Current Name- {tenant.name || "Loading..."}
+                    Editing Tenant ID: {id} – {tenant.name || "Loading..."}
                 </h2>
 
-                {success && <p className="text-green-500 text-sm mb-4">{success}</p>}
+                {error && (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 text-center">
+                        {error}
+                    </div>
+                )}
+
+                {success && (
+                    <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4 text-center">
+                        {success}
+                    </div>
+                )}
 
                 <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
                     <div>
@@ -105,7 +125,6 @@ const EditTenant = () => {
                             className="w-full p-2 border border-gray-300 rounded-lg"
                         />
                     </div>
-
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Shop ID</label>
                         <input
@@ -117,15 +136,18 @@ const EditTenant = () => {
                         />
                     </div>
 
-                    {/* ConfirmWrapper for Update */}
                     <ConfirmWrapper
                         open={showConfirm}
-                        message="Are you sure you want to update this tenant?"
+                        message={`Update Confirmation for Tenant ID: ${id}`}
+                        additionalInfo={`Are you sure you want to update "${tenant.name}" (Tenant ID: ${id})? Changes will be saved immediately.`}
+                        confirmText="Yes, Update Tenant"
+                        cancelText="No, Cancel"
                         onConfirm={() => {
                             setShowConfirm(false);
                             handleUpdate();
                         }}
                         onCancel={() => setShowConfirm(false)}
+                        icon={<FiEdit3 />}
                     >
                         <button
                             type="button"
@@ -137,7 +159,6 @@ const EditTenant = () => {
                         </button>
                     </ConfirmWrapper>
 
-                    {/* Cancel Button */}
                     <button
                         type="button"
                         onClick={() => navigate("/view-tenants")}
