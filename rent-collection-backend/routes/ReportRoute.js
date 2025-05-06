@@ -54,7 +54,20 @@ router.get('/monthly-income', async (req, res) => {
     const [fineMap, fineCross] = await getPaymentsByShopAndInvoice(Fine, startOfPeriod, endOfPeriod, selectedMonthYear);
     const [opMap, opCross] = await getPaymentsByShopAndInvoice(OperationFee, startOfPeriod, endOfPeriod, selectedMonthYear);
     const [vatMap, vatCross] = await getPaymentsByShopAndInvoice(VAT, startOfPeriod, endOfPeriod, selectedMonthYear);
-
+    const finesThisMonth = await Fine.findAll({
+      where: {
+        invoice_id: { [Op.in]: invoices.map(inv => inv.invoice_id) }
+      },
+      attributes: ['invoice_id', 'fine_amount'],
+      raw: true,
+    });
+    
+    const fineByInvoiceId = finesThisMonth.reduce((map, fine) => {
+      map[fine.invoice_id] = parseFloat(fine.fine_amount || 0);
+      return map;
+    }, {});
+    
+    
     const invoiceMapByShop = {};
     invoices.forEach(inv => {
       if (!invoiceMapByShop[inv.shop_id]) invoiceMapByShop[inv.shop_id] = [];
@@ -71,8 +84,9 @@ router.get('/monthly-income', async (req, res) => {
       { header: 'Operation Fee', key: 'operation_fee' },
       { header: 'VAT', key: 'vat_amount' },
       { header: 'Previous Balance', key: 'previous_balance' },
-      { header: 'Total Fines', key: 'fines' },
+      { header: 'Previous Total Fines', key: 'fines' },
       { header: 'Fines Previous Month', key: 'previous_fines' },
+      { header: 'Fine This Invoice', key: 'fine_for_this_invoice' }, // ✅ Add this
       { header: 'Total Arrears', key: 'total_arrears' },
       { header: 'Total Amount', key: 'total_amount' },
       { header: 'Total Paid', key: 'total_paid' },
@@ -113,6 +127,7 @@ router.get('/monthly-income', async (req, res) => {
       total_amount:0,
       fines:0,
       previous_fines:0,
+      fine_for_this_invoice:0,
        // ✅ Fix: add this line
     };
 
@@ -123,7 +138,8 @@ router.get('/monthly-income', async (req, res) => {
       const nextInvoice = shopInvoices[currentIndex + 1];
       const invStart = new Date(inv.createdAt).getTime();
       const invEnd = nextInvoice ? new Date(nextInvoice.createdAt).getTime() : Date.now();
-      
+      const fineThisInvoice =  parseFloat(fineByInvoiceId[inv.invoice_id] || 0);
+       console.log("Fine for this invoice:",fineThisInvoice);
       // Normalize both shop_ids to lower case for comparison
       const paidForThisInvoice = allPayments
         .filter(payment => {
@@ -164,7 +180,7 @@ router.get('/monthly-income', async (req, res) => {
 
       if (prevBalance < 0) {
         prevBalance = Math.abs(prevBalance);
-        adjusted_arrears=+ prevBalance;
+        adjusted_arrears += prevBalance;
         if (effective_shop_balance > 0) {
           effective_shop_balance = 0;
         }
@@ -174,7 +190,6 @@ router.get('/monthly-income', async (req, res) => {
 
       }
       const absPreviousBalance = Math.max(0, parseFloat(inv.previous_balance));  // Take absolute value to ensure it's positive
-      
       // Add negative shop_balance to total arrears
 
       sheet.addRow({
@@ -186,6 +201,7 @@ router.get('/monthly-income', async (req, res) => {
         previous_balance: absPreviousBalance,
         fines: inv.fines,
         previous_fines: inv.previous_fines,
+        fine_for_this_invoice:fineThisInvoice,
         total_arrears: adjusted_arrears,
         total_amount: inv.total_amount,
         total_paid: paidForThisInvoice,
@@ -232,6 +248,7 @@ router.get('/monthly-income', async (req, res) => {
       totals.total_amount += parseFloat(inv.total_amount);
       totals.fines += parseFloat(inv.fines);
       totals.previous_fines += parseFloat(inv.previous_fines);
+      totals.fine_for_this_invoice += fineThisInvoice;
     }
 
     sheet.getRow(1).eachCell(cell => {
@@ -265,6 +282,8 @@ router.get('/monthly-income', async (req, res) => {
       total_amount: totals.total_amount,
       fines: totals.fines,
       previous_fines: totals.previous_fines,
+      fine_for_this_invoice: totals.fine_for_this_invoice || 0,
+
     });
 
     totalRow.eachCell(cell => {
