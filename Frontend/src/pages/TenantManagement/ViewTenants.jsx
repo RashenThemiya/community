@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import api from "../../utils/axiosInstance";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -53,12 +53,13 @@ const ViewTenants = () => {
     };
 
     const filteredTenants = tenants.filter((tenant) =>
-        tenant.tenant_id.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.contact.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tenant.shop_id.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        tenant.tenant_id?.toString().toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.contact?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        tenant.shop_id?.toString().toLowerCase().includes(searchQuery.toLowerCase())
     );
+    
 
     const totalPages = Math.ceil(filteredTenants.length / ITEMS_PER_PAGE);
     const currentTenants = filteredTenants.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
@@ -180,7 +181,7 @@ const ViewTenants = () => {
 };
 
 function highlight(text, query) {
-    if (!query) return text;
+    if (!text || !query) return text || ""; // Handles null, undefined, or empty string
     const parts = text.split(new RegExp(`(${query})`, "gi"));
     return parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ? (
@@ -190,5 +191,6 @@ function highlight(text, query) {
         )
     );
 }
+
 
 export default ViewTenants;
