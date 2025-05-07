@@ -8,12 +8,15 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from "../components/Navbar";
 import { Skeleton } from "../components/Skeleton";
 import DailyPriceCard from './DailyPriceCard';
+import Footer from '../components/Footer';
+import "../fonts/IskoolaPota"; 
 
 const DailyPrice = () => {
   const { t } = useTranslation();
   const [dailyPrices, setDailyPrices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   const fetchPrices = useCallback(async () => {
@@ -42,18 +45,22 @@ const DailyPrice = () => {
     fetchPrices();
   }, [fetchPrices]);
 
+  const filteredPrices = dailyPrices.filter((item) =>
+    item.product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const downloadPDF = () => {
     const doc = new jsPDF();
-
-    // Title
+  
+    // Set Sinhala font
+    doc.setFont("IskoolaPota");
+  
     doc.setFontSize(18);
     doc.text(`${t("dailyPrices.pdfTitle", "Daily Product Prices")}`, 105, 20, { align: "center" });
-
-    // Subtitle (date)
+  
     doc.setFontSize(12);
     doc.text(`${t("dailyPrices.date", "Date")}: ${date}`, 105, 30, { align: "center" });
-
-    // Table
+  
     const tableColumn = [
       t("dailyPrices.productName", "Product Name"),
       t("dailyPrices.type", "Type"),
@@ -61,8 +68,8 @@ const DailyPrice = () => {
       t("dailyPrices.maxPrice", "Max Price (Rs.)")
     ];
     const tableRows = [];
-
-    dailyPrices.forEach((item) => {
+  
+    filteredPrices.forEach((item) => {
       tableRows.push([
         t(item.product?.name, item.product?.name || "Unnamed"),
         item.product?.type || "N/A",
@@ -70,36 +77,39 @@ const DailyPrice = () => {
         item.max_price
       ]);
     });
-
+  
     autoTable(doc, {
       startY: 40,
       head: [tableColumn],
       body: tableRows,
       styles: {
-        fontSize: 10,
+        font: "IskoolaPota",
+        fontSize: 10
       },
       headStyles: {
         fillColor: [52, 152, 219],
         textColor: [255, 255, 255],
+        font: "IskoolaPota"
       },
       alternateRowStyles: {
         fillColor: [240, 240, 240],
       },
       margin: { top: 40 },
     });
-
-    // Footer
+  
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(10);
+      doc.setFont("IskoolaPota");
       doc.text(`Downloaded on ${new Date().toLocaleString()}`, 14, 290);
       doc.text(`Page ${i} of ${pageCount}`, 195, 290, { align: "right" });
     }
-
+  
     doc.save(`Daily_Prices_${date}.pdf`);
     toast.success(t("dailyPrices.pdfDownloaded", "PDF downloaded successfully!"));
   };
+  
 
   return (
     <div>
@@ -111,15 +121,24 @@ const DailyPrice = () => {
           {t("dailyPrices.title", "Daily Product Prices")}
         </h1>
 
-        <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4 flex-wrap">
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <input
+              type="text"
+              placeholder={t("dailyPrices.searchPlaceholder", " 🔍︎ Search by product name")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+            />
+          </div>
 
-          {!loading && dailyPrices.length > 0 && (
+          {!loading && filteredPrices.length > 0 && (
             <button
               onClick={downloadPDF}
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg shadow-md transition duration-200"
@@ -135,7 +154,7 @@ const DailyPrice = () => {
               <Skeleton key={idx} />
             ))}
           </div>
-        ) : dailyPrices.length === 0 ? (
+        ) : filteredPrices.length === 0 ? (
           <div className="flex flex-col items-center text-center text-gray-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -155,12 +174,14 @@ const DailyPrice = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {dailyPrices.map((item) => (
+            {filteredPrices.map((item) => (
               <DailyPriceCard key={item.id} item={item} navigate={navigate} t={t} />
             ))}
           </div>
         )}
       </div>
+
+      <Footer />
     </div>
   );
 };

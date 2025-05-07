@@ -1,17 +1,17 @@
-import { useEffect, useState, useRef } from "react";
-import Slider from "react-slick";
 import {
-  Megaphone,
-  Newspaper,
   Bell,
   Calendar,
-  List,
   ChevronLeft,
   ChevronRight,
+  List,
+  Megaphone,
+  Newspaper,
 } from "lucide-react";
-import api from "../utils/axiosInstance";
-import "slick-carousel/slick/slick.css";
+import { useEffect, useRef, useState } from "react";
+import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
+import "slick-carousel/slick/slick.css";
+import api from "../utils/axiosInstance";
 
 // Icon mapping
 const icons = {

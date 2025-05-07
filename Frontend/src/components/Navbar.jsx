@@ -10,10 +10,21 @@ const Navbar = () => {
         i18n.changeLanguage(lng);
     };
 
+    const getTitle = () => {
+        switch (i18n.language) {
+            case 'en':
+                return 'Dambulla Dedicated Economic Centre';
+            case 'ta':
+                return 'தம்புள்ள விசேட பொருளாதார மையம்';
+            default:
+                return 'දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය';
+        }
+    };
+
     return (
-        <div className="shadow-lg">
-            {/* Top ribbon bar for hotline/announcement */}
-            <div className="bg-lime-300 text-gray-900 text-sm py-1 px-4 flex justify-between items-center font-medium">
+        <div className="sticky top-0 z-50 shadow-lg text-base md:text-lg bg-white">
+            {/* Top ribbon bar */}
+            <div className="bg-lime-400 text-gray-900 text-sm md:text-base py-2 px-4 flex justify-between items-center font-medium">
                 <div>
                     📢 Hotline: <span className="font-semibold">1919</span> | eGov Services Portal
                 </div>
@@ -25,37 +36,37 @@ const Navbar = () => {
             </div>
 
             {/* Main navbar */}
-            <nav className="bg-green-700 text-white">
-                <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <nav className="bg-green-800 text-white">
+                <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
                     {/* Logo and title */}
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-4">
                         <img
                             src="/images/logo.jpg"
                             alt="Gov Logo"
-                            className="w-10 h-10"
+                            className="w-12 h-12 rounded-full border border-white"
                         />
-                        <Link to="/" className="text-xl font-bold tracking-wide text-white">
-                            දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය
+                        <Link to="/" className="text-2xl font-bold tracking-wide text-white leading-tight">
+                            {getTitle()}
                         </Link>
                     </div>
 
-                    {/* Desktop Menu */}
-                    <div className="hidden md:flex space-x-6 items-center font-medium">
+                    {/* Desktop menu */}
+                    <div className="hidden md:flex space-x-8 items-center font-medium text-lg">
                         <Link to="/" className="hover:text-lime-300">Home</Link>
                         <Link to="/home-dailyprice" className="hover:text-lime-300">Daily Price</Link>
                         <Link to="/contact" className="hover:text-lime-300">Contact</Link>
                         <Link
                             to="/login"
-                            className="bg-white text-green-700 px-4 py-2 rounded-full hover:bg-lime-200 font-semibold transition"
+                            className="bg-white text-green-800 px-5 py-2 rounded-full hover:bg-lime-200 font-semibold transition"
                         >
                             Login
                         </Link>
                     </div>
 
-                    {/* Mobile Menu Toggle */}
+                    {/* Mobile menu toggle */}
                     <div className="md:hidden">
                         <button onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2"
+                            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2"
                                 viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round"
                                     d="M4 6h16M4 12h16M4 18h16" />
@@ -64,15 +75,15 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Mobile Menu */}
+                {/* Mobile menu */}
                 {isOpen && (
-                    <div className="md:hidden px-4 pb-4 space-y-2 font-medium text-white">
+                    <div className="md:hidden px-4 pb-4 space-y-3 font-medium text-white text-base">
                         <Link to="/" className="block hover:text-lime-300">Home</Link>
                         <Link to="/home-dailyprice" className="block hover:text-lime-300">Daily Price</Link>
                         <Link to="/contact" className="block hover:text-lime-300">Contact</Link>
                         <Link
                             to="/login"
-                            className="block bg-white text-green-700 text-center px-4 py-2 rounded-full font-semibold mt-2"
+                            className="block bg-white text-green-800 text-center px-4 py-2 rounded-full font-semibold mt-2 hover:bg-lime-200"
                         >
                             Login
                         </Link>
