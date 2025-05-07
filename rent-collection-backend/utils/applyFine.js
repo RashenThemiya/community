@@ -14,8 +14,9 @@ async function applyFine(invoiceId) {
     const t = await sequelize.transaction();
     try {
         console.log(`🔍 Looking up invoice ID: ${invoiceId}`);
+        
+        // Check if invoice exists
         const invoice = await Invoice.findByPk(invoiceId, { transaction: t });
-
         if (!invoice) {
             console.warn(`⚠️ Invoice ID ${invoiceId} not found.`);
             throw new Error("Invoice not found.");
@@ -24,6 +25,7 @@ async function applyFine(invoiceId) {
         const shopId = invoice.shop_id;
         console.log(`🏪 Shop ID for invoice: ${shopId}`);
 
+        // Early exit if fine already exists
         const existingFine = await Fine.findOne({
             where: { invoice_id: invoiceId },
             transaction: t
@@ -31,9 +33,11 @@ async function applyFine(invoiceId) {
 
         if (existingFine) {
             console.warn(`⚠️ Fine already exists for invoice #${invoiceId}`);
+            await t.rollback();
             return { success: false, message: "Fine already exists for this invoice." };
         }
 
+        // Fetch rent records
         const rents = await Rent.findAll({
             where: { invoice_id: invoiceId },
             transaction: t
@@ -41,9 +45,11 @@ async function applyFine(invoiceId) {
 
         if (rents.length === 0) {
             console.warn(`⚠️ No rent records found for invoice #${invoiceId}`);
+            await t.rollback();
             return { success: false, message: "No rent records found for this invoice." };
         }
 
+        // Calculate total fine
         let totalFineAmount = 0;
         for (const rent of rents) {
             const outstandingRent = parseFloat(rent.rent_amount) - parseFloat(rent.paid_amount);
@@ -56,10 +62,11 @@ async function applyFine(invoiceId) {
 
         if (totalFineAmount === 0) {
             console.log(`💤 No outstanding rent found for invoice #${invoiceId}`);
+            await t.rollback();
             return { success: false, message: "No outstanding rent to apply a fine." };
         }
 
-        // Create fine record
+        // Create fine
         await Fine.create({
             invoice_id: invoiceId,
             shop_id: shopId,
@@ -67,7 +74,7 @@ async function applyFine(invoiceId) {
             status: 'Unpaid'
         }, { transaction: t });
 
-        // Log Audit Trail
+        // Audit log
         await AuditTrail.create({
             shop_id: shopId,
             event_type: 'Fine Applied',
@@ -77,7 +84,11 @@ async function applyFine(invoiceId) {
 
         await t.commit();
         console.log(`✅ Fine of ${totalFineAmount.toFixed(2)} applied successfully to invoice #${invoiceId}`);
-        return { success: true, message: `Fine of ${totalFineAmount.toFixed(2)} applied successfully.`, fineAmount: totalFineAmount.toFixed(2) };
+        return {
+            success: true,
+            message: `Fine of ${totalFineAmount.toFixed(2)} applied successfully.`,
+            fineAmount: totalFineAmount.toFixed(2)
+        };
 
     } catch (error) {
         await t.rollback();

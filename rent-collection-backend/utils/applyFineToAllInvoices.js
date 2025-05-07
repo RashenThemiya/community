@@ -11,11 +11,9 @@ const dayjs = require('dayjs');
  */
 async function applyFineToAllInvoices() {
     try {
-        // Calculate the threshold date: 17 days ago
         const fineThresholdDate = dayjs().subtract(17, 'days').toDate();
         console.log(`📅 Fine threshold date is: ${fineThresholdDate}`);
 
-        // Find invoices with specified statuses and older than threshold date
         const invoices = await Invoice.findAll({
             where: {
                 status: { [Sequelize.Op.in]: ['Unpaid', 'Partially Paid', 'Arrest'] },
@@ -25,28 +23,25 @@ async function applyFineToAllInvoices() {
 
         console.log(`📄 Found ${invoices.length} potentially eligible invoices.`);
 
-        if (invoices.length === 0) {
+        if (!invoices.length) {
             return { success: false, message: "No eligible invoices found for fine application." };
         }
 
-        // Get IDs of invoices
         const invoiceIds = invoices.map(inv => inv.invoice_id);
 
-        // Check which invoices already have fines
-        const finedInvoices = await Fine.findAll({
+        const existingFines = await Fine.findAll({
             attributes: ['invoice_id'],
             where: { invoice_id: { [Sequelize.Op.in]: invoiceIds } },
             raw: true
         });
 
-        const finedInvoiceIds = new Set(finedInvoices.map(fine => fine.invoice_id));
+        const finedInvoiceIds = new Set(existingFines.map(f => f.invoice_id));
         console.log(`💰 ${finedInvoiceIds.size} invoices already have fines.`);
 
-        // Filter invoices that do not already have fines
         const invoicesToFine = invoices.filter(inv => !finedInvoiceIds.has(inv.invoice_id));
         console.log(`🔍 ${invoicesToFine.length} invoices eligible for fine application.`);
 
-        if (invoicesToFine.length === 0) {
+        if (!invoicesToFine.length) {
             return { success: false, message: "All eligible invoices already have fines." };
         }
 
@@ -60,14 +55,12 @@ async function applyFineToAllInvoices() {
                 totalFinedInvoices++;
                 console.log(`✅ Fine of ${result.fineAmount} applied to invoice #${invoice.invoice_id}`);
 
-                // Audit trail logging
+                // Audit Trail
                 await AuditTrail.create({
                     shop_id: invoice.shop_id,
                     invoice_id: invoice.invoice_id,
                     event_type: 'Fine Applied',
-                    event_description: `Fine applied to invoice #${invoice.invoice_id} due to overdue payment.`,
-                    old_value: null,
-                    new_value: result.fineAmount,
+                    event_description: `Fine of ${result.fineAmount} applied to overdue invoice.`,
                     user_actioned: 'System'
                 });
             } else {
