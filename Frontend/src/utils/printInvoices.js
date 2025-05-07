@@ -102,7 +102,7 @@ export const printInvoices = async (invoices) => {
 </h4>
   <div style=" font-size: 10px;">
     <div >
-      අවසන් වරට බදු කුලී ගෙවූ දිනය :
+      අවසන් වරට මුදල් ගෙවූ දිනය :
       <span>
         ${
           invoice.previous_payment_summary?.last_payment_date
@@ -130,6 +130,14 @@ export const printInvoices = async (invoices) => {
     </div>
   
   </div>
+  <!-- Divider Line -->
+  <div style="border-top: 1px solid black; margin: 8px 0;"></div>
+
+  <!-- Blank Space Section -->
+  <div style="height: 30px;">
+  <p style="margin: 0;text-align: center;font-size: 13px;">VAT Registration No: 409238270/7000</p>
+  </div>
+
 </div>
 
 
@@ -143,7 +151,7 @@ export const printInvoices = async (invoices) => {
             <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 20%; font-size: 9px;">
           
               <h4 style="color: red; margin: 0 0 5px; border-bottom: 1px solid black;">
-මෙම බිල්පතේ අයවිය යුතු මාසික කුලිය මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30%ක බදු කුලියක් අය කරනු ලැබේ.</h4>
+මෙම බිල්පතේ අයවිය යුතු මාසික කුලිය මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30% ක දඩයක් අය කරනු ලැබේ.</h4>
 
               <div style="text-align: center;">
   <p style="margin: 0;">
@@ -174,7 +182,7 @@ export const printInvoices = async (invoices) => {
     <!-- Section 4: for market office -->
     <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;border-right: 1px solid #000;">
       <div>
-        <p style="margin: 0;text-align: center;"><strong>For Trust Market Office Use</strong></p>
+        <p style="margin: 0;text-align: center;font-size: 13px;"><strong>For Trust Office Use</strong></p>
         
       </div>
       <div style="text-align: center; margin-top: auto;">
