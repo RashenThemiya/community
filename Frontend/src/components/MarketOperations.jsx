@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const MarketOperations = () => {
   return (
@@ -21,12 +22,17 @@ const MarketOperations = () => {
           </p>
         </div>
 
-        {/* Image */}
+        {/* Animated and smaller Image */}
         <div className="w-full flex justify-center">
-          <img
+          <motion.img
             src="/images/market.jpeg"
             alt="Market operations"
-            className="rounded-2xl shadow-lg w-full max-w-sm md:max-w-md lg:max-w-lg object-cover"
+            className="w-full max-w-xs object-cover"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           />
         </div>
       </div>

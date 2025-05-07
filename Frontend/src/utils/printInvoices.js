@@ -282,7 +282,7 @@ export const printInvoices = async (invoices) => {
   .half-page {
     height: 48%;
     overflow: hidden;
-      border: 1px dashed red;
+     
     box-sizing: border-box;
   }
     .scale-content {

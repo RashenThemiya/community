@@ -97,7 +97,7 @@ router.put('/:shopId', authenticateUser, authorizeRole(["admin", "superadmin"]),
 });
 
 // Delete shop (only accessible by Super Admin)
-router.delete('/:shopId', authenticateUser, authorizeRole(["admin", "superadmin"]), async (req, res) => {
+router.delete('/:shopId', authenticateUser, authorizeRole([ "superadmin"]), async (req, res) => {
   const { shopId } = req.params;
 
   try {

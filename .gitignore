@@ -3,4 +3,5 @@ rent-collection-backend/.env
 rent-management-frontend/node_modules/
 my-project/node_modules/
 Frontend/node_modules/
-frontend_for_pricehistory/node_modules/
+frontend_for_pricehistory/node_modules/"rent-collection-backend/config/credentials.json" 
+rent-collection-backend/config/credentials.json
