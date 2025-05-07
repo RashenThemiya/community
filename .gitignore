@@ -7,3 +7,4 @@ Frontend/node_modules/
 Frontend/.env
 frontend_for_pricehistory/node_modules/"rent-collection-backend/config/credentials.json" 
 rent-collection-backend/config/credentials.json
+**/.env
