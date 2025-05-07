@@ -7,6 +7,7 @@ const Invoice = require('../models/Invoice');
 const Fine = require('../models/Fine');
 const OperationFee = require('../models/OperationFee');
 const Rent = require('../models/Rent');
+
 const Vat = require('../models/VAT');
 const AuditTrail = require('../models/AuditTrail');
 const shopBalance = require('../models/ShopBalance');
