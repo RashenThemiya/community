@@ -1,5 +1,21 @@
 import api from "./axiosInstance";
 
+const waitForImagesToLoad = (container) => {
+  const images = container.querySelectorAll("img");
+  const promises = Array.from(images).map(
+    (img) =>
+      new Promise((resolve) => {
+        if (img.complete) {
+          resolve();
+        } else {
+          img.onload = resolve;
+          img.onerror = resolve; // still resolve on error to prevent hang
+        }
+      })
+  );
+  return Promise.all(promises);
+};
+
 export const printInvoices = async (invoices) => {
   if (invoices.length === 0) {
     alert("Please select at least one invoice to print.");
@@ -19,16 +35,16 @@ export const printInvoices = async (invoices) => {
   const printableContent = invoices
     .map((invoice) => {
       const invoiceHTML = `
-        <div style="padding: 2px; font-size: 11px; font-family: Arial, sans-serif;">
+        <div style="padding: 0px; font-size: 11px; font-family: Arial, sans-serif;">
           <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
                 <img src="/images/Gov.jpg" alt="Logo" style="height: 60px;"/>
             <div style="text-align: center;">
-              <h2 style="margin: 0; font-size: 14px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණභාරය</h2>
+              <h2 style="margin: 0; font-size: 17px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණභාරය</h2>
                     
           
 
               
-              <h4 style="margin-top: 5px; font-size: 12px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
+              <h4 style="margin-top: 5px; font-size: 15px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
             </div>
               <img src="/images/logo.jpg" alt="Logo" style="height: 60px;" />
           </div>
@@ -36,39 +52,44 @@ export const printInvoices = async (invoices) => {
 
 
 
-      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 13px; font-family: Arial, sans-serif;">
+      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 12px; font-family: Arial, sans-serif;">
 
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
-    <strong>Invoice No</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">බිල්පත් අංකය</span>: ${invoice.invoice_id}
+
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
+    <strong>Shop Detils</strong><br/>
+    <span style="font-weight: normal; text-transform: none;">කඩ අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.shop_id}
+  </span>
+  </span>
   </div>
 
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Invoice Month</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">බිල්පත් මාසය</span>: ${new Date(
+    <span style="font-weight: normal; text-transform: none;">බිල්පත් මාසය</span>:<span style="font-size: 15px;font-weight: bold;"> ${new Date(
       invoice.month_year
     ).toLocaleDateString("en-US", {
       month: "long",
       year: "numeric",
     })}
-  </div>
+  </span></div>
 
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Accounting Date</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">ගිණුම් කල දිනය</span>: ${new Date(
+    <span style="font-weight: normal; text-transform: none;">ගිණුම් කල දිනය</span>:<span style="font-size: 15px;font-weight: bold;"> ${new Date(
       invoice.createdAt
     ).toLocaleDateString()}
-  </div>
-
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
-    <strong>Shop No</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">කඩ අංකය</span>: ${invoice.shop_id}
+  </span></div>
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
+    <strong>Invoice No</strong><br/>
+    <span style="font-weight: normal; text-transform: none;">බිල්පත් අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.invoice_id}</span>
   </div>
 
 </div>
 
-
-
+      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 12px; font-family: Arial, sans-serif;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
+    <span style="font-weight: normal; text-transform: none;">බදුකරුගේ නම</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.Shop.Tenant.name}</span>
+  </div>
+</div>
 
           <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
             <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 60%;">
@@ -96,54 +117,62 @@ export const printInvoices = async (invoices) => {
               </table>
             </div>
 
+<div style="display: flex; flex-direction: column; width: 20%;">
+  <!-- Previous Month Payment Details -->
+  <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 5px;">
+    <h4 style="text-align: center; margin-bottom: 8px;">පසුගිය මස ගෙවීම් විස්තර</h4>
+    <div style="font-size: 10px;">
+      <div>
+        අවසන් වරට මුදල් ගෙවූ දිනය :
+        <span>
+          ${
+            invoice.previous_payment_summary?.last_payment_date
+              ? new Date(
+                  invoice.previous_payment_summary.last_payment_date
+                ).toLocaleDateString()
+              : "N/A"
+          }
+        </span>
+      </div>
 
-<div style="background-color: #f4d3a1; border: 1px solid #000; padding: 5px; width: 20%;">
-  <h4 style="text-align: center; margin-bottom: 8px ;">පසුගිය මස ගෙවීම් විස්තර
-</h4>
-  <div style=" font-size: 10px;">
-    <div >
-      අවසන් වරට බදු කුලී ගෙවූ දිනය :
-      <span>
-        ${
-          invoice.previous_payment_summary?.last_payment_date
-            ? new Date(
-                invoice.previous_payment_summary.last_payment_date
-              ).toLocaleDateString()
-            : "N/A"
-        }
-      </span>
+      <div>
+        පසුගිය මස ගෙවීමට තිබූ මුලු මුදල :
+        <span>
+          LKR ${
+            invoice.previous_invoice_total_amount
+              ? parseFloat(invoice.previous_invoice_total_amount).toFixed(2)
+              : '0.00'
+          }
+        </span>
+      </div>
+
+      <div>
+        පසුගිය මස ගෙවූ මුදල : <br/>
+        <span>
+          LKR ${parseFloat(invoice.previous_payment_summary?.total_paid || 0).toFixed(2)}
+        </span>
+      </div>
     </div>
 
-   <div>
-  පසුගිය මස ගෙවීමට තිබූ මුලු මුදල : 
-<span>LKR ${invoice.previous_invoice_total_amount ? parseFloat(invoice.previous_invoice_total_amount).toFixed(2) : '0.00'}</span>
+    <div style="border-top: 1px solid black; margin: 8px 0;"></div>
+  </div>
 
-</div>
-
-    <div >
-
-      පසුගිය මස ගෙවූ මුදල : <br/>
-      <span>LKR ${parseFloat(
-        invoice.previous_payment_summary?.total_paid || 0
-      ).toFixed(2)}</span>
-
+  <!-- VAT Info -->
+  <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; font-size: 9px; margin-top: 10px;">
+    <div style="height: 30px;">
+<p style="margin: 0; text-align: center; font-size: 11px; word-wrap: break-word; white-space: normal;">
+  VAT Registration No: 409238270/7000
+</p>
     </div>
-  
   </div>
 </div>
-
-
-
-
-
-
 
 
       
             <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 20%; font-size: 9px;">
           
               <h4 style="color: red; margin: 0 0 5px; border-bottom: 1px solid black;">
-මෙම බිල්පතේ අයවිය යුතු මාසික කුලිය මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30%ක බදු කුලියක් අය කරනු ලැබේ.</h4>
+මෙම බිල්පතේ අයවිය යුතු මාසික කුලි මුදල් මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30% ක දඩයක් අය කරනු ලැබේ.</h4>
 
               <div style="text-align: center;">
   <p style="margin: 0;">
@@ -174,7 +203,7 @@ export const printInvoices = async (invoices) => {
     <!-- Section 4: for market office -->
     <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;border-right: 1px solid #000;">
       <div>
-        <p style="margin: 0;text-align: center;"><strong>For Trust Market Office Use</strong></p>
+        <p style="margin: 0;text-align: center;font-size: 13px;"><strong>For Trust Office Use</strong></p>
         
       </div>
       <div style="text-align: center; margin-top: auto;">
@@ -266,13 +295,13 @@ export const printInvoices = async (invoices) => {
   }
 
   printWindow.document.write(`
-        <html>
-            <head>
-                <title>Print Invoices</title>
-             <style>
+ <html>
+<head>
+  <title>Print Invoices</title>
+ <style>
   @page {
-    size: A4;
-    margin: 10mm;
+    size: A4 portrait;
+    margin: 2mm;
   }
 
   body {
@@ -282,50 +311,43 @@ export const printInvoices = async (invoices) => {
   }
 
   .invoice-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    box-sizing: border-box;
     page-break-inside: avoid;
+    margin-bottom: 10mm;
   }
 
   .half-page {
-    height: 48%;
-    overflow: hidden;
-     
     box-sizing: border-box;
+    padding: 1mm;
+    height: 130mm; /* fits two half-pages into 277mm usable area */
+    overflow: hidden;
   }
-    .scale-content {
-  transform: scale(0.9);
-  transform-origin: top left;
-  width: 100%;
-}
 
+  .scale-content {
+    zoom: 0.88; /* zoom works better for print scaling than transform */
+  }
 
   .page-break {
-    display: block;
-    height: 0;
     page-break-after: always;
   }
 
   @media print {
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
     .page-break {
       display: block;
-      height: 0;
-      page-break-after: always;
     }
 
     .invoice-copy {
       page-break-inside: avoid;
     }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
   }
 </style>
+
+</head>
+
 
 
             </head>
@@ -335,6 +357,8 @@ export const printInvoices = async (invoices) => {
         </html>
     `);
 
-  printWindow.document.close();
-  printWindow.print();
+    printWindow.document.close();
+    await waitForImagesToLoad(printWindow.document);
+    printWindow.print();
+    
 };
