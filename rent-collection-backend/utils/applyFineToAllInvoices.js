@@ -1,72 +1,86 @@
 const { Sequelize } = require('sequelize');
 const Invoice = require('../models/Invoice');
-const Fine = require('../models/Fine'); // Import Fine model
-const AuditTrail = require('../models/AuditTrail'); // Import AuditTrail model
-const { applyFine } = require('../utils/applyFine'); // Import applyFine function
+const Fine = require('../models/Fine');
+const AuditTrail = require('../models/AuditTrail');
+const { applyFine } = require('../utils/applyFine');
+const sequelize = require('../database'); // Required for transaction fallback
 const dayjs = require('dayjs');
 
 /**
  * Apply fines to all eligible invoices that are older than 17 days and do NOT already have a fine.
+ * @param {Transaction} [externalTransaction] - Optional Sequelize transaction.
  * @returns {object} - Success or failure response.
  */
-async function applyFineToAllInvoices() {
-    try {
-        // Get the threshold date (17 days ago)
-        const fineThresholdDate = dayjs().subtract(0, 'days').toDate();
+async function applyFineToAllInvoices(externalTransaction = null) {
+  const transaction = externalTransaction || await sequelize.transaction();
+  let committedInternally = false;
 
-        // Fetch all invoices that are "Unpaid", "Partially Paid", or "Arrest" and older than 17 days
-        const invoices = await Invoice.findAll({
-            where: {
-                status: { [Sequelize.Op.in]: ['Unpaid', 'Partially Paid', 'Arrest'] },
-                createdAt: { [Sequelize.Op.lte]: fineThresholdDate } // Corrected field name
-            }
-        });
+  try {
+    const fineThresholdDate = dayjs().subtract(15, 'days').toDate(); // Corrected threshold
 
-        if (invoices.length === 0) {
-            return { success: false, message: "No eligible invoices found for fine application." };
-        }
+    const invoices = await Invoice.findAll({
+      where: {
+        status: { [Sequelize.Op.in]: ['Unpaid', 'Partially Paid', 'Arrest'] },
+        createdAt: { [Sequelize.Op.lte]: fineThresholdDate }
+      },
+      transaction
+    });
 
-        // Fetch invoices that already have a fine
-        const invoiceIds = invoices.map(inv => inv.invoice_id);
-        const finedInvoices = await Fine.findAll({
-            attributes: ['invoice_id'],
-            where: { invoice_id: { [Sequelize.Op.in]: invoiceIds } },
-            raw: true
-        });
-
-        const finedInvoiceIds = new Set(finedInvoices.map(fine => fine.invoice_id));
-
-        // Select only invoices that do NOT already have a fine
-        const invoicesToFine = invoices.filter(inv => !finedInvoiceIds.has(inv.invoice_id));
-
-        if (invoicesToFine.length === 0) {
-            return { success: false, message: "All eligible invoices already have fines." };
-        }
-
-        let totalFinedInvoices = 0;
-        for (const invoice of invoicesToFine) {
-            const result = await applyFine(invoice.invoice_id);
-            if (result.success) {
-                totalFinedInvoices++;
-
-                // Log Audit Trail for fine application
-                await AuditTrail.create({
-                    shop_id: invoice.shop_id,
-                    invoice_id: invoice.invoice_id,
-                    event_type: 'Fine Applied',
-                    event_description: `Fine applied to invoice #${invoice.invoice_id} due to overdue payment.`,
-                    old_value: null, // No previous fine value
-                    new_value: result.fineAmount, // Fine amount applied
-                    user_actioned: 'System' // Since this is an automated process
-                });
-            }
-        }
-
-        return { success: true, message: `${totalFinedInvoices} invoices fined successfully.` };
-    } catch (error) {
-        console.error("❌ Fine Application Error:", error);
-        return { success: false, message: error.message };
+    if (invoices.length === 0) {
+      if (!externalTransaction) await transaction.rollback();
+      return { success: false, message: "No eligible invoices found for fine application." };
     }
+
+    const invoiceIds = invoices.map(inv => inv.invoice_id);
+    const finedInvoices = await Fine.findAll({
+      attributes: ['invoice_id'],
+      where: { invoice_id: { [Sequelize.Op.in]: invoiceIds } },
+      raw: true,
+      transaction
+    });
+
+    const finedInvoiceIds = new Set(finedInvoices.map(f => f.invoice_id));
+    const invoicesToFine = invoices.filter(inv => !finedInvoiceIds.has(inv.invoice_id));
+
+    if (invoicesToFine.length === 0) {
+      if (!externalTransaction) await transaction.rollback();
+      return { success: false, message: "All eligible invoices already have fines." };
+    }
+
+    let totalFinedInvoices = 0;
+
+    // You can use batching for better control (limit concurrency)
+    for (const invoice of invoicesToFine) {
+      const result = await applyFine(invoice.invoice_id, transaction); // <-- modify applyFine to accept `transaction`
+      if (result.success) {
+        totalFinedInvoices++;
+
+        await AuditTrail.create({
+          shop_id: invoice.shop_id,
+          invoice_id: invoice.invoice_id,
+          event_type: 'Fine Applied',
+          event_description: `Fine applied to invoice #${invoice.invoice_id} due to overdue payment.`,
+          old_value: null,
+          new_value: result.fineAmount,
+          user_actioned: 'System'
+        }, { transaction });
+      }
+    }
+
+    if (!externalTransaction) {
+      await transaction.commit();
+      committedInternally = true;
+    }
+
+    return { success: true, message: `${totalFinedInvoices} invoices fined successfully.` };
+
+  } catch (error) {
+    if (!externalTransaction && !committedInternally) {
+      await transaction.rollback();
+    }
+    console.error("❌ Fine Application Error:", error);
+    return { success: false, message: error.message };
+  }
 }
 
 module.exports = { applyFineToAllInvoices };
