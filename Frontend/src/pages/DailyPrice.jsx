@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar";
 import { Skeleton } from "../components/Skeleton";
 import DailyPriceCard from './DailyPriceCard';
 import Footer from '../components/Footer';
+import "../fonts/IskoolaPota"; 
 
 const DailyPrice = () => {
   const { t } = useTranslation();
@@ -50,13 +51,16 @@ const DailyPrice = () => {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-
+  
+    // Set Sinhala font
+    doc.setFont("IskoolaPota");
+  
     doc.setFontSize(18);
     doc.text(`${t("dailyPrices.pdfTitle", "Daily Product Prices")}`, 105, 20, { align: "center" });
-
+  
     doc.setFontSize(12);
     doc.text(`${t("dailyPrices.date", "Date")}: ${date}`, 105, 30, { align: "center" });
-
+  
     const tableColumn = [
       t("dailyPrices.productName", "Product Name"),
       t("dailyPrices.type", "Type"),
@@ -64,7 +68,7 @@ const DailyPrice = () => {
       t("dailyPrices.maxPrice", "Max Price (Rs.)")
     ];
     const tableRows = [];
-
+  
     filteredPrices.forEach((item) => {
       tableRows.push([
         t(item.product?.name, item.product?.name || "Unnamed"),
@@ -73,33 +77,39 @@ const DailyPrice = () => {
         item.max_price
       ]);
     });
-
+  
     autoTable(doc, {
       startY: 40,
       head: [tableColumn],
       body: tableRows,
-      styles: { fontSize: 10 },
+      styles: {
+        font: "IskoolaPota",
+        fontSize: 10
+      },
       headStyles: {
         fillColor: [52, 152, 219],
         textColor: [255, 255, 255],
+        font: "IskoolaPota"
       },
       alternateRowStyles: {
         fillColor: [240, 240, 240],
       },
       margin: { top: 40 },
     });
-
+  
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(10);
+      doc.setFont("IskoolaPota");
       doc.text(`Downloaded on ${new Date().toLocaleString()}`, 14, 290);
       doc.text(`Page ${i} of ${pageCount}`, 195, 290, { align: "right" });
     }
-
+  
     doc.save(`Daily_Prices_${date}.pdf`);
     toast.success(t("dailyPrices.pdfDownloaded", "PDF downloaded successfully!"));
   };
+  
 
   return (
     <div>

@@ -96,62 +96,62 @@ export const printInvoices = async (invoices) => {
               </table>
             </div>
 
+<div style="display: flex; flex-direction: column; width: 20%;">
+  <!-- Previous Month Payment Details -->
+  <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 5px;">
+    <h4 style="text-align: center; margin-bottom: 8px;">පසුගිය මස ගෙවීම් විස්තර</h4>
+    <div style="font-size: 10px;">
+      <div>
+        අවසන් වරට මුදල් ගෙවූ දිනය :
+        <span>
+          ${
+            invoice.previous_payment_summary?.last_payment_date
+              ? new Date(
+                  invoice.previous_payment_summary.last_payment_date
+                ).toLocaleDateString()
+              : "N/A"
+          }
+        </span>
+      </div>
 
-<div style="background-color: #f4d3a1; border: 1px solid #000; padding: 5px; width: 20%;">
-  <h4 style="text-align: center; margin-bottom: 8px ;">පසුගිය මස ගෙවීම් විස්තර
-</h4>
-  <div style=" font-size: 10px;">
-    <div >
-      අවසන් වරට මුදල් ගෙවූ දිනය :
-      <span>
-        ${
-          invoice.previous_payment_summary?.last_payment_date
-            ? new Date(
-                invoice.previous_payment_summary.last_payment_date
-              ).toLocaleDateString()
-            : "N/A"
-        }
-      </span>
+      <div>
+        පසුගිය මස ගෙවීමට තිබූ මුලු මුදල :
+        <span>
+          LKR ${
+            invoice.previous_invoice_total_amount
+              ? parseFloat(invoice.previous_invoice_total_amount).toFixed(2)
+              : '0.00'
+          }
+        </span>
+      </div>
+
+      <div>
+        පසුගිය මස ගෙවූ මුදල : <br/>
+        <span>
+          LKR ${parseFloat(invoice.previous_payment_summary?.total_paid || 0).toFixed(2)}
+        </span>
+      </div>
     </div>
 
-   <div>
-  පසුගිය මස ගෙවීමට තිබූ මුලු මුදල : 
-<span>LKR ${invoice.previous_invoice_total_amount ? parseFloat(invoice.previous_invoice_total_amount).toFixed(2) : '0.00'}</span>
+    <div style="border-top: 1px solid black; margin: 8px 0;"></div>
+  </div>
 
-</div>
-
-    <div >
-
-      පසුගිය මස ගෙවූ මුදල : <br/>
-      <span>LKR ${parseFloat(
-        invoice.previous_payment_summary?.total_paid || 0
-      ).toFixed(2)}</span>
-
+  <!-- VAT Info -->
+  <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; font-size: 9px; margin-top: 10px;">
+    <div style="height: 30px;">
+<p style="margin: 0; text-align: center; font-size: 11px; word-wrap: break-word; white-space: normal;">
+  VAT Registration No: 409238270/7000
+</p>
     </div>
-  
   </div>
-  <!-- Divider Line -->
-  <div style="border-top: 1px solid black; margin: 8px 0;"></div>
-
-  <!-- Blank Space Section -->
-  <div style="height: 30px;">
-  <p style="margin: 0;text-align: center;font-size: 13px;">VAT Registration No: 409238270/7000</p>
-  </div>
-
 </div>
-
-
-
-
-
-
 
 
       
             <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 20%; font-size: 9px;">
           
               <h4 style="color: red; margin: 0 0 5px; border-bottom: 1px solid black;">
-මෙම බිල්පතේ අයවිය යුතු මාසික කුලිය මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30% ක දඩයක් අය කරනු ලැබේ.</h4>
+මෙම බිල්පතේ අයවිය යුතු මාසික කුලි මුදල් මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30% ක දඩයක් අය කරනු ලැබේ.</h4>
 
               <div style="text-align: center;">
   <p style="margin: 0;">

@@ -46,7 +46,29 @@ const Setting = () => {
 
   const handleInvoiceArrest = (credentials) =>
     handleApiCall("/api/settings/invoice-arrest-action", "Invoice arrest applied!", "Failed to apply invoice arrest.", credentials);
-
+  const handleBackupDownload = async () => {
+    try {
+      const res = await fetch('/api/backup/backup', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (!res.ok) throw new Error('Download failed');
+  
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'database_backup.sql';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      toast.error("Backup download failed");
+      console.error(err);
+    }
+  };
+  
+  
   // Modal verification handler
   const handleVerify = async (email, password) => {
     try {
@@ -186,7 +208,21 @@ const Setting = () => {
               View Logs
             </button>
           </div>
+          {/* Backup System Data */}
+<div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+  <h2 className="text-xl font-semibold mb-4">Backup System Data</h2>
+  <p className="text-gray-700 mb-4">Download a backup of the database for safekeeping.</p>
+  <button
+    className={`py-2 px-4 rounded-lg text-white w-full bg-indigo-500 hover:bg-indigo-600`}
+    onClick={handleBackupDownload}
+  >
+    Backup Data
+  </button>
+</div>
+
+
         </div>
+        
       </div>
 
       {/* Credential Modal */}

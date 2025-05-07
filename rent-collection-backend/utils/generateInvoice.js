@@ -15,7 +15,7 @@ const { fetchAndCalculateDues } = require("./fetchAndCalculateDues");
 
 async function generateInvoice(shop_id, monthYear,adminName = "System") {
   try {
-    await applyFineToAllInvoices();
+    
     //  Fetch shop details
     const shop = await Shop.findOne({ where: { shop_id } });
 
