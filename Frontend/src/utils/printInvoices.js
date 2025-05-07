@@ -19,16 +19,16 @@ export const printInvoices = async (invoices) => {
   const printableContent = invoices
     .map((invoice) => {
       const invoiceHTML = `
-        <div style="padding: 2px; font-size: 11px; font-family: Arial, sans-serif;">
+        <div style="padding: 0px; font-size: 11px; font-family: Arial, sans-serif;">
           <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
                 <img src="/images/Gov.jpg" alt="Logo" style="height: 60px;"/>
             <div style="text-align: center;">
-              <h2 style="margin: 0; font-size: 14px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණභාරය</h2>
+              <h2 style="margin: 0; font-size: 17px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණභාරය</h2>
                     
           
 
               
-              <h4 style="margin-top: 5px; font-size: 12px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
+              <h4 style="margin-top: 5px; font-size: 15px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
             </div>
               <img src="/images/logo.jpg" alt="Logo" style="height: 60px;" />
           </div>
@@ -36,34 +36,34 @@ export const printInvoices = async (invoices) => {
 
 
 
-      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 13px; font-family: Arial, sans-serif;">
+      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 12px; font-family: Arial, sans-serif;">
 
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Invoice No</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">බිල්පත් අංකය</span>: ${invoice.invoice_id}
+    <span style="font-weight: normal; text-transform: none;">බිල්පත් අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.invoice_id}</span>
   </div>
 
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Invoice Month</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">බිල්පත් මාසය</span>: ${new Date(
+    <span style="font-weight: normal; text-transform: none;">බිල්පත් මාසය</span>:<span style="font-size: 15px;font-weight: bold;"> ${new Date(
       invoice.month_year
     ).toLocaleDateString("en-US", {
       month: "long",
       year: "numeric",
     })}
-  </div>
+  </span></div>
 
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Accounting Date</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">ගිණුම් කල දිනය</span>: ${new Date(
+    <span style="font-weight: normal; text-transform: none;">ගිණුම් කල දිනය</span>:<span style="font-size: 15px;font-weight: bold;"> ${new Date(
       invoice.createdAt
     ).toLocaleDateString()}
-  </div>
+  </span></div>
 
-  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Shop No</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">කඩ අංකය</span>: ${invoice.shop_id}
-  </div>
+    <span style="font-weight: normal; text-transform: none;">කඩ අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.shop_id}
+  </span></div>
 
 </div>
 
