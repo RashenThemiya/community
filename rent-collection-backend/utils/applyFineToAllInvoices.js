@@ -3,7 +3,7 @@ const Invoice = require('../models/Invoice');
 const Fine = require('../models/Fine');
 const AuditTrail = require('../models/AuditTrail');
 const { applyFine } = require('../utils/applyFine');
-const sequelize = require('../database'); // Required for transaction fallback
+const sequelize = require('../config/database'); // Required for transaction fallback
 const dayjs = require('dayjs');
 
 /**
