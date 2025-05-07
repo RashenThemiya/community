@@ -11,7 +11,7 @@ const router = express.Router();
  * Route: POST /api/admin/register
  * Access: Super Admin
  */
-router.post("/register", authenticateUser, authorizeRole(["superadmin", "admin"]), async (req, res) => {
+router.post("/register", authenticateUser, authorizeRole(["superadmin"]), async (req, res) => {
   const { username, email, password, role } = req.body;
 
   try {
@@ -166,7 +166,7 @@ router.get("/admin", authenticateUser, authorizeRole(["admin", "superadmin"]), (
  * Route: GET /api/admin/list
  * Access: Super Admin
  */
-router.get("/list", authenticateUser, authorizeRole(["admin", "superadmin"]), async (req, res) => {
+router.get("/list", authenticateUser, authorizeRole(["superadmin"]), async (req, res) => {
   try {
     const admins = await Admin.findAll({
       attributes: { exclude: ["password"] },

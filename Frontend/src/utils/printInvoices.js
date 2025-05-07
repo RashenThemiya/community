@@ -19,30 +19,33 @@ export const printInvoices = async (invoices) => {
   const printableContent = invoices
     .map((invoice) => {
       const invoiceHTML = `
-        <div style="padding: 5px; font-size: 11px; font-family: Arial, sans-serif;">
-          <div style="display: flex; align-items: center; justify-content: center; gap: 60px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
+        <div style="padding: 2px; font-size: 11px; font-family: Arial, sans-serif;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
                 <img src="/images/Gov.jpg" alt="Logo" style="height: 60px;"/>
             <div style="text-align: center;">
-              <h2 style="margin: 0; font-size: 14px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය</br>කළමනාකරණභාරය</h2>
+              <h2 style="margin: 0; font-size: 14px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණභාරය</h2>
                     
           
 
               
-              <h4 style="margin-top: 5px; font-size: 7px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
+              <h4 style="margin-top: 5px; font-size: 12px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
             </div>
               <img src="/images/logo.jpg" alt="Logo" style="height: 60px;" />
           </div>
-      
-          <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9;font-size: 11px; ">
-            
-  <div>
+
+
+
+
+      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 13px; font-family: Arial, sans-serif;">
+
+  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Invoice No</strong><br/>
-    <span>බිල්පත් අංකය</span>: ${invoice.invoice_id}
+    <span style="font-weight: normal; text-transform: none;">බිල්පත් අංකය</span>: ${invoice.invoice_id}
   </div>
 
-  <div>
+  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Invoice Month</strong><br/>
-    <span>බිල්පත් මාසය</span>: ${new Date(
+    <span style="font-weight: normal; text-transform: none;">බිල්පත් මාසය</span>: ${new Date(
       invoice.month_year
     ).toLocaleDateString("en-US", {
       month: "long",
@@ -50,26 +53,28 @@ export const printInvoices = async (invoices) => {
     })}
   </div>
 
-  <div>
+  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Accounting Date</strong><br/>
-    <span>ගිණුම් කල දිනය</span>: ${new Date(
+    <span style="font-weight: normal; text-transform: none;">ගිණුම් කල දිනය</span>: ${new Date(
       invoice.createdAt
     ).toLocaleDateString()}
   </div>
-  <div style="padding: 5px; background-color: #d0e7f9;">
-  <strong>Shop No</strong><br/>
-  <span>කඩ අංකය</span>: ${invoice.shop_id}
-</div>
+
+  <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+    <strong>Shop No</strong><br/>
+    <span style="font-weight: normal; text-transform: none;">කඩ අංකය</span>: ${invoice.shop_id}
+  </div>
+
 </div>
 
 
 
 
           <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
-            <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 50%;">
+            <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 60%;">
               <h3 style="text-align: center; margin: 0 0 8px;">Statement of Account / ගිණුම් ප්‍රකාශය
 </h3>
-              <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
                 <tr><td>Monthly Rent / මාසික කුලිය</td><td style="text-align: right;">LKR ${
                   invoice.rent_amount
                 }</td></tr>
@@ -135,14 +140,14 @@ export const printInvoices = async (invoices) => {
 
 
       
-            <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 30%; font-size: 9px;">
+            <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 20%; font-size: 9px;">
           
               <h4 style="color: red; margin: 0 0 5px; border-bottom: 1px solid black;">
 මෙම බිල්පතේ අයවිය යුතු මාසික කුලිය මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30%ක බදු කුලියක් අය කරනු ලැබේ.</h4>
 
               <div style="text-align: center;">
   <p style="margin: 0;">
-    දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානය<br/>
+    දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන<br/>
     කළමනාකරණභාරය <br/>
     නමට ලංකා බැංකු ජංගම ගිණුම් අංක 2603285 දරණ ගිණුමට ඔබ විසින් මුදල් <br/>
     ගෙවීම් කළ යුතු අතර ඒ සඳහා මෙම බිල්පත අනිවාර්යයෙන්ම භාවිතා කල යුතුය
@@ -153,22 +158,33 @@ export const printInvoices = async (invoices) => {
           </div>
 
 
-     <div style="background-color: #fff3cd; border: 1px solid #000; padding: 10px; margin-top: 10px; font-size: 11px;">
+     <div style="background-color: #fff3cd; border: 1px solid #000; padding: 5px; margin-top: 10px; font-size: 11px;overflow: visible;">
   <div style="display: flex; justify-content: space-between; align-items: stretch; text-align: left;">
     
     <!-- Section 1: Contacts -->
     <div style="flex: 1; padding-right: 10px; border-right: 1px solid #000; display: flex; flex-direction: column; justify-content: space-between;">
       <div>
-        <p style="margin: 0;"><strong>විමසීම්
+        <p style="margin: 0;text-align: center;"><strong>විමසීම්
 </strong></p>
         <p style="margin: 5px 0 0;">Manager<br/>Management Office<br/>Dedicated Economic Center<br/>Dambulla<br/>Tel: 066-2285181 / 066-2285448<br/>Email: dambulladec@gmail.com</p>
       </div>
     </div>
 
+
+    <!-- Section 4: for market office -->
+    <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;border-right: 1px solid #000;">
+      <div>
+        <p style="margin: 0;text-align: center;"><strong>For Trust Market Office Use</strong></p>
+        
+      </div>
+      <div style="text-align: center; margin-top: auto;">
+        <p style="margin: 0;">_________________<br/><span style="font-size: 11px;">Official Seal</span></p>
+      </div>
+    </div>
     <!-- Section 2: For Renter -->
     <div style="flex: 1.5; padding: 0 10px; border-right: 1px solid #000; display: flex; flex-direction: column; justify-content: space-between;">
       <div>
-        <p style="margin: 0;"><strong>බදුකරුගේ ප්‍රයෝජනය සඳහා
+        <p style="margin: 0;text-align: center;"><strong>බදුකරුගේ ප්‍රයෝජනය සඳහා
 </strong></p>
   <p style="margin: 5px 0;">
   බැංකුවට ගෙවූ මුදල: 
@@ -184,32 +200,27 @@ export const printInvoices = async (invoices) => {
       </div>
     </div>
 
-     <!-- Section 3: for market office -->
-    <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;border-right: 1px solid #000;">
-      <div>
-        <p style="margin: 0;"><strong>For Market Office Use</strong></p>
-        
-      </div>
-      <div style="text-align: center; margin-top: auto;">
-        <p style="margin: 0;">_________________<br/><span style="font-size: 11px;">Official Seal</span></p>
-      </div>
-    </div>
-
-    <!-- Section 4: Bank Cashier -->
+ <!-- Section 3: Bank Cashier -->
     <div style="flex: 1.5; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between; ">
       <div>
-        <p style="margin: 0;"><strong>Bank Use Only</strong></p>
-          <p style="margin: 5px 0;">
+        <p style="margin: 0;text-align: center;font-size: 13px;"><strong>Bank Use Only</strong></p>
+          <p style="margin: 5px 0;font-size: 12px;">
   Amount Received: 
   <span style="display: inline-block; width: 165px; border: 1px solid #000; height: 20px; padding: 0 5px;">
     Rs.
   </span>
 </p>
       </div>
+
+
       <div style="text-align: center; margin-top: auto;">
         <p style="margin: 0;">_______________________<br/><span style="font-size: 11px;">Signature of Bank Cashier</span></p>
       </div>
     </div>
+
+
+
+   
 
 
 
@@ -282,7 +293,7 @@ export const printInvoices = async (invoices) => {
   .half-page {
     height: 48%;
     overflow: hidden;
-      border: 1px dashed red;
+     
     box-sizing: border-box;
   }
     .scale-content {

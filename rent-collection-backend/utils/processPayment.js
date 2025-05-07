@@ -113,7 +113,7 @@ async function processPayment(shopId, amountPaid, paymentMethod, paymentDate = n
 async function processInvoicePayments(invoice, remainingBalance, t, paymentTimestamp) {
   
 
-    for (const model of [Rent, OperationFee, Vat, Fine]) {
+    for (const model of [Vat, OperationFee, Rent, Fine]) {
         const records = await model.findAll({
             where: {
                 invoice_id: invoice.invoice_id,
@@ -154,7 +154,7 @@ let unpaidComponents = 0;
 let partiallyPaidComponents = 0;
 let arrestComponents = 0;
 
-for (const model of [Rent, OperationFee, Vat, Fine]) {
+for (const model of [Vat, OperationFee, Rent, Fine]) {
     const components = await model.findAll({
         where: { invoice_id: invoice.invoice_id },
         transaction: t
