@@ -19,7 +19,7 @@ function dumpDatabase() {
     }
 
     const filePath = path.join(backupDir, fileName);
-    const command = `mysqldump -h ${process.env.DB_HOST} -u ${process.env.DB_USER} -p"${process.env.DB_PASS}" ${process.env.DB_NAME} > "${filePath}"`;
+    const command = `mysqldump --default-character-set=utf8mb4 -h ${process.env.DB_HOST} -u ${process.env.DB_USER} -p"${process.env.DB_PASS}" ${process.env.DB_NAME} > "${filePath}"`;
 
     exec(command, (error) => {
       if (error) return reject(error);

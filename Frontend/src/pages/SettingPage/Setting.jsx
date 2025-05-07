@@ -5,6 +5,7 @@ import CredentialModal from "../../components/CredentialModal";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const Setting = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -48,7 +49,7 @@ const Setting = () => {
     handleApiCall("/api/settings/invoice-arrest-action", "Invoice arrest applied!", "Failed to apply invoice arrest.", credentials);
   const handleBackupDownload = async () => {
     try {
-      const res = await fetch('/api/backup/backup', {
+      const res = await fetch(`${API_BASE_URL}/api/backup/backup`, {
         headers: { Authorization: `Bearer ${token}` },
       });
   
