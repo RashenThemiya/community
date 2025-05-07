@@ -1,5 +1,21 @@
 import api from "./axiosInstance";
 
+const waitForImagesToLoad = (container) => {
+  const images = container.querySelectorAll("img");
+  const promises = Array.from(images).map(
+    (img) =>
+      new Promise((resolve) => {
+        if (img.complete) {
+          resolve();
+        } else {
+          img.onload = resolve;
+          img.onerror = resolve; // still resolve on error to prevent hang
+        }
+      })
+  );
+  return Promise.all(promises);
+};
+
 export const printInvoices = async (invoices) => {
   if (invoices.length === 0) {
     alert("Please select at least one invoice to print.");
@@ -38,9 +54,12 @@ export const printInvoices = async (invoices) => {
 
       <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 12px; font-family: Arial, sans-serif;">
 
+
   <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
-    <strong>Invoice No</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">බිල්පත් අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.invoice_id}</span>
+    <strong>Shop Detils</strong><br/>
+    <span style="font-weight: normal; text-transform: none;">කඩ අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.shop_id}
+  </span>
+  </span>
   </div>
 
   <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
@@ -59,16 +78,18 @@ export const printInvoices = async (invoices) => {
       invoice.createdAt
     ).toLocaleDateString()}
   </span></div>
-
   <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
-    <strong>Shop No</strong><br/>
-    <span style="font-weight: normal; text-transform: none;">කඩ අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.shop_id}
-  </span></div>
+    <strong>Invoice No</strong><br/>
+    <span style="font-weight: normal; text-transform: none;">බිල්පත් අංකය</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.invoice_id}</span>
+  </div>
 
 </div>
 
-
-
+      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 12px; font-family: Arial, sans-serif;">
+  <div style=" text-transform: uppercase; letter-spacing: 0.5px;">
+    <span style="font-weight: normal; text-transform: none;">බදුකරුගේ නම</span>: <span style="font-size: 15px;font-weight: bold;">${invoice.Shop.Tenant.name}</span>
+  </div>
+</div>
 
           <div style="display: flex; justify-content: space-between; margin-top: 10px; gap: 10px;">
             <div style="background-color: #f4d3a1; border: 1px solid #000; padding: 10px; width: 60%;">
@@ -274,13 +295,13 @@ export const printInvoices = async (invoices) => {
   }
 
   printWindow.document.write(`
-        <html>
-            <head>
-                <title>Print Invoices</title>
-             <style>
+ <html>
+<head>
+  <title>Print Invoices</title>
+ <style>
   @page {
-    size: A4;
-    margin: 10mm;
+    size: A4 portrait;
+    margin: 2mm;
   }
 
   body {
@@ -290,50 +311,43 @@ export const printInvoices = async (invoices) => {
   }
 
   .invoice-copy {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    box-sizing: border-box;
     page-break-inside: avoid;
+    margin-bottom: 10mm;
   }
 
   .half-page {
-    height: 48%;
-    overflow: hidden;
-     
     box-sizing: border-box;
+    padding: 5mm;
+    height: 130mm; /* fits two half-pages into 277mm usable area */
+    overflow: hidden;
   }
-    .scale-content {
-  transform: scale(0.9);
-  transform-origin: top left;
-  width: 100%;
-}
 
+  .scale-content {
+    zoom: 0.88; /* zoom works better for print scaling than transform */
+  }
 
   .page-break {
-    display: block;
-    height: 0;
     page-break-after: always;
   }
 
   @media print {
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
     .page-break {
       display: block;
-      height: 0;
-      page-break-after: always;
     }
 
     .invoice-copy {
       page-break-inside: avoid;
     }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
   }
 </style>
+
+</head>
+
 
 
             </head>
@@ -343,6 +357,8 @@ export const printInvoices = async (invoices) => {
         </html>
     `);
 
-  printWindow.document.close();
-  printWindow.print();
+    printWindow.document.close();
+    await waitForImagesToLoad(printWindow.document);
+    printWindow.print();
+    
 };
