@@ -105,7 +105,7 @@ export const printInvoices = async (invoices) => {
  </td><td style="text-align: right;">LKR ${invoice.vat_amount}</td></tr>
                 <tr><td>Previous Balance / ශේෂය
 </td><td style="text-align: right;">LKR ${invoice.previous_balance}</td></tr>
-                <tr><td>Fines / දඩ</td><td style="text-align: right;">LKR ${
+                <tr><td>Total Fines / සියලු දඩ</td><td style="text-align: right;">LKR ${
                   invoice.fines
                 }</td></tr>
                 <tr><td>Total Arrears / හිඟ බදු කුලිය
@@ -150,6 +150,12 @@ export const printInvoices = async (invoices) => {
         පසුගිය මස ගෙවූ මුදල : <br/>
         <span>
           LKR ${parseFloat(invoice.previous_payment_summary?.total_paid || 0).toFixed(2)}
+        </span>
+      </div>
+       <div>
+        පසුගිය මසට දඩ : <br/>
+        <span>
+          LKR ${parseFloat(invoice.previous_fines || 0).toFixed(2)}
         </span>
       </div>
     </div>
