@@ -19,7 +19,7 @@ export const printInvoices = async (invoices) => {
   const printableContent = invoices
     .map((invoice) => {
       const invoiceHTML = `
-        <div style="padding: 5px; font-size: 11px; font-family: Arial, sans-serif;">
+        <div style="padding: 2px; font-size: 11px; font-family: Arial, sans-serif;">
           <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
                 <img src="/images/Gov.jpg" alt="Logo" style="height: 60px;"/>
             <div style="text-align: center;">
@@ -28,7 +28,7 @@ export const printInvoices = async (invoices) => {
           
 
               
-              <h4 style="margin-top: 5px; font-size: 10px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
+              <h4 style="margin-top: 5px; font-size: 12px;">Monthly Rent Notice / මාසික බදු කුලිය අය කිරීමේ බිල්පත්‍රය</h4>
             </div>
               <img src="/images/logo.jpg" alt="Logo" style="height: 60px;" />
           </div>
@@ -36,7 +36,7 @@ export const printInvoices = async (invoices) => {
 
 
 
-      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 11px; font-family: Arial, sans-serif;">
+      <div style="display: flex; justify-content: space-between; padding: 5px; background-color: #d0e7f9; font-size: 13px; font-family: Arial, sans-serif;">
 
   <div style="font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
     <strong>Invoice No</strong><br/>
@@ -170,6 +170,17 @@ export const printInvoices = async (invoices) => {
       </div>
     </div>
 
+
+    <!-- Section 4: for market office -->
+    <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;border-right: 1px solid #000;">
+      <div>
+        <p style="margin: 0;text-align: center;"><strong>For Trust Market Office Use</strong></p>
+        
+      </div>
+      <div style="text-align: center; margin-top: auto;">
+        <p style="margin: 0;">_________________<br/><span style="font-size: 11px;">Official Seal</span></p>
+      </div>
+    </div>
     <!-- Section 2: For Renter -->
     <div style="flex: 1.5; padding: 0 10px; border-right: 1px solid #000; display: flex; flex-direction: column; justify-content: space-between;">
       <div>
@@ -190,7 +201,7 @@ export const printInvoices = async (invoices) => {
     </div>
 
  <!-- Section 3: Bank Cashier -->
-    <div style="flex: 1.5; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;border-right: 1px solid #000; ">
+    <div style="flex: 1.5; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between; ">
       <div>
         <p style="margin: 0;text-align: center;font-size: 13px;"><strong>Bank Use Only</strong></p>
           <p style="margin: 5px 0;font-size: 12px;">
@@ -208,16 +219,6 @@ export const printInvoices = async (invoices) => {
     </div>
 
 
-     <!-- Section 4: for market office -->
-    <div style="flex: 1; padding-left: 10px; display: flex; flex-direction: column; justify-content: space-between;">
-      <div>
-        <p style="margin: 0;text-align: center;"><strong>For Trust Market Office Use</strong></p>
-        
-      </div>
-      <div style="text-align: center; margin-top: auto;">
-        <p style="margin: 0;">_________________<br/><span style="font-size: 11px;">Official Seal</span></p>
-      </div>
-    </div>
 
    
 
