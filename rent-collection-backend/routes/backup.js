@@ -2,7 +2,6 @@ const express = require('express');
 const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { google } = require('googleapis');
 const { authenticateUser, authorizeRole } = require('../middleware/authMiddleware');
 require('dotenv').config();
 
@@ -29,35 +28,8 @@ function dumpDatabase() {
   });
 }
 
-// 2. Upload to Google Drive
-async function uploadToDrive(filePath) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: path.join(__dirname, '../config/credentials.json'), // Or use process.env.GOOGLE_DRIVE_KEY_PATH
-    scopes: ['https://www.googleapis.com/auth/drive.file'],
-  });
-
-  const drive = google.drive({ version: 'v3', auth });
-
-  const fileMetadata = {
-    name: path.basename(filePath),
-  };
-
-  const media = {
-    mimeType: 'application/sql',
-    body: fs.createReadStream(filePath),
-  };
-
-  const response = await drive.files.create({
-    resource: fileMetadata,
-    media,
-    fields: 'id',
-  });
-
-  return response.data.id;
-}
-
-// 3. Backup route: dump DB, upload to Drive, and download
-router.post(
+// 2. Backup route: dump DB and download
+router.get(
   '/backup',
   authenticateUser,
   authorizeRole(['admin', 'superadmin']),
@@ -66,10 +38,7 @@ router.post(
       // Step 1: Dump the DB to a file
       const filePath = await dumpDatabase();
 
-      // Step 2: Upload to Google Drive
-      await uploadToDrive(filePath);
-
-      // Step 3: Serve the file to the client as download
+      // Step 2: Serve the file to the client as download
       res.download(filePath, path.basename(filePath), (err) => {
         if (err) {
           console.error('Download error:', err);
