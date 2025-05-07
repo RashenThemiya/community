@@ -317,7 +317,7 @@ export const printInvoices = async (invoices) => {
 
   .half-page {
     box-sizing: border-box;
-    padding: 5mm;
+    padding: 1mm;
     height: 130mm; /* fits two half-pages into 277mm usable area */
     overflow: hidden;
   }
