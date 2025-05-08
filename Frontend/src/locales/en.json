@@ -158,24 +158,17 @@
     "6": "To provide direct employment to over 5,000 people and indirect employment to more than 15,000, making Dambulla a key human resource hub for Sri Lanka."
   },
   "openTime": "🕔 Open - 5AM to 12MN",
-  "features": [
-    {
-      "value": "10,000+",
-      "label": "Traders & Farmers Visit Daily"
-    },
-    {
-      "value": "2000+",
-      "label": "Vehicles Received per Day"
-    },
-    {
-      "value": "2,500+",
-      "label": "Metric Tons of Vegetables Exchanged Daily"
-    },
-    {
-      "value": "60% - 70%",
-      "label": "Sri Lankan Vegetable Market"
-    }
-  ],
+  "featureCards": {
+    "openTime": "Open Daily from 4.30 a.m. onwards",
+    "tradersValue": "10,000+",
+    "tradersLabel": "Traders & Farmers Visit Daily",
+    "vehiclesValue": "2,000+",
+    "vehiclesLabel": "Vehicles Received per Day",
+    "vegetablesValue": "2,500+",
+    "vegetablesLabel": "Metric Tons of Vegetables Exchanged Daily",
+    "marketShareValue": "60% - 70%",
+    "marketShareLabel": "Sri Lankan Vegetable Market Share"
+  },
   "marketOperations": {
     "title": "Market Operations",
     "para1": " The Dambulla Dedicated Economic Center operates under a shop rental system, where selected and qualified entrepreneurs are allocated stalls on a monthly rental basis. The rental income collected from these shop owners is used to establish a management trust fund, which supports the maintenance and all development activities of the center.",
