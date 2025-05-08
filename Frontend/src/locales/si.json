@@ -79,13 +79,13 @@
   "Turmeric": "කහ",
   "Jackfruit": "පොලොස්",
   "Woodapple": "දිවුල්",
-  "Indian Bael": "බෙලි",
+  "Indian bael": "බෙලි",
   "King Coconut": "තැඹිලි",
   "Coconut": "පොල්",
-  "Red Onion (Imported)": "රතු ලූණු (ආනයන)",
-  "Red Onion (Lanka)": "රතු ලූණු (ලංකා)",
-  "Big Onion (Imported)": "මුලු ලූණු (ආනයන)",
-
+  "Red Onion Import": "රතු ලූණු (ආනයන)",
+  "Red Onion- Lanka": "රතු ලූණු (ලංකා)",
+  "Big Onion Import": "මුලු ලූණු (ආනයන)",
+  "Pineapple": "අන්නාසි",
 
   "home": {
     "welcomeMessage": "දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානයට සාදරයෙන් පිළිගනිමු",
