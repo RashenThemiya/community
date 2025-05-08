@@ -13,7 +13,7 @@ const Navbar = () => {
     const getTitle = () => {
         switch (i18n.language) {
             case 'en':
-                return 'Dambulla Dedicated Economic Centre';
+                return 'Dambulla Dedicated Economic Center';
             case 'ta':
                 return 'தம்புள்ள விசேட பொருளாதார மையம்';
             default:
