@@ -82,14 +82,10 @@
   "Coconut": "Coconut",
   "Red Onion (Imported)": "Red Onion (Imported)",
   "Red Onion (Lanka)": "Red Onion (Lanka)",
-  "Big Onion (Imported)": "Big Onion (Imported)"
-,
-
+  "Big Onion (Imported)": "Big Onion (Imported)",
   "home": {
     "welcomeMessage": "Welcome to the Dambulla Dedicated Economic Center",
     "description": "From the 1998 budget proposals of the Government of Sri Lanka, as a first step towards establishing regionally specific dedicated economic centers in the country, approximately Rs. 115 million was spent. This special economic center, consisting of 144 stalls, was opened on 1999.04.01 for the benefit and advantage of wholesale vegetable traders and ultimately vegetable producers."
-
-
   },
   "contact": {
     "title": "Contact Us",
@@ -122,48 +118,69 @@
     "center": "Dedicated Economic Center",
     "city": "Dambulla"
   },
-  
-    "ServiceSection": {
-      "sectionTitle": "Our Services",
-      "sectionDescription": "Our services at the Dambulla Special Economic Center work towards enhancing the economic growth and agricultural sustainability of farmers. Our primary objectives are to provide better prices for farmers, promote collective growth for agricultural production, and deliver high-quality products. Additionally, we fully implement new technological methods, start small industries, and establish price determination systems. Through our services, we aim to ensure the safety of farmers and provide high-quality products to consumers.",
-      "services": [
-        {
-          "icon": "💰",
-          "title": "Determining Vegetable Prices",
-          "description": "The vegetable prices at the Dambulla Special Economic Center are determined based on supply and demand principles. In some cases, farmers are unable to cover their production costs, putting them in a difficult situation. Since the price determination is solely based on supply and demand, management has limited control over the prices. Therefore, we are taking several steps to stabilize vegetable prices."
-        },
-        {
-          "icon": "🥬",
-          "title": "Ensuring High-Quality Vegetable Production",
-          "description": "We aim to achieve high yields from very small land areas and ensure that farmers maintain high-quality vegetable production, ensuring better crop yields for them."
-        },
-        {
-          "icon": "🏭",
-          "title": "Establishing Small Industries",
-          "description": "We focus on establishing small industries to prevent excess production from reaching the market, ensuring that products are processed locally and the market is balanced."
-        },
-        {
-          "icon": "🤝",
-          "title": "Preventing Price Manipulation",
-          "description": "Large-scale advertising boards in Dambulla, Kapetipola, and Meegoda will be used to prevent price manipulation and ensure that prices remain fair for all stakeholders."
-        }
-      ]
-    },
-    
-      "vision": {
-        "title": "Vision",
-        "text": "Progress of the nation through peace of mind for the farming community."
+  "ServiceSection": {
+    "sectionTitle": "Our Services",
+    "sectionDescription": "Our services at the Dambulla Special Economic Center work towards enhancing the economic growth and agricultural sustainability of farmers. Our primary objectives are to provide better prices for farmers, promote collective growth for agricultural production, and deliver high-quality products. Additionally, we fully implement new technological methods, start small industries, and establish price determination systems. Through our services, we aim to ensure the safety of farmers and provide high-quality products to consumers.",
+    "services": [
+      {
+        "icon": "💰",
+        "title": "Determining Vegetable Prices",
+        "description": "The vegetable prices at the Dambulla Special Economic Center are determined based on supply and demand principles. In some cases, farmers are unable to cover their production costs, putting them in a difficult situation. Since the price determination is solely based on supply and demand, management has limited control over the prices. Therefore, we are taking several steps to stabilize vegetable prices."
       },
-      "mission": {
-        "title": "Mission",
-        "1": "To directly contribute to fulfilling the vegetable and fruit needs of the Sri Lankan population by supplying essential vegetables, fruits, and grains that are clean and affordable.",
-        "2": "To protect traditional vegetable and fruit producers by offering fair and attractive prices for their produce.",
-        "3": "To ensure the continuous production of high-quality, waste-free vegetables and fruits, thereby increasing the income of farmers and uplifting their living standards.",
-        "4": "To revive the declining local agricultural industry.",
-        "5": "To enhance the income of wholesale traders through a well-planned and systematic wholesale business, supporting the development of the Dambulla region.",
-        "6": "To provide direct employment to over 5,000 people and indirect employment to more than 15,000, making Dambulla a key human resource hub for Sri Lanka."
+      {
+        "icon": "🥬",
+        "title": "Ensuring High-Quality Vegetable Production",
+        "description": "We aim to achieve high yields from very small land areas and ensure that farmers maintain high-quality vegetable production, ensuring better crop yields for them."
+      },
+      {
+        "icon": "🏭",
+        "title": "Establishing Small Industries",
+        "description": "We focus on establishing small industries to prevent excess production from reaching the market, ensuring that products are processed locally and the market is balanced."
+      },
+      {
+        "icon": "🤝",
+        "title": "Preventing Price Manipulation",
+        "description": "Large-scale advertising boards in Dambulla, Kapetipola, and Meegoda will be used to prevent price manipulation and ensure that prices remain fair for all stakeholders."
       }
-    
-     
-  
+    ]
+  },
+  "vision": {
+    "title": "Vision",
+    "text": "Progress of the nation through peace of mind for the farming community."
+  },
+  "mission": {
+    "title": "Mission",
+    "1": "To directly contribute to fulfilling the vegetable and fruit needs of the Sri Lankan population by supplying essential vegetables, fruits, and grains that are clean and affordable.",
+    "2": "To protect traditional vegetable and fruit producers by offering fair and attractive prices for their produce.",
+    "3": "To ensure the continuous production of high-quality, waste-free vegetables and fruits, thereby increasing the income of farmers and uplifting their living standards.",
+    "4": "To revive the declining local agricultural industry.",
+    "5": "To enhance the income of wholesale traders through a well-planned and systematic wholesale business, supporting the development of the Dambulla region.",
+    "6": "To provide direct employment to over 5,000 people and indirect employment to more than 15,000, making Dambulla a key human resource hub for Sri Lanka."
+  },
+  "openTime": "🕔 Open - 5AM to 12MN",
+  "features": [
+    {
+      "value": "10,000+",
+      "label": "Traders & Farmers Visit Daily"
+    },
+    {
+      "value": "2000+",
+      "label": "Vehicles Received per Day"
+    },
+    {
+      "value": "2,500+",
+      "label": "Metric Tons of Vegetables Exchanged Daily"
+    },
+    {
+      "value": "60% - 70%",
+      "label": "Sri Lankan Vegetable Market"
+    }
+  ],
+  "marketOperations": {
+    "title": "Market Operations",
+    "para1": " The Dambulla Dedicated Economic Center operates under a shop rental system, where selected and qualified entrepreneurs are allocated stalls on a monthly rental basis. The rental income collected from these shop owners is used to establish a management trust fund, which supports the maintenance and all development activities of the center.",
+    "para2": "Farmers and traders are directly involved in the market operations, and the stall owners act as intermediaries, facilitating transactions between both parties. For this service, stall owners charge a commission fee.",
+    "para3": " This market is known for having the lowest commission rates in Sri Lanka, which is one of the main reasons for the popularity of this system.",
+    "para4": "The Dambulla Dedicated Economic Center functions as a day-and-night market, which is why Dambulla is popularly known as a \"city that never sleeps.\" Currently, market activities take place from 5:00 AM to 12:00 midnight."
+  }
 }
