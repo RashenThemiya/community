@@ -30,7 +30,7 @@ const DailyPriceCard = ({ item, navigate, t }) => {
 
       <button
         onClick={() => navigate(`/product/${item.product?.id}/chart`)}
-        className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+        className="mt-4 w-full bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
       >
         {t("dailyPrices.history", "View Price History")}
       </button>
