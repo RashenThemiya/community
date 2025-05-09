@@ -29,11 +29,22 @@ const DailyPriceCard = ({ item, navigate, t }) => {
       </p>
 
       <button
-        onClick={() => navigate(`/product/${item.product?.id}/chart`)}
-        className="mt-4 w-full bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
-      >
-        {t("dailyPrices.history", "View Price History")}
-      </button>
+  onClick={() => navigate(`/product/${item.product?.id}/chart`)}
+  className="mt-4 w-full bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white font-medium px-4 py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-all duration-300 shadow-md hover:shadow-lg"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="w-4 h-4"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v18h18M3 10l6 6L21 4" />
+  </svg>
+  {t("dailyPrices.history", "View Price History")}
+</button>
+
     </div>
   );
 };
