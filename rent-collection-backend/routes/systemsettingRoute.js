@@ -33,7 +33,7 @@ router.delete('/payment/:id', authenticateUser, authorizeRole(['admin', 'superad
             event_type: 'Correction',
             event_description: `Payment ID ${id} deleted by ${adminName}.`,
             old_value: JSON.stringify(deletedPaymentData),
-            new_value: null,deletedInvoiceData,
+            new_value: null,
             edit_reason: 'Payment deletion due to correction or admin request',
             user_actioned: adminName,
         });
@@ -192,7 +192,7 @@ router.post('/fine/apply/:invoice_id', authenticateUser, authorizeRole(['admin',
         // Optional: log the fine application by admin (update if needed in applyFine)
         await AuditTrail.create({
             invoice_id,
-            event_type: 'Manual Fine Application',
+            event_type: 'Correction',
             event_description: `Fine of ${result.fineAmount} manually applied to Invoice ID ${invoice_id} by ${adminName}.`,
             user_actioned: adminName
         });

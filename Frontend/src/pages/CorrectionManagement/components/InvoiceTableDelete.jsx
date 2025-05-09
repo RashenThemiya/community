@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import api from "../../../utils/axiosInstance"; // Ensure correct path
 
-const InvoiceTableDelete = ({ shop, payments }) => {
+const InvoiceTableDelete = ({ shop, payments, onInvoiceUpdate }) => {
   const [expandedInvoice, setExpandedInvoice] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [invoices, setInvoices] = useState(shop?.Invoices || []);
@@ -28,7 +28,7 @@ const handleApplyFine = async (invoiceId) => {
   try {
     const res = await api.post(`/api/systemsetting/fine/apply/${invoiceId}`);
     alert(res.data.message);
-    // Reload or update invoices state to reflect the fine application
+    onInvoiceUpdate(); // Refresh shop data
   } catch (error) {
     alert("Failed to apply fine.");
     console.error(error);
@@ -41,7 +41,7 @@ const handleDeleteFine = async (invoiceId) => {
   try {
     const res = await api.delete(`/api/systemsetting/fine/${invoiceId}`);
     alert(res.data.message);
-    // Reload or update invoices state to reflect fine deletion
+    onInvoiceUpdate(); // Refresh shop data
   } catch (error) {
     alert("Failed to delete fine.");
     console.error(error);
