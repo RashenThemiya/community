@@ -35,7 +35,7 @@ export const printInvoices = async (invoices) => {
   const printableContent = invoices
     .map((invoice) => {
       const invoiceHTML = `
-        <div style="padding: 0px; font-size: 11px; font-family: Arial, sans-serif;">
+        <div style="padding: 0px; font-size: 11px; font-family:  'Noto Sans Sinhala', Arial, sans-serif;">
           <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
                 <img src="/images/Gov.jpg" alt="Logo" style="height: 60px;"/>
             <div style="text-align: center;">
@@ -306,6 +306,8 @@ export const printInvoices = async (invoices) => {
   <title>Print Invoices</title>
     <link href="https://fonts.googleapis.com/css2?family=sans-serif&display=swap" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Arial&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala&display=swap" rel="stylesheet">
+
 
  <style>
   @page {
@@ -314,7 +316,7 @@ export const printInvoices = async (invoices) => {
   }
 
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Noto Sans Sinhala',Arial, sans-serif;
     margin: 0;
     padding: 0;
   }
