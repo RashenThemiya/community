@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +7,113 @@ import Navbar from "../components/Navbar";
 import { Skeleton } from "../components/Skeleton";
 import DailyPriceCard from './DailyPriceCard';
 import Footer from '../components/Footer';
-import "../fonts/IskoolaPota"; 
+
+// HTML print function
+const waitForImagesToLoad = (container) => {
+  const images = container.querySelectorAll("img");
+  const promises = Array.from(images).map(
+    (img) =>
+      new Promise((resolve) => {
+        if (img.complete) {
+          resolve();
+        } else {
+          img.onload = resolve;
+          img.onerror = resolve;
+        }
+      })
+  );
+  return Promise.all(promises);
+};
+
+const printDailyPrices = async ({ prices, date, t }) => {
+  if (!prices || prices.length === 0) {
+    toast.error("No daily prices to print.");
+    return;
+  }
+
+  const tableRows = prices
+    .map(
+      (item, idx) => `
+      <tr>
+        <td style="border:1px solid #000; padding:4px 6px; font-size:13px;">${idx + 1}</td>
+        <td style="border:1px solid #000; padding:4px 6px; font-size:13px; text-align:left;">${item.product?.name || ""}</td>
+        <td style="border:1px solid #000; padding:4px 6px; font-size:13px; text-align:right;">${item.min_price ? "Rs. " + Number(item.min_price).toFixed(2) : ""}</td>
+        <td style="border:1px solid #000; padding:4px 6px; font-size:13px; text-align:right;">${item.max_price ? "Rs. " + Number(item.max_price).toFixed(2) : ""}</td>
+      </tr>
+    `
+    )
+    .join("");
+
+  const printableContent = `
+    <div style="font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif; color:#222;">
+      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #333; margin-bottom:10px; padding-bottom:8px;">
+        <img src="/images/Gov.jpg" alt="Logo" style="height:60px;">
+        <div style="text-align:center; flex:1;">
+          <div style="font-size:20px; font-weight:bold; letter-spacing:1px;">දෛනික මිල තොරතුරු</div>
+          <div style="font-size:13px; margin-top:2px;">Dedicated Economic Center, Dambulla</div>
+        </div>
+        <img src="/images/logo.jpg" alt="Logo" style="height:60px;">
+      </div>
+
+      <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
+        <div>දු.අ: 0662285181</div>
+        <div>දිනය : <strong>${date}</strong></div>
+        <div>Email : dambulladec@gmail.com</div>
+      </div>
+      
+      <table style="width:100%; border-collapse:collapse; margin-top:10px; margin-bottom:10px;">
+        <thead>
+          <tr style="background:#f5f5f5;">
+            <th style="border:1px solid #000; padding:5px 0; font-size:14px; width:5%;">#</th>
+            <th style="border:1px solid #000; padding:5px 0; font-size:14px;">අයිතමය</th>
+            <th style="border:1px solid #000; padding:5px 0; font-size:14px; width:20%;">අවම මිල</th>
+            <th style="border:1px solid #000; padding:5px 0; font-size:14px; width:20%;">උපරිම මිල</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+
+      <div style="margin-top:15px; font-size:12px; background:#fff3cd; border:1px solid #000; padding:8px;">
+        <strong>විමසීම්:</strong> Manager, Management Office, Dedicated Economic Center, Dambulla<br/>
+        Tel: 066-2285181 / 066-2285448 | Email: dambulladec@gmail.com
+      </div>
+    </div>
+  `;
+
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    toast.error("Popup blocked! Please allow popups for printing.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Daily Prices</title>
+        <style>
+          @page { size: A4 portrait; margin: 10mm; }
+          body { margin:0; padding:0; }
+          table, th, td { border-collapse: collapse; }
+        </style>
+        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+Sinhala:400,700&display=swap" rel="stylesheet">
+        <style>
+          body, td, th {
+            font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif !important;
+          }
+        </style>
+      </head>
+      <body>
+        ${printableContent}
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  await waitForImagesToLoad(printWindow.document);
+  printWindow.print();
+};
 
 const DailyPrice = () => {
   const { t } = useTranslation();
@@ -50,66 +154,8 @@ const DailyPrice = () => {
   );
 
   const downloadPDF = () => {
-    const doc = new jsPDF();
-  
-    // Set Sinhala font
-    doc.setFont("IskoolaPota");
-  
-    doc.setFontSize(18);
-    doc.text(`${t("dailyPrices.pdfTitle", "Daily Product Prices")}`, 105, 20, { align: "center" });
-  
-    doc.setFontSize(12);
-    doc.text(`${t("dailyPrices.date", "Date")}: ${date}`, 105, 30, { align: "center" });
-  
-    const tableColumn = [
-      t("dailyPrices.productName", "Product Name"),
-      t("dailyPrices.type", "Type"),
-      t("dailyPrices.minPrice", "Min Price (Rs.)"),
-      t("dailyPrices.maxPrice", "Max Price (Rs.)")
-    ];
-    const tableRows = [];
-  
-    filteredPrices.forEach((item) => {
-      tableRows.push([
-        t(item.product?.name, item.product?.name || "Unnamed"),
-        item.product?.type || "N/A",
-        item.min_price,
-        item.max_price
-      ]);
-    });
-  
-    autoTable(doc, {
-      startY: 40,
-      head: [tableColumn],
-      body: tableRows,
-      styles: {
-        font: "IskoolaPota",
-        fontSize: 10
-      },
-      headStyles: {
-        fillColor: [52, 152, 219],
-        textColor: [255, 255, 255],
-        font: "IskoolaPota"
-      },
-      alternateRowStyles: {
-        fillColor: [240, 240, 240],
-      },
-      margin: { top: 40 },
-    });
-  
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFontSize(10);
-      doc.setFont("IskoolaPota");
-      doc.text(`Downloaded on ${new Date().toLocaleString()}`, 14, 290);
-      doc.text(`Page ${i} of ${pageCount}`, 195, 290, { align: "right" });
-    }
-  
-    doc.save(`Daily_Prices_${date}.pdf`);
-    toast.success(t("dailyPrices.pdfDownloaded", "PDF downloaded successfully!"));
+    printDailyPrices({ prices: filteredPrices, date, t });
   };
-  
 
   return (
     <div>

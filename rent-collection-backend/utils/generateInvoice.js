@@ -15,7 +15,8 @@ const { fetchAndCalculateDues } = require("./fetchAndCalculateDues");
 
 async function generateInvoice(shop_id, monthYear,adminName = "System") {
   try {
-    
+    const invoiceDate = new Date(`${monthYear}-01T00:00:00.000Z`);
+
     //  Fetch shop details
     const shop = await Shop.findOne({ where: { shop_id } });
 
@@ -86,6 +87,8 @@ async function generateInvoice(shop_id, monthYear,adminName = "System") {
       total_arrears: totalArrears,
       total_amount: totalAmountToPay,
       status: "Unpaid",
+      createdAt: invoiceDate,
+       updatedAt: invoiceDate
     });
 
     //  Create linked entries in related tables
@@ -94,6 +97,8 @@ async function generateInvoice(shop_id, monthYear,adminName = "System") {
       invoice_id: invoice.invoice_id,
       rent_amount: rentAmount,
       status: "Unpaid",
+      createdAt: invoiceDate,
+      updatedAt: invoiceDate
     });
 
     await OperationFee.create({
@@ -101,6 +106,8 @@ async function generateInvoice(shop_id, monthYear,adminName = "System") {
       invoice_id: invoice.invoice_id,
       operation_amount: operationFee,
       status: "Unpaid",
+      createdAt: invoiceDate,
+      updatedAt: invoiceDate
     });
 
     await Vat.create({
@@ -108,6 +115,8 @@ async function generateInvoice(shop_id, monthYear,adminName = "System") {
       invoice_id: invoice.invoice_id,
       vat_amount: vatAmount,
       status: "Unpaid",
+      createdAt: invoiceDate,
+     updatedAt: invoiceDate
     });
    
     // 📝 Log event in audit_trail
@@ -117,6 +126,8 @@ async function generateInvoice(shop_id, monthYear,adminName = "System") {
       event_type: "Invoice Generated",
       event_description: `Invoice ${invoice.invoice_id} generated for shop ${shop_id}`,
       user_actioned: adminName || "System",
+      createdAt: invoiceDate,
+      updatedAt: invoiceDate
         });
 
     console.log(`✅ Invoice ${invoice.invoice_id} generated successfully.`);
