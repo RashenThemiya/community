@@ -11,7 +11,7 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm text-lime-100">
                     <div>
                         <h4 className="text-lg font-semibold text-white mb-2">Office Details</h4>
-                        <p>Chris Wijerathna</p>
+                        <p>Cristy Wijerathna</p>
                         <p>Manager</p>
                         <p>Management Office</p>
                         <p>Dedicated Economic Center</p>
