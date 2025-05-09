@@ -1,11 +1,12 @@
 import 'font-awesome/css/font-awesome.min.css';
-import React from 'react';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
 
 
 import AdminDashboard from "./pages/AdminDashboard";
+import Contact from './pages/Contact';
+import SystemSetting from './pages/CorrectionManagement/SystemSetting';
 import HomeDailyPrice from './pages/DailyPrice';
 import AddDailyPrice from './pages/DailyPrice/AddDailyPrice';
 import DailyPrice from './pages/DailyPrice/DailyPrice';
@@ -13,7 +14,6 @@ import EditDailyPrice from './pages/DailyPrice/EditDailyPrice';
 import ViewDailyPrice from './pages/DailyPrice/ViewDailyPrice';
 import Home from "./pages/Home";
 import Invoice from './pages/Invoice/Invoice';
-import Contact from './pages/Contact';
 import Login from "./pages/Login";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import CorrectPayment from './pages/Payment/CorrectPayment';
@@ -25,6 +25,7 @@ import EditProduct from './pages/ProductManagement/EditProduct';
 import ProductManagement from './pages/ProductManagement/ProductManagement';
 import ProductSummary from './pages/ProductManagement/ProductSummary';
 import ViewProducts from './pages/ProductManagement/ViewProducts';
+import ProductPriceChart from './pages/ProductPriceChart';
 import AddPublication from './pages/Publications/AddPublication';
 import Publication from './pages/Publications/PublicationManagement';
 import ViewPublications from './pages/Publications/ViewPublications';
@@ -44,7 +45,6 @@ import EditTenant from './pages/TenantManagement/EditTenant';
 import TenantManagement from './pages/TenantManagement/TenantManagement';
 import ViewTenants from './pages/TenantManagement/ViewTenants';
 import VehicleTicket from './pages/VehicleTickets/VehicleTickets';
-import ProductPriceChart from './pages/ProductPriceChart';
 function App() {
   return (
     <AuthProvider>
@@ -91,7 +91,7 @@ function App() {
             <Route path="/home-dailyprice" element={<HomeDailyPrice />} />
             <Route path="/admin-panel" element={<AdminPanel />}/>
             <Route path="/product/:id/chart" element={<ProductPriceChart />} />
-
+<Route path="/system-setting" element={<SystemSetting />} />
           </Routes>
         </div>
       </Router>
