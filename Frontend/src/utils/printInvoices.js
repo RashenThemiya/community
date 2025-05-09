@@ -35,11 +35,11 @@ export const printInvoices = async (invoices) => {
   const printableContent = invoices
     .map((invoice) => {
       const invoiceHTML = `
-        <div style="padding: 0px; font-size: 11px; font-family: Arial, sans-serif;">
+        <div style="padding: 0px; font-size: 11px; font-family:  'Noto Sans Sinhala', Arial, sans-serif;">
           <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
                 <img src="/images/Gov.jpg" alt="Logo" style="height: 60px;"/>
             <div style="text-align: center;">
-              <h2 style="margin: 0; font-size: 17px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණභාරය</h2>
+              <h2 style="margin: 0; font-size: 17px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණ භාරය</h2>
                     
           
 
@@ -96,22 +96,22 @@ export const printInvoices = async (invoices) => {
               <h3 style="text-align: center; margin: 0 0 8px;">Statement of Account / ගිණුම් ප්‍රකාශය
 </h3>
               <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                <tr><td>Monthly Rent / මාසික කුලිය</td><td style="text-align: right;">LKR ${
+                <tr><td>Monthly Rent / මාසික කුලිය</td><td style="text-align: right;">Rs ${
                   invoice.rent_amount
                 }</td></tr>
                 <tr><td>Operation Fee / මෙහෙයුම් ගාස්තුව
-</td><td style="text-align: right;">LKR ${invoice.operation_fee}</td></tr>
+</td><td style="text-align: right;">Rs ${invoice.operation_fee}</td></tr>
                 <tr><td>VAT / එකතු කල අගය මත බද්ද
- </td><td style="text-align: right;">LKR ${invoice.vat_amount}</td></tr>
+ </td><td style="text-align: right;">Rs ${invoice.vat_amount}</td></tr>
                 <tr><td>Previous Balance / ශේෂය
-</td><td style="text-align: right;">LKR ${invoice.previous_balance}</td></tr>
-                <tr><td>Total Fines / සියලු දඩ</td><td style="text-align: right;">LKR ${
+</td><td style="text-align: right;">Rs ${invoice.previous_balance}</td></tr>
+                <tr><td>Total Fines / සියලු දඩ</td><td style="text-align: right;">Rs ${
                   invoice.fines
                 }</td></tr>
                 <tr><td>Total Arrears / හිඟ බදු කුලිය
-</td><td style="text-align: right;">LKR ${invoice.total_arrears}</td></tr>
+</td><td style="text-align: right;">Rs ${invoice.total_arrears}</td></tr>
                 <tr style="border-top: 1px solid #000;"><td><strong>Total Amount / අය විය යුතු මුලු මුදල
-</strong></td><td style="text-align: right;"><strong>LKR ${
+</strong></td><td style="text-align: right;"><strong>Rs ${
         invoice.total_amount
       }</strong></td></tr>
               </table>
@@ -138,7 +138,7 @@ export const printInvoices = async (invoices) => {
       <div>
         පසුගිය මස ගෙවීමට තිබූ මුලු මුදල :
         <span>
-          LKR ${
+          Rs ${
             invoice.previous_invoice_total_amount
               ? parseFloat(invoice.previous_invoice_total_amount).toFixed(2)
               : '0.00'
@@ -149,13 +149,13 @@ export const printInvoices = async (invoices) => {
       <div>
         පසුගිය මස ගෙවූ මුදල : <br/>
         <span>
-          LKR ${parseFloat(invoice.previous_payment_summary?.total_paid || 0).toFixed(2)}
+          Rs ${parseFloat(invoice.previous_payment_summary?.total_paid || 0).toFixed(2)}
         </span>
       </div>
        <div>
         පසුගිය මසට දඩ : <br/>
         <span>
-          LKR ${parseFloat(invoice.previous_fines || 0).toFixed(2)}
+          Rs ${parseFloat(invoice.previous_fines || 0).toFixed(2)}
         </span>
       </div>
     </div>
@@ -183,7 +183,7 @@ export const printInvoices = async (invoices) => {
               <div style="text-align: center;">
   <p style="margin: 0;">
     දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන<br/>
-    කළමනාකරණභාරය <br/>
+    කළමනාකරණ භාරය <br/>
     නමට ලංකා බැංකු ජංගම ගිණුම් අංක 2603285 දරණ ගිණුමට ඔබ විසින් මුදල් <br/>
     ගෙවීම් කළ යුතු අතර ඒ සඳහා මෙම බිල්පත අනිවාර්යයෙන්ම භාවිතා කල යුතුය
   </p>
@@ -304,14 +304,19 @@ export const printInvoices = async (invoices) => {
  <html>
 <head>
   <title>Print Invoices</title>
+    <link href="https://fonts.googleapis.com/css2?family=sans-serif&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Arial&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala&display=swap" rel="stylesheet">
+
+
  <style>
   @page {
     size: A4 portrait;
-    margin: 2mm;
+    margin: 4mm;
   }
 
   body {
-    font-family: Arial, sans-serif;
+    font-family: 'Noto Sans Sinhala',Arial, sans-serif;
     margin: 0;
     padding: 0;
   }

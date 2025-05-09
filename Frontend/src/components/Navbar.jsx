@@ -26,7 +26,7 @@ const Navbar = () => {
             {/* Top ribbon bar */}
             <div className="bg-lime-400 text-gray-900 text-sm md:text-base py-2 px-4 flex justify-between items-center font-medium">
                 <div>
-                    📢 Hotline: <span className="font-semibold">1919</span> | eGov Services Portal
+                    📢 Hotline: <span className="font-semibold"> 066 2285181</span> | eGov Services Portal
                 </div>
                 <div className="space-x-4 flex">
                     <button onClick={() => handleLanguageChange('en')} className="hover:underline">EN</button>
