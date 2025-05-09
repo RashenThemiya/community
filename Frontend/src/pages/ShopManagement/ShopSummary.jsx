@@ -57,8 +57,8 @@ const ShopSummary = () => {
       
 
     return (
-       <div className="w-screen h-screen flex bg-gray-100 overflow-hidden">
-  <div className="w-full lg:w-1/4 p-4 space-y-4 overflow-y-auto bg-white shadow-md">
+<div className="w-screen h-screen flex flex-col lg:flex-row bg-gray-100 overflow-hidden">
+<div className="w-full lg:w-1/4 h-1/2 lg:h-full p-4 space-y-4 overflow-y-auto bg-white shadow-md">
     <button
       onClick={() => navigate(-1)}
       className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-300 transition duration-200"
@@ -89,7 +89,7 @@ const ShopSummary = () => {
     <TenantDetails tenant={shop?.Tenant} />
   </div>
 
-  <div className="w-full lg:w-3/4 p-6 overflow-hidden">
+<div className="w-full lg:w-3/4 h-1/2 lg:h-full p-6 overflow-hidden">
     <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">Shop Summary</h2>
 
     <div className="bg-white p-4 rounded shadow h-full flex flex-col">
