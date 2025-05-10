@@ -103,13 +103,15 @@ const SystemSetting = () => {
         }}
       />
     </div>
-    <GenerateInvoiceForm
-      shopId={shop.shop_id}
-      onInvoiceGenerated={(generatedInvoice) => {
-        setInvoice(generatedInvoice);
-        alert("Invoice generated successfully!");
-      }}
-    />
+<GenerateInvoiceForm
+  shopId={shop.shop_id}
+  onInvoiceGenerated={() => {
+    fetchShopSummary(); // ✅ Re-fetch shop data with latest invoices
+    alert("Invoice generated successfully!");
+  }}
+/>
+
+
     <div className="bg-gray-50 p-4 rounded shadow">
       <h3 className="text-lg font-semibold border-b mb-2">Shop Details</h3>
       <p><strong>ID:</strong> {shop.shop_id}</p>
@@ -180,7 +182,12 @@ const SystemSetting = () => {
         {activeTab === "payments" ? (
           <PaymentList payments={shop.Payments} />
         ) : (
-          <InvoiceTable shop={shop} payments={shop.Payments} />
+          <InvoiceTable
+  shop={shop}
+  payments={shop.Payments}
+  onInvoiceUpdate={fetchShopSummary} // <-- pass the fetch function
+/>
+
         )}
       </div>
     </div>
