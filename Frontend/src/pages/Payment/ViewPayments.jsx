@@ -77,6 +77,12 @@ const ViewPayments = () => {
       };
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
+    // Sort payments by shop_id
+filteredPayments.sort((a, b) => {
+  if (a.shop_id < b.shop_id) return -1;
+  if (a.shop_id > b.shop_id) return 1;
+  return 0;
+});
 
     // Add payment rows
     filteredPayments.forEach((payment) => {
