@@ -3,7 +3,7 @@
   "Cauliflower": "මල්ගෝවා",
   "Red Cabbage": "රතුගෝවා",
   "Lotus Roots": "නෙළුම් අල",
-  "Kohila": "කොහිලා",
+  "Kohila": "කොහිල",
   "Kiriala": "කිරි අල",
   "Beans": "බෝංචි",
   "Manioc": "මඤ්ඤොක්කා",
@@ -87,7 +87,13 @@
   "Red Onion- Lanka": "රතු ලූණු (ලංකා)",
   "Big Onion Import": "මුලු ලූණු (ආනයන)",
   "Pineapple": "අන්නාසි",
-
+  "Watermelon": "කොමඩු",
+  "Guava": "පේර",
+  "Papaya": "පැපොල්",
+  "Garlic": "සුදුළුනු",
+  "Peanuts": "රටකජු",
+  "Black Pepper": "ගම්මිරිස්",
+  "Big Onion Lanka": "ලොකු ලූනු ලංකා",
 
   "home": {
     "welcomeMessage": "දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානයට සාදරයෙන් පිළිගනිමු",
