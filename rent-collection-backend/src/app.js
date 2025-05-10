@@ -29,7 +29,8 @@ const publicationRoutes = require('../routes/publicationRoutes');
 const ReportRoute        = require('../routes/ReportRoute')// Import publications routes
 const ReportRoute2        = require('../routes/ReportRoutebb')// Import publications routes
 const ReportRoute3        = require('../routes/ReportRoutec')// Import publications routes
-const backupRoutes = require('../routes/backup'); // Import backup routes
+const backupRoutes = require('../routes/backup'); // Import backup routes4
+const systemseetingRoute = require('../routes/systemsettingRoute'); // Import system settings routes
 const app = express();
 
 app.use(cors({ origin: "*", credentials: true }));
@@ -62,7 +63,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/prices', productPriceRoutes); // Product price routes
 app.use('/api/publications', publicationRoutes); // Publications routes
 app.use('/api/backup', backupRoutes); // Backup routes
-
+app.use('/api/systemsetting', systemseetingRoute); // System settings routes
 const createDefaultAdmins = async () => {
   try {
     const users = [
