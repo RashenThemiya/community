@@ -40,8 +40,17 @@ const DailyPrice = () => {
     item.product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // FIX: Map filteredPrices to use translated product names before printing PDF
   const downloadPDF = () => {
-    printDailyPrices({ prices: filteredPrices, date });
+    const translatedPrices = filteredPrices.map(item => ({
+      ...item,
+      product: {
+        ...item.product,
+        // Use the product name as the translation key
+        name: t(item.product?.name, item.product?.name)
+      }
+    }));
+    printDailyPrices({ prices: translatedPrices, date });
   };
 
   return (
