@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../../../utils/axiosInstance";
+import ConfirmWrapper from "../../../components/ConfirmWrapper"; // Adjust path as needed
 
 const GenerateInvoiceForm = ({ shopId, onInvoiceGenerated }) => {
   const [selectedYear, setSelectedYear] = useState("");
@@ -103,13 +104,21 @@ const GenerateInvoiceForm = ({ shopId, onInvoiceGenerated }) => {
         </select>
       </div>
 
-      <button
-        onClick={handleGenerateInvoice}
-        disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400 w-full"
+      <ConfirmWrapper
+        onConfirm={handleGenerateInvoice}
+        message={`Generate invoice for ${selectedMonth && selectedYear ? `${months.find(m => m.value === selectedMonth)?.name} ${selectedYear}` : "selected month and year"}?`}
+        confirmText="Yes, Generate"
+        cancelText="Cancel"
+        buttonBackgroundColor="bg-blue-600"
+        buttonTextColor="text-white"
       >
-        {loading ? "Generating..." : "Generate Invoice"}
-      </button>
+        <button
+          disabled={loading}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400 w-full"
+        >
+          {loading ? "Generating..." : "Generate Invoice"}
+        </button>
+      </ConfirmWrapper>
 
       {error && <p className="text-red-600 mt-3">{error}</p>}
     </div>

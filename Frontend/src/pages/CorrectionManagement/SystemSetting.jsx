@@ -11,6 +11,7 @@ import GenerateInvoiceForm from "./components/GenerateInvoiceForm";
 import InvoiceTable from "./components/InvoiceTableDelete";
 import PaymentList from "./components/PaymentDelete";
 import MakePayment from "./components/SettingPayment";
+import ConfirmWrapper from "../../components/ConfirmWrapper"; // Only needed for other buttons
 
 const SystemSetting = () => {
   const [shopId, setShopId] = useState("");
@@ -68,6 +69,7 @@ const SystemSetting = () => {
               placeholder="Enter Shop ID"
               className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500"
             />
+            {/* Load Summary button: NO confirmation */}
             <button
               onClick={fetchShopSummary}
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
@@ -115,19 +117,35 @@ const SystemSetting = () => {
                   <p><strong>VAT:</strong> {shop.vat_rate}%</p>
                   <p><strong>Operation Fee:</strong> LKR {shop.operation_fee}</p>
 
-                  <button
-                    onClick={() => setShowPaymentModal(true)}
-                    className="mt-3 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                  {/* Make Payment button with confirmation */}
+                  <ConfirmWrapper
+                    onConfirm={() => setShowPaymentModal(true)}
+                    message="Are you sure you want to make a payment?"
+                    confirmText="Yes, Make Payment"
+                    cancelText="No, Cancel"
+                    icon={<span>💸</span>}
                   >
-                    Make Payment
-                  </button>
+                    <button
+                      className="mt-3 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      Make Payment
+                    </button>
+                  </ConfirmWrapper>
 
-                  <button
-                    onClick={handleExportSummary}
-                    className="mt-3 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                  {/* Export Summary button with confirmation */}
+                  <ConfirmWrapper
+                    onConfirm={handleExportSummary}
+                    message="Export shop summary?"
+                    confirmText="Export"
+                    cancelText="Cancel"
+                    icon={<span>📄</span>}
                   >
-                    Export Summary
-                  </button>
+                    <button
+                      className="mt-3 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                    >
+                      Export Summary
+                    </button>
+                  </ConfirmWrapper>
                 </div>
 
                 <TenantDetails tenant={shop.Tenant} />
@@ -136,6 +154,7 @@ const SystemSetting = () => {
               <div className="lg:col-span-3">
                 <div className="bg-gray-50 p-4 rounded shadow">
                   <div className="flex gap-4 border-b mb-4">
+                    {/* Tab buttons: NO confirmation */}
                     <button
                       onClick={() => setActiveTab("payments")}
                       className={`px-4 py-2 font-medium ${activeTab === "payments" ? "border-b-4 border-green-600 text-green-800" : "text-gray-600"}`}
@@ -152,22 +171,35 @@ const SystemSetting = () => {
 
                   <div className="flex justify-end mb-3">
                     {activeTab === "payments" ? (
-                      <button
-                        onClick={handleExportPayments}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      <ConfirmWrapper
+                        onConfirm={handleExportPayments}
+                        message="Export all payments for this shop?"
+                        confirmText="Export"
+                        cancelText="Cancel"
+                        icon={<span>💵</span>}
                       >
-                        Export Payments
-                      </button>
+                        <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                          Export Payments
+                        </button>
+                      </ConfirmWrapper>
                     ) : (
-                      <button
-                        onClick={handleExportInvoices}
-                        className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                      <ConfirmWrapper
+                        onConfirm={handleExportInvoices}
+                        message="Export all invoices for this shop?"
+                        confirmText="Export"
+                        cancelText="Cancel"
+                        icon={<span>🧾</span>}
                       >
-                        Export Invoices
-                      </button>
+                        <button
+                          className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                        >
+                          Export Invoices
+                        </button>
+                      </ConfirmWrapper>
                     )}
                   </div>
-
                   <div className="h-[calc(100vh-300px)] overflow-y-auto">
                     {activeTab === "payments" ? (
                       <PaymentList payments={shop.Payments} />
