@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../../../utils/axiosInstance";
+import ConfirmWrapper from "../../../components/ConfirmWrapper"; // Adjust path as needed
 
 const SettingPayment = ({ shopId, onSuccess }) => {
   const [amount, setAmount] = useState("");
@@ -11,8 +12,9 @@ const SettingPayment = ({ shopId, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // We'll remove form's onSubmit and handle submission via ConfirmWrapper onConfirm
+
+  const handleSubmit = async () => {
     if (!amount || isNaN(amount) || !paymentMethod) {
       setError("Amount and payment method are required.");
       return;
@@ -40,7 +42,6 @@ const SettingPayment = ({ shopId, onSuccess }) => {
     }
   };
 
-  // Disable submit if amount empty or invalid or paymentMethod empty
   const isSubmitDisabled = loading || !amount || isNaN(amount) || !paymentMethod;
 
   return (
@@ -53,7 +54,7 @@ const SettingPayment = ({ shopId, onSuccess }) => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
         <div>
           <label
             htmlFor="amount"
@@ -130,16 +131,25 @@ const SettingPayment = ({ shopId, onSuccess }) => {
         </div>
 
         <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={isSubmitDisabled}
-            className={`px-6 py-3 rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-400 transition ${
-              isSubmitDisabled ? "cursor-not-allowed" : "cursor-pointer"
-            }`}
-            style={{ pointerEvents: isSubmitDisabled ? "auto" : "auto" }}
+          <ConfirmWrapper
+            onConfirm={handleSubmit}
+            message={`Confirm payment of LKR ${amount} via ${paymentMethod}?`}
+            confirmText="Yes, Submit"
+            cancelText="Cancel"
+            buttonBackgroundColor="bg-green-600"
+            buttonTextColor="text-white"
           >
-            {loading ? "Processing..." : "Submit Payment"}
-          </button>
+            <button
+              type="button"
+              disabled={isSubmitDisabled}
+              className={`px-6 py-3 rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-400 transition ${
+                isSubmitDisabled ? "cursor-not-allowed" : "cursor-pointer"
+              }`}
+              style={{ backgroundColor: isSubmitDisabled ? undefined : undefined }}
+            >
+              {loading ? "Processing..." : "Submit Payment"}
+            </button>
+          </ConfirmWrapper>
         </div>
       </form>
     </div>
