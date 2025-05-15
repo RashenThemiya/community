@@ -105,20 +105,28 @@ const GenerateInvoiceForm = ({ shopId, onInvoiceGenerated }) => {
       </div>
 
       <ConfirmWrapper
-        onConfirm={handleGenerateInvoice}
-        message={`Generate invoice for ${selectedMonth && selectedYear ? `${months.find(m => m.value === selectedMonth)?.name} ${selectedYear}` : "selected month and year"}?`}
-        confirmText="Yes, Generate"
-        cancelText="Cancel"
-        buttonBackgroundColor="bg-blue-600"
-        buttonTextColor="text-white"
-      >
-        <button
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400 w-full"
-        >
-          {loading ? "Generating..." : "Generate Invoice"}
-        </button>
-      </ConfirmWrapper>
+  onConfirm={handleGenerateInvoice}
+  message={`Generate invoice for ${
+    selectedMonth && selectedYear
+      ? `${months.find((m) => m.value === selectedMonth)?.name} ${selectedYear}`
+      : "selected month and year"
+  }?`}
+  confirmText="Yes, Generate"
+  cancelText="Cancel"
+  buttonBackgroundColor="bg-blue-600"
+  buttonTextColor="text-white"
+>
+<button
+  disabled={loading || !selectedYear || !selectedMonth}
+  className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full ${
+    (loading || !selectedYear || !selectedMonth) ? "cursor-not-allowed" : "cursor-pointer"
+  }`}
+>
+  {loading ? "Generating..." : "Generate Invoice"}
+</button>
+
+</ConfirmWrapper>
+
 
       {error && <p className="text-red-600 mt-3">{error}</p>}
     </div>
