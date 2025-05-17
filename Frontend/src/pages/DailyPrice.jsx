@@ -1,119 +1,13 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Toaster, toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Navbar from "../components/Navbar";
 import { Skeleton } from "../components/Skeleton";
 import DailyPriceCard from './DailyPriceCard';
 import Footer from '../components/Footer';
-
-// HTML print function
-const waitForImagesToLoad = (container) => {
-  const images = container.querySelectorAll("img");
-  const promises = Array.from(images).map(
-    (img) =>
-      new Promise((resolve) => {
-        if (img.complete) {
-          resolve();
-        } else {
-          img.onload = resolve;
-          img.onerror = resolve;
-        }
-      })
-  );
-  return Promise.all(promises);
-};
-
-const printDailyPrices = async ({ prices, date, t }) => {
-  if (!prices || prices.length === 0) {
-    toast.error("No daily prices to print.");
-    return;
-  }
-
-  const tableRows = prices
-    .map(
-      (item, idx) => `
-      <tr>
-        <td style="border:1px solid #000; padding:4px 6px; font-size:13px;">${idx + 1}</td>
-        <td style="border:1px solid #000; padding:4px 6px; font-size:13px; text-align:left;">${item.product?.name || ""}</td>
-        <td style="border:1px solid #000; padding:4px 6px; font-size:13px; text-align:right;">${item.min_price ? "Rs. " + Number(item.min_price).toFixed(2) : ""}</td>
-        <td style="border:1px solid #000; padding:4px 6px; font-size:13px; text-align:right;">${item.max_price ? "Rs. " + Number(item.max_price).toFixed(2) : ""}</td>
-      </tr>
-    `
-    )
-    .join("");
-
-  const printableContent = `
-    <div style="font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif; color:#222;">
-      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #333; margin-bottom:10px; padding-bottom:8px;">
-        <img src="/images/Gov.jpg" alt="Logo" style="height:60px;">
-        <div style="text-align:center; flex:1;">
-          <div style="font-size:20px; font-weight:bold; letter-spacing:1px;">දෛනික මිල තොරතුරු</div>
-          <div style="font-size:13px; margin-top:2px;">Dedicated Economic Center, Dambulla</div>
-        </div>
-        <img src="/images/logo.jpg" alt="Logo" style="height:60px;">
-      </div>
-
-      <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px;">
-        <div>දු.අ: 0662285181</div>
-        <div>දිනය : <strong>${date}</strong></div>
-        <div>Email : dambulladec@gmail.com</div>
-      </div>
-      
-      <table style="width:100%; border-collapse:collapse; margin-top:10px; margin-bottom:10px;">
-        <thead>
-          <tr style="background:#f5f5f5;">
-            <th style="border:1px solid #000; padding:5px 0; font-size:14px; width:5%;">#</th>
-            <th style="border:1px solid #000; padding:5px 0; font-size:14px;">අයිතමය</th>
-            <th style="border:1px solid #000; padding:5px 0; font-size:14px; width:20%;">අවම මිල</th>
-            <th style="border:1px solid #000; padding:5px 0; font-size:14px; width:20%;">උපරිම මිල</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${tableRows}
-        </tbody>
-      </table>
-
-      <div style="margin-top:15px; font-size:12px; background:#fff3cd; border:1px solid #000; padding:8px;">
-        <strong>විමසීම්:</strong> Manager, Management Office, Dedicated Economic Center, Dambulla<br/>
-        Tel: 066-2285181 / 066-2285448 | Email: dambulladec@gmail.com
-      </div>
-    </div>
-  `;
-
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) {
-    toast.error("Popup blocked! Please allow popups for printing.");
-    return;
-  }
-
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>Print Daily Prices</title>
-        <style>
-          @page { size: A4 portrait; margin: 10mm; }
-          body { margin:0; padding:0; }
-          table, th, td { border-collapse: collapse; }
-        </style>
-        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+Sinhala:400,700&display=swap" rel="stylesheet">
-        <style>
-          body, td, th {
-            font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif !important;
-          }
-        </style>
-      </head>
-      <body>
-        ${printableContent}
-      </body>
-    </html>
-  `);
-
-  printWindow.document.close();
-  await waitForImagesToLoad(printWindow.document);
-  printWindow.print();
-};
+import { printDailyPrices } from '../utils/printDailyPrice';
 
 const DailyPrice = () => {
   const { t } = useTranslation();
@@ -130,15 +24,8 @@ const DailyPrice = () => {
         `${import.meta.env.VITE_API_BASE_URL}/api/prices/by-date/${date}`
       );
       const data = response.data;
-
-      if (Array.isArray(data)) {
-        setDailyPrices(data);
-      } else {
-        console.error("Expected an array but got:", data);
-        setDailyPrices([]);
-      }
+      setDailyPrices(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching prices:", error);
       setDailyPrices([]);
     } finally {
       setLoading(false);
@@ -153,20 +40,27 @@ const DailyPrice = () => {
     item.product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // FIX: Map filteredPrices to use translated product names before printing PDF
   const downloadPDF = () => {
-    printDailyPrices({ prices: filteredPrices, date, t });
+    const translatedPrices = filteredPrices.map(item => ({
+      ...item,
+      product: {
+        ...item.product,
+        // Use the product name as the translation key
+        name: t(item.product?.name, item.product?.name)
+      }
+    }));
+    printDailyPrices({ prices: translatedPrices, date });
   };
 
   return (
     <div>
       <Navbar />
       <Toaster position="top-center" reverseOrder={false} />
-
       <div className="container mx-auto px-4 py-6">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           {t("dailyPrices.title", "Daily Product Prices")}
         </h1>
-
         <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4 flex-wrap">
           <div className="flex items-center gap-4 w-full md:w-auto">
             <input
@@ -183,7 +77,6 @@ const DailyPrice = () => {
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
             />
           </div>
-
           {!loading && filteredPrices.length > 0 && (
             <button
               onClick={downloadPDF}
@@ -193,7 +86,6 @@ const DailyPrice = () => {
             </button>
           )}
         </div>
-
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, idx) => (
@@ -226,7 +118,6 @@ const DailyPrice = () => {
           </div>
         )}
       </div>
-
       <Footer />
     </div>
   );
