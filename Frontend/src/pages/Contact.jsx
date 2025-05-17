@@ -47,7 +47,7 @@ const Contact = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">{t("contact.talkToUs")}</h2>
           <p className="text-gray-600 mb-6">{t("contact.subText")}</p>
           <ul className="space-y-4 text-gray-700">
-            <li><strong>📍 {t("contact.address")}:</strong> {t("contact.addressDetails")}</li>
+            <li><strong>📍 {t("contact.address")}:</strong> {t("Kandy - Jaffna Highway, Dambulla")}</li>
             <li><strong>✉️ {t("contact.email")}:</strong> <a href="mailto:tmb.dec@gmail.com" className="text-blue-600">dambulladec@gmail.com</a></li>
             <li><strong>📞 {t("contact.phone")}:</strong> <a href="tel:0252275171" className="text-blue-600">066-2285181</a></li>
 
