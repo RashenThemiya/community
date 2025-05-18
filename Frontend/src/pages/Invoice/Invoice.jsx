@@ -130,7 +130,7 @@ const Invoice = () => {
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
-                            className={`px-4 py-2 rounded-lg ${activeTab === tab.key ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                            className={`px-4 py-2 rounded-lg cursor-pointer ${activeTab === tab.key ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                         >
                             {tab.label}
                         </button>
