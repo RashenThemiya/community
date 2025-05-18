@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import CredentialModal from "../../components/CredentialModal";
+
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { FaPercentage, FaUserShield, FaFileInvoiceDollar, FaExclamationTriangle, FaGavel, FaBan, FaClipboardList, FaDatabase, FaCog } from "react-icons/fa";
@@ -229,7 +230,6 @@ const Setting = () => {
           </div>
 
           {/* Invoice Arrest Action */}
-          {/* Invoice Arrest Action */}
           <div className="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -246,8 +246,8 @@ const Setting = () => {
               onClick={() => openCredentialModal(handleInvoiceArrest)}
               disabled={loading}
               className={`py-2.5 px-4 rounded-xl text-white font-medium w-full transition-colors duration-300 ${loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-purple-500 hover:bg-purple-600 cursor-pointer"
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-purple-500 hover:bg-purple-600 cursor-pointer"
                 }`}
             >
               {loading ? "Processing..." : "Apply Invoice Arrest"}
