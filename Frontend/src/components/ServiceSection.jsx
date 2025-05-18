@@ -1,5 +1,5 @@
 import { Disclosure } from "@headlessui/react";
-import { ChevronUpIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
@@ -12,7 +12,7 @@ const ServiceSection = () => {
   return (
     <div className="py-20 bg-white">
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-        
+
         {/* 📸 Image Side */}
         <div className="w-full">
           <div className="aspect-w-4 aspect-h-3 rounded-3xl overflow-hidden shadow-lg">
@@ -43,10 +43,9 @@ const ServiceSection = () => {
                         <span className="flex items-center gap-2">
                           {service.icon} {service.title}
                         </span>
-                        <ChevronUpIcon
-                          className={`h-5 w-5 text-green-700 transform duration-200 ${
-                            open ? "rotate-180" : ""
-                          }`}
+                        <ChevronDownIcon
+                          className={`h-5 w-5 text-green-700 transform duration-200 ${open ? "rotate-180" : ""
+                            }`}
                         />
                       </Disclosure.Button>
                       <Disclosure.Panel className="px-4 py-4 text-gray-700 text-justify whitespace-pre-line bg-white">
