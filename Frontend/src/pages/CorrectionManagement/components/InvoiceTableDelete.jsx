@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import api from "../../../utils/axiosInstance"; // Ensure correct path
+import api from "../../../utils/axiosInstance";
+import ConfirmWrapper from "../../../components/ConfirmWrapper"; // Ensure correct path
 
 const InvoiceTableDelete = ({ shop, payments, onInvoiceUpdate }) => {
   const [expandedInvoice, setExpandedInvoice] = useState(null);
@@ -164,12 +165,23 @@ const handleDeleteFine = async (invoiceId) => {
                       >
                         {expandedInvoice === invoice.invoice_id ? "Hide" : "View"}
                       </button>
-                      <button
-                        onClick={() => handleDelete(invoice.invoice_id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
+                      <ConfirmWrapper
+  onConfirm={() => handleDelete(invoice.invoice_id)}
+  message={`Are you sure you want to delete invoice ID ${invoice.invoice_id}?`}
+  confirmText="Yes, Delete"
+  cancelText="Cancel"
+  buttonBackgroundColor="bg-red-500"
+  buttonTextColor="text-white"
+  icon={<span>🗑️</span>}
+>
+  <button
+    type="button"
+    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+  >
+    Delete
+  </button>
+</ConfirmWrapper>
+
                     </td>
                   </tr>
 
