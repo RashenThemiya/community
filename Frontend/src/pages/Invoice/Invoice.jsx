@@ -150,7 +150,7 @@ const Invoice = () => {
                         onClick={onPrintClick}
                         disabled={selectedInvoices.length === 0}
                         className={`mt-4 px-6 py-2 rounded-lg text-white flex items-center ${selectedInvoices.length === 0
-                            ? "bg-green-400 cursor-not-allowed"
+                            ? "bg-green-300 cursor-not-allowed"
                             : "bg-green-500 hover:bg-green-700"}`
                         }
                     >
