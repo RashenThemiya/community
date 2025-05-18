@@ -55,12 +55,12 @@ const Navbar = () => {
                         <Link to="/" className="hover:text-lime-300">Home</Link>
                         <Link to="/home-dailyprice" className="hover:text-lime-300">Daily Price</Link>
                         <Link to="/contact" className="hover:text-lime-300">Contact</Link>
-                        <Link
+                        {/* <Link
                             to="/login"
                             className="bg-white text-green-800 px-5 py-2 rounded-full hover:bg-lime-200 font-semibold transition"
                         >
                             Login
-                        </Link>
+                        </Link> */}
                     </div>
 
                     {/* Mobile menu toggle */}
@@ -81,12 +81,12 @@ const Navbar = () => {
                         <Link to="/" className="block hover:text-lime-300">Home</Link>
                         <Link to="/home-dailyprice" className="block hover:text-lime-300">Daily Price</Link>
                         <Link to="/contact" className="block hover:text-lime-300">Contact</Link>
-                        <Link
+                        {/* <Link
                             to="/login"
                             className="block bg-white text-green-800 text-center px-4 py-2 rounded-full font-semibold mt-2 hover:bg-lime-200"
                         >
                             Login
-                        </Link>
+                        </Link> */}
                     </div>
                 )}
             </nav>
