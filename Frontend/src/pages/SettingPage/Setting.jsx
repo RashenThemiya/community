@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import CredentialModal from "../../components/CredentialModal";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
+import LoadingSpinner from "../../components/LoadingSpinner"; // <-- Import your spinner
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const Setting = () => {
@@ -14,7 +15,27 @@ const Setting = () => {
 
   const token = localStorage.getItem("token");
 
-  const handleApiCall = async (endpoint, successMsg, errorMsg, credentials = {}) => {
+  // Custom success popup for invoice generation
+  const showInvoiceSuccessPopup = (message) => {
+    toast.success(
+      <div>
+        <div className="font-bold text-green-700 mb-1">Invoices Generated!</div>
+        <div>{message}</div>
+      </div>,
+      {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+      }
+    );
+  };
+
+  const handleApiCall = async (endpoint, successMsg, errorMsg, credentials = {}, customSuccess = null) => {
     if (!token) {
       toast.error("Unauthorized! Please log in.");
       navigate("/login");
@@ -26,7 +47,13 @@ const Setting = () => {
       const response = await api.post(endpoint, credentials, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success(response.data.message || successMsg);
+
+      // Use custom success popup for invoice generation
+      if (customSuccess) {
+        customSuccess(response.data.message || successMsg);
+      } else {
+        toast.success(response.data.message || successMsg);
+      }
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || errorMsg);
@@ -37,7 +64,13 @@ const Setting = () => {
 
   // Refactored actions to accept credentials
   const handleGenerateInvoices = (credentials) =>
-    handleApiCall("/api/generateInvoices/generate-all", "Invoices generated!", "Failed to generate invoices.", credentials);
+    handleApiCall(
+      "/api/generateInvoices/generate-all",
+      "Invoices generated!",
+      "Failed to generate invoices.",
+      credentials,
+      showInvoiceSuccessPopup // Pass custom popup for invoice generation
+    );
 
   const handleApplyFines = (credentials) =>
     handleApiCall("/api/settings/apply-fines", "Fines applied successfully!", "Failed to apply fines.", credentials);
@@ -47,14 +80,15 @@ const Setting = () => {
 
   const handleInvoiceArrest = (credentials) =>
     handleApiCall("/api/settings/invoice-arrest-action", "Invoice arrest applied!", "Failed to apply invoice arrest.", credentials);
+
   const handleBackupDownload = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/backup/backup`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       if (!res.ok) throw new Error('Download failed');
-  
+
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -68,17 +102,15 @@ const Setting = () => {
       console.error(err);
     }
   };
-  
-  
+
   // Modal verification handler
   const handleVerify = async (email, password) => {
     try {
       const res = await api.post("/api/admin/verify", { email, password });
-  
+
       if (res.status === 200) {
         toast.success("Verification successful");
         setModalOpen(false); // ✅ Only close modal if verification is successful
-  
         if (pendingAction) {
           pendingAction({ email, password }); // Run the saved action
         }
@@ -92,7 +124,6 @@ const Setting = () => {
     }
     // ✅ Remove the `finally` block completely
   };
-  
 
   const openCredentialModal = (action) => {
     setPendingAction(() => action); // Save the intended action
@@ -110,6 +141,16 @@ const Setting = () => {
           <h1>Settings</h1>
           <p className="text-lg text-gray-500">Manage system settings</p>
         </div>
+
+        {/* Show loading spinner overlay when loading */}
+        {loading && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+    <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+  </div>
+)}
+
+
+
 
         {/* Settings Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -209,32 +250,31 @@ const Setting = () => {
               View Logs
             </button>
           </div>
+
           {/* Backup System Data */}
-<div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-  <h2 className="text-xl font-semibold mb-4">Backup System Data</h2>
-  <p className="text-gray-700 mb-4">Download a backup of the database for safekeeping.</p>
-  <button
-    className={`py-2 px-4 rounded-lg text-white w-full bg-indigo-500 hover:bg-indigo-600`}
-    onClick={handleBackupDownload}
-  >
-    Backup Data
-  </button>
-</div>
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+            <h2 className="text-xl font-semibold mb-4">Backup System Data</h2>
+            <p className="text-gray-700 mb-4">Download a backup of the database for safekeeping.</p>
+            <button
+              className={`py-2 px-4 rounded-lg text-white w-full bg-indigo-500 hover:bg-indigo-600`}
+              onClick={handleBackupDownload}
+            >
+              Backup Data
+            </button>
+          </div>
 
-{/* System Configuration */}
-<div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-  <h2 className="text-xl font-semibold mb-4">System Configuration</h2>
-  <p className="text-gray-700 mb-4">Modify core system configuration and preferences.</p>
-  <button
-    className="bg-cyan-500 text-white py-2 px-4 rounded-lg hover:bg-cyan-600 w-full"
-    onClick={() => navigate("/system-setting")}
-  >
-    System Settings
-  </button>
-</div>
-
+          {/* System Configuration */}
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+            <h2 className="text-xl font-semibold mb-4">System Configuration</h2>
+            <p className="text-gray-700 mb-4">Modify core system configuration and preferences.</p>
+            <button
+              className="bg-cyan-500 text-white py-2 px-4 rounded-lg hover:bg-cyan-600 w-full"
+              onClick={() => navigate("/system-setting")}
+            >
+              System Settings
+            </button>
+          </div>
         </div>
-        
       </div>
 
       {/* Credential Modal */}
