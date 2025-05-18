@@ -12,9 +12,12 @@ import {
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import treeAnimation from '../assets/Animation - 1746479551878.json';
+import useIsLargeScreen from '../hook/useIsLargeScreen.js';
 
 const VisionMission = () => {
   const { t } = useTranslation();
+  const isLargeScreen = useIsLargeScreen();
+
 
   const items = [
     { icon: <Target className="text-green-700 w-6 h-6" />, text: t('mission.1') },
@@ -46,9 +49,9 @@ const VisionMission = () => {
         {/* Vision */}
         <motion.div
           className="bg-green-600 text-white rounded-2xl p-6 sm:p-8 shadow-lg w-full lg:w-1/2 flex flex-col justify-between"
-          initial={{ x: 0 }}
-          animate={{ x: -50 }}
-          transition={{ duration: 1.5, ease: 'easeInOut' }}
+          initial={isLargeScreen ? { x: -50, opacity: 0 } : false}
+          animate={isLargeScreen ? { x: 0, opacity: 1 } : false}
+          transition={isLargeScreen ? { duration: 1, ease: 'easeOut' } : {}}
           style={glowStyle}
         >
           <div className="flex flex-col justify-between h-full">
@@ -72,9 +75,9 @@ const VisionMission = () => {
         {/* Mission */}
         <motion.div
           className="bg-white rounded-2xl p-6 sm:p-8 shadow-md w-full lg:w-1/2 border border-green-100 flex flex-col justify-between"
-          initial={{ x: 0 }}
-          animate={{ x: 50 }}
-          transition={{ duration: 1.5, ease: 'easeInOut' }}
+          initial={isLargeScreen ? { x: 50, opacity: 0 } : false}
+          animate={isLargeScreen ? { x: 0, opacity: 1 } : false}
+          transition={isLargeScreen ? { duration: 1, ease: 'easeOut' } : {}}
           style={glowStyle}
         >
           <div>
