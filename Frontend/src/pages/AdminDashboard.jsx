@@ -9,6 +9,8 @@ import {
 import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 import Sidebar from "../components/Sidebar";
 import api from "../utils/axiosInstance";
+import { ResponsiveContainer } from 'recharts';
+
 
 const months = [
   { name: "All Months", value: 0 },
@@ -223,31 +225,32 @@ const AdminDashboard = () => {
             <h2 className="text-xl md:text-2xl font-bold mt-10 mb-4 bg-gradient-to-r from-green-600 to-teal-500 text-white px-4 py-2 rounded-lg shadow">
               Invoice Status
             </h2>
-            <div className="bg-white p-6 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-              <PieChart width={400} height={400} margin={{ left: 10 }}>
-                <Pie
-                  data={invoiceData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  innerRadius={50}
-                  paddingAngle={5}
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {invoiceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#fff",
-                    borderRadius: "10px",
-                    border: "1px solid #e5e7eb",
-                  }}
-                />
-              </PieChart>
-
+            <div className="relative z-10 overflow-hidden bg-white p-6 rounded-2xl shadow-lg grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-36">
+              <ResponsiveContainer width="100%" height={300} className={"z-10"} >
+                <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+                  <Pie
+                    data={invoiceData}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    innerRadius={50}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {invoiceData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      borderRadius: "10px",
+                      border: "1px solid #e5e7eb",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
               <div className="space-y-4">
                 {invoiceData.map((item, idx) => (
                   <div key={idx} className="flex items-center justify-between bg-gray-50 p-4 rounded-xl shadow-sm">
@@ -263,7 +266,7 @@ const AdminDashboard = () => {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 };
 
