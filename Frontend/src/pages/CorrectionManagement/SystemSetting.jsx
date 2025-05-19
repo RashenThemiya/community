@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 import {
   exportInvoicesExcel,
@@ -20,6 +21,7 @@ const SystemSetting = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("payments");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const navigate = useNavigate();
 
   const fetchShopSummary = async () => {
     if (!shopId.trim()) return;
@@ -55,7 +57,16 @@ const SystemSetting = () => {
   };
 
   return (
-    <div className="w-screen h-screen bg-gray-100 overflow-auto">
+    <div className="w-screen h-screen bg-gray-100 overflow-auto relative">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate(-1)}
+        className="absolute top-4 left-4 z-50 flex items-center gap-2 bg-white border border-gray-300 shadow px-3 py-1 rounded-lg hover:bg-gray-100 transition"
+      >
+        <span className="text-xl">←</span>
+        <span className="font-medium">Back</span>
+      </button>
+
       <div className="w-full space-y-6">
         <div className="w-full bg-white shadow rounded-lg p-6 space-y-6">
           <h1 className="text-2xl font-bold text-center text-gray-800">System Settings</h1>
