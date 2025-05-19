@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import { Eye, PlusCircle } from "lucide-react";
 
 const TenantManagement = () => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const TenantManagement = () => {
 
                     {/* Add New Tenant */}
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-                        <h2 className="text-xl font-semibold mb-4">Add New Tenant</h2>
+                        <h2 className="text-xl font-semibold mb-4 flex items-center"><PlusCircle className="mr-2 text-blue-600" />Add New Tenant</h2>
                         <p className="text-gray-700 mb-4">Register a new tenant and assign them to a shop.</p>
                         <button
                             className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 w-full sm:w-auto"
@@ -35,7 +36,7 @@ const TenantManagement = () => {
 
                     {/* View All Tenants */}
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-                        <h2 className="text-xl font-semibold mb-4">View All Tenants</h2>
+                        <h2 className="text-xl font-semibold mb-4 flex items-center"><Eye className="mr-2 text-green-600" />View All Tenants</h2>
                         <p className="text-gray-700 mb-4">See the complete list of tenants and their assigned shops.</p>
                         <button
                             className="bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 w-full sm:w-auto"

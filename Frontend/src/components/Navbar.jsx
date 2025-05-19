@@ -26,7 +26,7 @@ const Navbar = () => {
             {/* Top ribbon bar */}
             <div className="bg-lime-400 text-gray-900 text-sm md:text-base py-2 px-4 flex justify-between items-center font-medium">
                 <div>
-                    📢 Hotline: <span className="font-semibold"> 066 2285181</span> | eGov Services Portal
+                    📢 DDEC Hotline Service: <span className="font-semibold"> 066 2285181</span>
                 </div>
                 <div className="space-x-4 flex">
                     <button onClick={() => handleLanguageChange('en')} className="hover:underline">EN</button>
@@ -55,12 +55,12 @@ const Navbar = () => {
                         <Link to="/" className="hover:text-lime-300">Home</Link>
                         <Link to="/home-dailyprice" className="hover:text-lime-300">Daily Price</Link>
                         <Link to="/contact" className="hover:text-lime-300">Contact</Link>
-                        <Link
+                        {/* <Link
                             to="/login"
                             className="bg-white text-green-800 px-5 py-2 rounded-full hover:bg-lime-200 font-semibold transition"
                         >
                             Login
-                        </Link>
+                        </Link> */}
                     </div>
 
                     {/* Mobile menu toggle */}
@@ -81,12 +81,12 @@ const Navbar = () => {
                         <Link to="/" className="block hover:text-lime-300">Home</Link>
                         <Link to="/home-dailyprice" className="block hover:text-lime-300">Daily Price</Link>
                         <Link to="/contact" className="block hover:text-lime-300">Contact</Link>
-                        <Link
+                        {/* <Link
                             to="/login"
                             className="block bg-white text-green-800 text-center px-4 py-2 rounded-full font-semibold mt-2 hover:bg-lime-200"
                         >
                             Login
-                        </Link>
+                        </Link> */}
                     </div>
                 )}
             </nav>

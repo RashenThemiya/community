@@ -4,6 +4,8 @@ import ConfirmWrapper from "../../components/ConfirmWrapper";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { printInvoices } from "../../utils/printInvoices";
+import { Printer } from "lucide-react";
+
 
 const Invoice = () => {
     const [invoices, setInvoices] = useState([]);
@@ -128,7 +130,7 @@ const Invoice = () => {
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
-                            className={`px-4 py-2 rounded-lg ${activeTab === tab.key ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                            className={`px-4 py-2 rounded-lg cursor-pointer ${activeTab === tab.key ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                         >
                             {tab.label}
                         </button>
@@ -147,14 +149,15 @@ const Invoice = () => {
                     <button
                         onClick={onPrintClick}
                         disabled={selectedInvoices.length === 0}
-                        className={`mt-4 px-6 py-2 rounded-lg text-white ${
-                            selectedInvoices.length === 0
-                                ? "bg-green-500 cursor-not-allowed"
-                                : "bg-green-500 hover:bg-green-700"
-                        }`}
+                        className={`mt-4 px-6 py-2 rounded-lg text-white flex items-center ${selectedInvoices.length === 0
+                            ? "bg-green-300 cursor-not-allowed"
+                            : "bg-green-500 hover:bg-green-700"}`
+                        }
                     >
+                        <Printer className="w-5 h-5 mr-2" />
                         Print Selected Invoices
                     </button>
+
                 </ConfirmWrapper>
 
                 <div className="overflow-x-auto bg-white p-4 shadow-md rounded-lg mt-4">

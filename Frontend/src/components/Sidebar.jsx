@@ -79,7 +79,7 @@ const Sidebar = () => {
             </div>
 
             {/* Sidebar for mobile view (Bottom navigation) */}
-            <div className="bg-gray-900 text-white fixed bottom-0 left-0 w-full flex justify-around p-2 md:hidden">
+            <div className="bg-gray-900 text-white fixed bottom-0 left-0 w-full flex justify-around p-2 md:hidden z-50">
                 {menuItems.map((item) => (
                     <Link key={item.path} to={item.path} className="flex flex-col items-center">
                         <span className="text-xl">{item.icon}</span>
