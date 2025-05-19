@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,8 +14,13 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
   final _vehicleNumberController = TextEditingController();
   String _selectedVehicleType = 'Car';
   bool _isLoading = false;
+  bool _isPrinting = false;
   String? _responseMessage;
   double _ticketPrice = 50.0;
+
+  final BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
+  List<BluetoothDevice> _devices = [];
+  BluetoothDevice? _selectedDevice;
 
   final List<Map<String, dynamic>> _vehicleTypes = [
     {'label': 'Lorry', 'icon': Icons.local_shipping},
@@ -28,6 +34,7 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
   void initState() {
     super.initState();
     _loadTicketPrice();
+    _initBluetooth();
   }
 
   Future<void> _loadTicketPrice() async {
@@ -37,13 +44,34 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
     });
   }
 
+  Future<void> _initBluetooth() async {
+    try {
+      bool? isConnected = await bluetooth.isConnected;
+      if (isConnected == true) {
+        await bluetooth.disconnect(); // Reset
+      }
+      List<BluetoothDevice> devices = await bluetooth.getBondedDevices();
+      setState(() {
+        _devices = devices;
+        if (devices.isNotEmpty) _selectedDevice = devices.first;
+      });
+    } catch (e) {
+      setState(() {
+        _responseMessage = 'Bluetooth initialization failed: $e';
+      });
+    }
+  }
+
   Future<void> issueTicket() async {
     final vehicleNumber = _vehicleNumberController.text.trim();
 
     if (vehicleNumber.isEmpty) {
-      setState(() {
-        _responseMessage = 'Vehicle number is required.';
-      });
+      setState(() => _responseMessage = 'Vehicle number is required.');
+      return;
+    }
+
+    if (_selectedDevice == null) {
+      setState(() => _responseMessage = 'Please select a Bluetooth printer.');
       return;
     }
 
@@ -73,38 +101,65 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 201) {
-        _printTicket(data['ticket']);
-
+        await _printTicket(data['ticket']);
         setState(() {
-          _responseMessage = '✅ Ticket issued: ID ${data['ticketId']}';
+          _responseMessage = '✅ Ticket printed successfully: ID ${data['ticketId']}';
+          _vehicleNumberController.clear();
+          _selectedVehicleType = 'Car';
         });
-
-        _vehicleNumberController.clear();
-        _selectedVehicleType = 'Car';
       } else {
         setState(() {
           _responseMessage = data['message'] ?? 'Ticket issuing failed.';
         });
       }
     } catch (e) {
-      print('Ticket Issue Error: $e');
       setState(() {
-        _responseMessage = 'Something went wrong.';
+        _responseMessage = 'Something went wrong while issuing the ticket.';
+      });
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _printTicket(Map<String, dynamic> ticket) async {
+    setState(() {
+      _isPrinting = true;
+      _responseMessage = '🖨️ Printing ticket...';
+    });
+
+    try {
+      bool? connected = await bluetooth.isConnected;
+      if (connected != true) {
+        await bluetooth.connect(_selectedDevice!);
+        await Future.delayed(Duration(seconds: 1));
+      }
+
+      bluetooth.write("\n\n");
+      bluetooth.write("====== VEHICLE TICKET ======\n");
+      bluetooth.write("Vehicle No : ${ticket['vehicleNumber'] ?? ''}\n");
+      bluetooth.write("Type       : ${ticket['vehicleType'] ?? ''}\n");
+      bluetooth.write("Price      : Rs. ${ticket['ticketPrice'] ?? ''}\n");
+      bluetooth.write("Date       : ${ticket['date'] ?? ''}\n");
+      bluetooth.write("Time       : ${ticket['time'] ?? ''}\n");
+      bluetooth.write("Issued By  : ${ticket['byWhom'] ?? ''}\n");
+      bluetooth.write("============================\n\n\n");
+
+    } catch (e) {
+      setState(() {
+        _responseMessage = '❌ Printing failed: $e';
       });
     } finally {
       setState(() {
-        _isLoading = false;
+        _isPrinting = false;
       });
     }
   }
 
-  void _printTicket(Map<String, dynamic> ticket) {
-    print('🖨️ Printing Ticket...');
-    print('Vehicle: ${ticket['vehicleNumber']}');
-    print('Type: ${ticket['vehicleType']}');
-    print('Price: ${ticket['ticketPrice']}');
-    print('Date: ${ticket['date']} ${ticket['time']}');
-    print('Issued by: ${ticket['byWhom']}');
+  @override
+  void dispose() {
+    _vehicleNumberController.dispose();
+    bluetooth.disconnect();
+    super.dispose();
   }
 
   @override
@@ -146,21 +201,45 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
               }).toList(),
             ),
             const SizedBox(height: 20),
+            DropdownButton<BluetoothDevice>(
+              value: _selectedDevice,
+              hint: Text("Select Printer"),
+              items: _devices.map((device) {
+                return DropdownMenuItem(
+                  value: device,
+                  child: Text(device.name ?? device.address ?? 'Unknown Device'),
+                );
+              }).toList(),
+              onChanged: (device) {
+                setState(() => _selectedDevice = device);
+              },
+            ),
+            const SizedBox(height: 20),
             _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : ElevatedButton.icon(
-                    onPressed: issueTicket,
+                    onPressed: _isPrinting ? null : issueTicket,
                     icon: Icon(Icons.local_parking),
-                    label: Text('Issue Ticket (\$${_ticketPrice.toStringAsFixed(2)})'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                    ),
+                    label: Text('Issue Ticket (LKR ${_ticketPrice.toStringAsFixed(2)})'),
+                    style: ElevatedButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 16)),
                   ),
             if (_responseMessage != null) ...[
               const SizedBox(height: 20),
-              Text(
-                _responseMessage!,
-                style: TextStyle(color: _responseMessage!.contains('✅') ? Colors.green : Colors.red),
+              Row(
+                children: [
+                  if (_isPrinting) CircularProgressIndicator(),
+                  if (_isPrinting) const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _responseMessage!,
+                      style: TextStyle(
+                        color: _responseMessage!.contains('✅')
+                            ? Colors.green
+                            : (_isPrinting ? Colors.orange : Colors.red),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ],
