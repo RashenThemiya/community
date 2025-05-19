@@ -9,22 +9,16 @@ const InvoiceTableDelete = ({ shop, payments, onInvoiceUpdate }) => {
 
   // Function to delete the invoice
   const handleDelete = async (invoiceId) => {
-    if (!window.confirm("Are you sure you want to delete this invoice?")) return;
+  try {
+    await api.delete(`/api/systemsetting/invoice/${invoiceId}`);
+    setInvoices(invoices.filter((inv) => inv.invoice_id !== invoiceId));
+    alert("Invoice deleted successfully.");
+  } catch (error) {
+    alert("Failed to delete invoice.");
+    console.error(error);
+  }
+};
 
-    try {
-      // Sending the delete request to the backend
-await api.delete(`/api/systemsetting/invoice/${invoiceId}`);
-      
-      // Remove the deleted invoice from the local state
-      setInvoices(invoices.filter((inv) => inv.invoice_id !== invoiceId));
-
-      // Show success message
-      alert("Invoice deleted successfully.");
-    } catch (error) {
-      alert("Failed to delete invoice.");
-      console.error(error);
-    }
-  };
 const handleApplyFine = async (invoiceId) => {
   try {
     const res = await api.post(`/api/systemsetting/fine/apply/${invoiceId}`);

@@ -1,8 +1,9 @@
-// components/LoadingSpinner.jsx
 const LoadingSpinner = () => {
   return (
-    <div className="flex items-center justify-center h-40 w-full">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-green-600"></div>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+    >
+      <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin bg-transparent" />
     </div>
   );
 };
