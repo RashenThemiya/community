@@ -87,7 +87,7 @@ const ViewPublications = () => {
                 {loading ? (
                     <div className="text-center text-gray-500">Loading...</div>
                 ) : filteredPublications.length === 0 ? (
-                    <div className="text-center text-gray-600">No {activeTab}s found.</div>
+                    <div className="text-center text-gray-600">No {activeTab} found.</div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full table-auto border rounded-lg">
