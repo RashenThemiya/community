@@ -1,8 +1,8 @@
 import 'font-awesome/css/font-awesome.min.css';
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import AdminDashboard from "./pages/AdminDashboard";
 import Contact from './pages/Contact';
@@ -93,6 +93,7 @@ function App() {
             <Route path="/product/:id/chart" element={<ProductPriceChart />} />
 <Route path="/system-setting" element={<SystemSetting />} />
           </Routes>
+          <ToastContainer />
         </div>
       </Router>
     </AuthProvider>
