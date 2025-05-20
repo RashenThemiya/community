@@ -6,9 +6,8 @@ import CredentialModal from "../../components/CredentialModal";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 
-import LoadingSpinner from "../../components/LoadingSpinner"; // <-- Import your spinner
 
-import { FaPercentage, FaUserShield, FaFileInvoiceDollar, FaExclamationTriangle, FaGavel, FaBan, FaClipboardList, FaDatabase, FaCog } from "react-icons/fa";
+import { FaBan, FaClipboardList, FaCog, FaDatabase, FaExclamationTriangle, FaFileInvoiceDollar, FaGavel, FaPercentage, FaUserShield } from "react-icons/fa";
 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -370,17 +369,7 @@ const Setting = () => {
           </div>
 
 
-          {/* System Configuration */}
-          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-            <h2 className="text-xl font-semibold mb-4">System Configuration</h2>
-            <p className="text-gray-700 mb-4">Modify core system configuration and preferences.</p>
-            <button
-              className="bg-cyan-500 text-white py-2 px-4 rounded-lg hover:bg-cyan-600 w-full"
-              onClick={() => navigate("/system-setting")}
-            >
-              System Settings
-            </button>
-          </div>
+ 
         </div>
 
       </div>
