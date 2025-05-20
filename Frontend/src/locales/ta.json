@@ -22,7 +22,7 @@
   "Gotukola": "வல்லாரை",
   "Raddish": "முள்ளங்கி",
   "Curry Leaves": "கருவேப்பிலை",
-  "Nolkhol": "நொல்கோல்",
+  "Nnolkhol": "நொல்கோல்",
   "Athugowa": "அதுகோவா",
   "Cooking Melon": "சமைக்கும் முலாம்பழம்",
   "Spinach": "கீரை",
@@ -67,7 +67,7 @@
   "Mango": "மாம்பழம்",
   "Capsicum": "குடைமிளகாய்",
   "Green Chili": "பச்சை மிளகாய்",
-  "Dry Chilies": "உலர்ந்த மிளகாய்",
+  "Dry Chillies": "உலர்ந்த மிளகாய்",
   "Nai Miris": "நாய் மிளகாய்",
   "Avacado": "வெண்ணைப் பழம்",
   "Passionfruit": "பாஷன் பழம்",
@@ -83,6 +83,7 @@
   "Red Onion Import": "சிவப்புக் கட்டி வெங்காயம் (இறக்குமதி)",
   "Red Onion (Lanka)": "சிவப்புக் கட்டி வெங்காயம் (இலங்கை)",
   "Big Onion (Imported)": "மொத்த வெங்காயம் (இறக்குமதி)",
+  "Big Onion Lanka": "பெரிய வெங்காயம் லங்கா",
   "Guava": "கொய்யா",
    "Watermelon": "தர்பூசணி",
    "Papaya": "பப்பாளி",
@@ -91,6 +92,7 @@
      "Passion": "பேஷன் பழம்",
       "Peanuts": "வேர்க்கடலை",
       "Garlic": "பூண்டு",
+      "Black Pepper": "கருப்பு மிளகு",
 
   "home": {
     "welcomeMessage": "தம்புள்ள சிறப்பு பொருளாதார மையத்திற்கு வரவேற்கிறோம்",
