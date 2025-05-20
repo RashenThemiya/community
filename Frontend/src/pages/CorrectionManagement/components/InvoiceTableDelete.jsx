@@ -1,34 +1,29 @@
 import React, { useState } from "react";
-import api from "../../../utils/axiosInstance"; // Ensure correct path
+import api from "../../../utils/axiosInstance";
+import ConfirmWrapper from "../../../components/ConfirmWrapper"; // Ensure correct path
 
-const InvoiceTableDelete = ({ shop, payments }) => {
+const InvoiceTableDelete = ({ shop, payments, onInvoiceUpdate }) => {
   const [expandedInvoice, setExpandedInvoice] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [invoices, setInvoices] = useState(shop?.Invoices || []);
 
   // Function to delete the invoice
   const handleDelete = async (invoiceId) => {
-    if (!window.confirm("Are you sure you want to delete this invoice?")) return;
+  try {
+    await api.delete(`/api/systemsetting/invoice/${invoiceId}`);
+    setInvoices(invoices.filter((inv) => inv.invoice_id !== invoiceId));
+    alert("Invoice deleted successfully.");
+  } catch (error) {
+    alert("Failed to delete invoice.");
+    console.error(error);
+  }
+};
 
-    try {
-      // Sending the delete request to the backend
-await api.delete(`/api/systemsetting/invoice/${invoiceId}`);
-      
-      // Remove the deleted invoice from the local state
-      setInvoices(invoices.filter((inv) => inv.invoice_id !== invoiceId));
-
-      // Show success message
-      alert("Invoice deleted successfully.");
-    } catch (error) {
-      alert("Failed to delete invoice.");
-      console.error(error);
-    }
-  };
 const handleApplyFine = async (invoiceId) => {
   try {
     const res = await api.post(`/api/systemsetting/fine/apply/${invoiceId}`);
     alert(res.data.message);
-    // Reload or update invoices state to reflect the fine application
+    onInvoiceUpdate(); // Refresh shop data
   } catch (error) {
     alert("Failed to apply fine.");
     console.error(error);
@@ -41,7 +36,7 @@ const handleDeleteFine = async (invoiceId) => {
   try {
     const res = await api.delete(`/api/systemsetting/fine/${invoiceId}`);
     alert(res.data.message);
-    // Reload or update invoices state to reflect fine deletion
+    onInvoiceUpdate(); // Refresh shop data
   } catch (error) {
     alert("Failed to delete fine.");
     console.error(error);
@@ -164,12 +159,23 @@ const handleDeleteFine = async (invoiceId) => {
                       >
                         {expandedInvoice === invoice.invoice_id ? "Hide" : "View"}
                       </button>
-                      <button
-                        onClick={() => handleDelete(invoice.invoice_id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
+                      <ConfirmWrapper
+  onConfirm={() => handleDelete(invoice.invoice_id)}
+  message={`Are you sure you want to delete invoice ID ${invoice.invoice_id}?`}
+  confirmText="Yes, Delete"
+  cancelText="Cancel"
+  buttonBackgroundColor="bg-red-500"
+  buttonTextColor="text-white"
+  icon={<span>🗑️</span>}
+>
+  <button
+    type="button"
+    className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+  >
+    Delete
+  </button>
+</ConfirmWrapper>
+
                     </td>
                   </tr>
 
