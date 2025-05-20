@@ -3,7 +3,6 @@ import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { FaTrash } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
-;
 
 const VehicleTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -268,11 +267,14 @@ const VehicleTickets = () => {
                             message="Are you sure you want to delete this ticket?"
                             onConfirm={() => handleDeleteTicket(ticket.id)}
                           >
-                            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm">
-                              Delete
+                            <button
+                              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm w-full sm:w-auto justify-center"
+                            >
+
+                              <span>Delete</span>
+                              <FaTrash className="text-base" />
                             </button>
                           </ConfirmWrapper>
-
                         </td>
                       </tr>
                     ))
