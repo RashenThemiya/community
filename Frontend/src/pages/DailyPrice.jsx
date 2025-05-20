@@ -20,12 +20,9 @@ const DailyPrice = () => {
   const fetchPrices = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/prices/by-date/${date}`
-      );
-      const data = response.data;
-      setDailyPrices(Array.isArray(data) ? data : []);
-    } catch (error) {
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/prices/by-date/${date}`);
+      setDailyPrices(Array.isArray(response.data) ? response.data : []);
+    } catch {
       setDailyPrices([]);
     } finally {
       setLoading(false);
@@ -36,21 +33,60 @@ const DailyPrice = () => {
     fetchPrices();
   }, [fetchPrices]);
 
-  const filteredPrices = dailyPrices.filter((item) =>
+  const filteredPrices = dailyPrices.filter(item =>
     item.product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // FIX: Map filteredPrices to use translated product names before printing PDF
+  // Prepare UI translations
+  const uiTranslations = {
+    title: t("ui.title"),
+    center: t("ui.center"),
+    tel: t("ui.tel"),
+    dateLabel: t("ui.dateLabel"),
+    emailLabel: t("ui.emailLabel"),
+    inquiry: t("ui.inquiry"),
+    manager: t("ui.manager"),
+    contact: t("ui.contact"),
+    tableHeaders: {
+      number: t("ui.tableHeaders.number"),
+      item: t("ui.tableHeaders.item"),
+      minPrice: t("ui.tableHeaders.minPrice"),
+      maxPrice: t("ui.tableHeaders.maxPrice"),
+    },
+    noPrices: t("ui.noPrices"),
+    popupBlocked: t("ui.popupBlocked"),
+    uncategorized: t("ui.uncategorized"),
+  };
+
+  // Product names translation map
+  const productNamesTranslations = {};
+  filteredPrices.forEach(item => {
+    const name = item.product?.name;
+    if (name && !productNamesTranslations[name]) {
+      productNamesTranslations[name] = t(name, name);
+    }
+  });
+
+  // Types translation map
+  const typesTranslations = t("types", { returnObjects: true });
+
+  // Translate product names only; keep original type for grouping
+  const translatedPrices = filteredPrices.map(item => ({
+    ...item,
+    product: {
+      ...item.product,
+      name: productNamesTranslations[item.product?.name] || item.product?.name
+    }
+  }));
+
   const downloadPDF = () => {
-    const translatedPrices = filteredPrices.map(item => ({
-      ...item,
-      product: {
-        ...item.product,
-        // Use the product name as the translation key
-        name: t(item.product?.name, item.product?.name)
-      }
-    }));
-    printDailyPrices({ prices: translatedPrices, date });
+    printDailyPrices({
+      prices: translatedPrices,
+      date,
+      ui: uiTranslations,
+      productNames: productNamesTranslations,
+      types: typesTranslations
+    });
   };
 
   return (
@@ -62,22 +98,19 @@ const DailyPrice = () => {
           {t("dailyPrices.title", "Daily Product Prices")}
         </h1>
         <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4 flex-wrap">
-          <div className="flex items-center gap-4 w-full md:w-auto">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-  type="text"
-  placeholder={t("dailyPrices.searchPlaceholder", " 🔍︎ Search Products")}
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64"
-/>
-
-          </div>
+          <input
+            type="date"
+            value={date}
+            onChange={e => setDate(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            type="text"
+            placeholder={t("dailyPrices.searchPlaceholder", " 🔍︎ Search Products")}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64"
+          />
           {!loading && filteredPrices.length > 0 && (
             <button
               onClick={downloadPDF}
@@ -94,26 +127,12 @@ const DailyPrice = () => {
             ))}
           </div>
         ) : filteredPrices.length === 0 ? (
-          <div className="flex flex-col items-center text-center text-gray-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-16 w-16 mb-4 text-gray-300"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 10h18M9 16h6M9 12h6m-7 8h8a2 2 0 002-2V8a2 2 0 00-2-2h-2l-2-3h-4l-2 3H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
+          <div className="text-center text-gray-500">
             {t("dailyPrices.noData", "No prices available for this date.")}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredPrices.map((item) => (
+            {filteredPrices.map(item => (
               <DailyPriceCard key={item.id} item={item} navigate={navigate} t={t} />
             ))}
           </div>

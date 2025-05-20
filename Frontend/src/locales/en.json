@@ -181,5 +181,34 @@
     "searchPlaceholder": "🔍︎ Search Products",
     "downloadPdf": "Download PDF",
     "noData": "No prices available for this date."
-  }
+  },
+  "ui": {
+    "title": "Daily Price Information",
+    "center": "Dedicated Economic Center, Dambulla",
+    "tel": "Tel: 0662285181",
+    "dateLabel": "Date",
+    "emailLabel": "Email",
+    "inquiry": "Inquiry:",
+    "manager": "Manager, Management Office, Dedicated Economic Center, Dambulla",
+    "contact": "Tel: 066-2285181 / 066-2285448 | Email: dambulladec@gmail.com",
+    "tableHeaders": {
+      "number": "#",
+      "item": "Item",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price"
+    },
+    "noPrices": "No daily prices to print.",
+    "popupBlocked": "Popup blocked! Please allow popups for printing.",
+    "uncategorized": "Uncategorized"
+  },
+  "types": {
+  "Fruit": "Fruit",
+  "Vegetable": "Vegetable",
+  "Rice": "Rice",
+  "Potatoes": "Potatoes",
+  "Leaf Vegetable": "Leaf Vegetable",
+  "Grain": "Grain",
+  "Uncategorized": "Uncategorized"
+}
+
 }
