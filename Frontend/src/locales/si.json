@@ -13,7 +13,7 @@
   "Carrot - Jaffna": "කැරට් (යාපනය)",
   "Wild -Baby Potato": "වල්  කුඩා අර්තාපල්",
   "Onion Leaves": "ලූණු කොළ",
-  "Beetroot - Nuwara Eliya": "බීට්රූට් (නුවරඑලිය)",
+  "Beetroot - Nuwaraeliya": "බීට්රූට් (නුවරඑලිය)",
   "Beetroot Cut - Malsiripura": "බීට්රූට් කපන ලද (මල්සිරිපුර)",
   "Beetroot Cut - Puththalama": "බීට්රූට් කපන ලද (පුත්තලම)",
   "Mukunuwenna": "මුකුණුවැන්න",
@@ -52,6 +52,7 @@
   "Banana - Abul": "අඹුල් කෙසෙල්",
   "Banana - Kolikuttu": "කෝලිකුට්ටු කෙසෙල්",
   "Banana - Ambun": "අඹුන් කෙසෙල්",
+  "Red Banana": "රතු කෙසෙල්",
   "Eggplant": "වම්බටු",
   "Brinjal": "බටු",
   "Thithbatu": "තිත්බටු",
@@ -94,6 +95,8 @@
   "Peanuts": "රටකජු",
   "Black Pepper": "ගම්මිරිස්",
   "Big Onion Lanka": "ලොකු ලූනු ලංකා",
+  "Passion": "පැෂන්",
+
 
   "home": {
     "welcomeMessage": "දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථානයට සාදරයෙන් පිළිගනිමු",
