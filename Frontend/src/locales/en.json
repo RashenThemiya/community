@@ -175,5 +175,11 @@
     "para2": "Farmers and traders are directly involved in the market operations, and the stall owners act as intermediaries, facilitating transactions between both parties. For this service, stall owners charge a commission fee.",
     "para3": " This market is known for having the lowest commission rates in Sri Lanka, which is one of the main reasons for the popularity of this system.",
     "para4": "The Dambulla Dedicated Economic Center functions as a day-and-night market, which is why Dambulla is popularly known as a \"city that never sleeps.\" Currently, market activities take place from 5:00 AM to 12:00 midnight."
+  },
+  "dailyPrices": {
+    "title": "Daily Product Prices",
+    "searchPlaceholder": "🔍︎ Search products",
+    "downloadPdf": "Download PDF",
+    "noData": "No prices available for this date."
   }
 }

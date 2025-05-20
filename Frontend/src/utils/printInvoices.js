@@ -36,10 +36,10 @@ export const printInvoices = async (invoices) => {
     .map((invoice) => {
       const invoiceHTML = `
         <div style="padding: 0px; font-size: 11px; font-family:  'Noto Sans Sinhala', Arial, sans-serif;">
-          <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 10px; margin-bottom: 15px;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 30px; background-color: #f0f0f0; border: 1px solid #000; padding: 5px; margin-bottom: 5px;">
                 <img src="/images/Gov.jpg" alt="Logo" style="height: 60px;"/>
             <div style="text-align: center;">
-              <h2 style="margin: 0; font-size: 17px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණ භාරය</h2>
+              <h2 style="margin: 0; font-size: 15px;">දඹුල්ල විශේෂිත ආර්ථික මධ්‍යස්ථාන කළමනාකරණ භාරය</h2>
                     
           
 
@@ -175,7 +175,7 @@ export const printInvoices = async (invoices) => {
 
 
       
-            <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 20%; font-size: 9px;">
+            <div style="background-color: #e7f3d4; border: 1px solid #000; padding: 10px; width: 20%; font-size: 10px;">
           
               <h4 style="color: red; margin: 0 0 5px; border-bottom: 1px solid black;">
 මෙම බිල්පතේ අයවිය යුතු මාසික කුලි මුදල් මෙම මස 15 වන දිනට පෙර ගෙවිය යුතුය. එසේ නොමැති වුවහොත් 30% ක දඩයක් අය කරනු ලැබේ.</h4>
@@ -193,7 +193,7 @@ export const printInvoices = async (invoices) => {
           </div>
 
 
-     <div style="background-color: #fff3cd; border: 1px solid #000; padding-top: 5px; padding-right: 2px; padding-bottom: 1px; padding-left: 2px; margin-top: 4px;margin-bottom: 0px; font-size: 11px;overflow: visible;">
+     <div style="background-color: #fff3cd; border: 1px solid #000; padding-top: 2px; padding-right: 2px; padding-bottom: 1px; padding-left: 2px; margin-top: 4px;margin-bottom: 0px; font-size: 10px;overflow: visible;">
   <div style="display: flex; justify-content: space-between; align-items: stretch; text-align: left;">
     
     <!-- Section 1: Contacts -->
@@ -284,7 +284,7 @@ export const printInvoices = async (invoices) => {
   ${invoiceHTML}
   </div>
 </div>
-        <hr style="margin: 20px 0; border: 1px dashed #aaa;" />
+        <hr style="margin: 10px 0; border: 1px dashed #aaa;" />
        <div class="half-page">
   <div class="scale-content">
         <p style="text-align: right; font-size: 12px; font-weight: bold; margin-top: 1px; margin-bottom: 1px; padding-top: 1px; padding-bottom: 1px;"> Office Copy </p>

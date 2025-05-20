@@ -97,7 +97,7 @@ const EconomicCenterNews = () => {
 
   const PostCard = ({ pub }) => (
     <div
-      className={`rounded-xl p-5 border shadow-md h-[450px] w-full flex flex-col justify-between transition transform hover:scale-105 hover:shadow-xl hover:bg-gray-100 cursor-pointer duration-300 ${getCardClasses(pub.type)}`}
+      className={`rounded-xl p-5 border shadow-md w-full flex flex-col justify-between transition transform hover:scale-105 hover:shadow-xl hover:bg-gray-100 cursor-pointer duration-300 ${getCardClasses(pub.type)}`}
     >
       {pub.image && (
         <img
@@ -110,7 +110,8 @@ const EconomicCenterNews = () => {
         {icons[pub.type] || icons["all"]}
       </div>
       <h3 className="text-xl font-bold text-gray-800 mb-2">{pub.topic}</h3>
-      <p className="text-gray-700 text-sm line-clamp-3">{pub.description}</p>
+      {/* Removed line-clamp-3 to show full content */}
+      <p className="text-gray-700 text-sm">{pub.description}</p>
     </div>
   );
 

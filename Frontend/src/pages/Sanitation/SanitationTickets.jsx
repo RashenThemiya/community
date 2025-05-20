@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
+import { FaTrash } from "react-icons/fa";
+import ConfirmWrapper from "../../components/ConfirmWrapper";
 
 const SanitationTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -95,6 +97,24 @@ const SanitationTickets = () => {
     }
   };
 
+  const handleDeleteTicket = async (id) => {
+    setError(null);
+    setSuccessMsg("");
+
+    try {
+      await api.delete(`/api/sanitation/${id}`);
+      setSuccessMsg("Ticket deleted successfully.");
+      fetchTickets();          // Refresh ticket list
+      fetchDailyIncome();      // Refresh daily income
+      fetchMonthlyIncome();    // Refresh monthly income
+    } catch (err) {
+      setError("Failed to delete the ticket.");
+      console.error("Failed to delete ticket:", err);
+    }
+  };
+
+
+
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <Sidebar />
@@ -180,6 +200,7 @@ const SanitationTickets = () => {
                     <th className="p-3 text-left">Price</th>
                     <th className="p-3 text-left">Date</th>
                     <th className="p-3 text-left">By Whom</th>
+                    <th className="p-3 text-left">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -190,6 +211,21 @@ const SanitationTickets = () => {
                         <td className="p-3">Rs. {ticket.price}</td>
                         <td className="p-3">{ticket.date}</td>
                         <td className="p-3">{ticket.byWhom}</td>
+                        <td className="p-3">
+                          <ConfirmWrapper
+                            message="Are you sure you want to delete this ticket?"
+                            onConfirm={() => handleDeleteTicket(ticket.id)}
+                          >
+                            <button
+                              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm w-full sm:w-auto justify-center"
+                            >
+
+                              <span>Delete</span>
+                              <FaTrash className="text-base" />
+                            </button>
+                          </ConfirmWrapper>
+                        </td>
+
                       </tr>
                     ))
                   ) : (

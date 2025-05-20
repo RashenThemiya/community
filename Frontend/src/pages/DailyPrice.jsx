@@ -40,8 +40,17 @@ const DailyPrice = () => {
     item.product?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // FIX: Map filteredPrices to use translated product names before printing PDF
   const downloadPDF = () => {
-    printDailyPrices({ prices: filteredPrices, date });
+    const translatedPrices = filteredPrices.map(item => ({
+      ...item,
+      product: {
+        ...item.product,
+        // Use the product name as the translation key
+        name: t(item.product?.name, item.product?.name)
+      }
+    }));
+    printDailyPrices({ prices: translatedPrices, date });
   };
 
   return (
@@ -61,12 +70,13 @@ const DailyPrice = () => {
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
-              type="text"
-              placeholder={t("dailyPrices.searchPlaceholder", " 🔍︎ Search by product name")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
-            />
+  type="text"
+  placeholder={t("dailyPrices.searchPlaceholder", " 🔍︎ Search products")}
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64"
+/>
+
           </div>
           {!loading && filteredPrices.length > 0 && (
             <button

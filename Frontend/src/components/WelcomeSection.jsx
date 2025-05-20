@@ -7,7 +7,7 @@ const WelcomeSection = () => {
     return (
         <div className="bg-white">
             <div className="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="text-left space-y-6">
+                <div className="text-left space-y-6 pl-6">
                     <h1 className="text-4xl font-bold text-green-800">
                         {t("home.welcomeMessage")}
                     </h1>
