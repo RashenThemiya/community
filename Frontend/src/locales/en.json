@@ -178,7 +178,7 @@
   },
   "dailyPrices": {
     "title": "Daily Product Prices",
-    "searchPlaceholder": "🔍︎ Search products",
+    "searchPlaceholder": "🔍︎ Search Products",
     "downloadPdf": "Download PDF",
     "noData": "No prices available for this date."
   }

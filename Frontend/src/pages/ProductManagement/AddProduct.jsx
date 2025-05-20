@@ -81,10 +81,10 @@ const AddProduct = () => {
                     required
                 >
                     <option value="">Select Product Type</option>
-                    <option value="fruit">Fruit</option>
-                    <option value="vegetable">Vegetable</option>
-                    <option value="rice">Rice</option>
-                    <option value="potatoes">Potatoes</option>
+                    <option value="Fruit">Fruit</option>
+                    <option value="Vegetable">Vegetable</option>
+                    <option value="Rice">Rice</option>
+                    <option value="Potatoes">Potatoes</option>
                     <option value="Leaf Vegetable">Leaf Vegetable</option>
                     <option value="Grain">Grain</option>
                 </select>

@@ -71,7 +71,7 @@ const DailyPrice = () => {
             />
             <input
   type="text"
-  placeholder={t("dailyPrices.searchPlaceholder", " 🔍︎ Search products")}
+  placeholder={t("dailyPrices.searchPlaceholder", " 🔍︎ Search Products")}
   value={searchTerm}
   onChange={(e) => setSearchTerm(e.target.value)}
   className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64"
