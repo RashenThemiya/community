@@ -21,6 +21,7 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
   final BlueThermalPrinter bluetooth = BlueThermalPrinter.instance;
   List<BluetoothDevice> _devices = [];
   BluetoothDevice? _selectedDevice;
+  bool _testPrinted = false;
 
   final List<Map<String, dynamic>> _vehicleTypes = [
     {'label': 'Lorry', 'icon': Icons.local_shipping},
@@ -43,21 +44,61 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
       _ticketPrice = prefs.getDouble('ticketPrice') ?? 50.0;
     });
   }
+Future<void> _initBluetooth() async {
+  try {
+    List<BluetoothDevice> devices = await bluetooth.getBondedDevices();
+    BluetoothDevice? pt210Device;
 
-  Future<void> _initBluetooth() async {
-    try {
-      bool? isConnected = await bluetooth.isConnected;
-      if (isConnected == true) {
-        await bluetooth.disconnect(); // Reset
+    for (var device in devices) {
+      if ((device.name?.toLowerCase().contains('pt') ?? false) ||
+          (device.name?.toLowerCase().contains('printer') ?? false)) {
+        pt210Device = device;
+        break;
       }
-      List<BluetoothDevice> devices = await bluetooth.getBondedDevices();
+    }
+
+    setState(() {
+      _devices = devices;
+      _selectedDevice = pt210Device;
+    });
+
+    if (pt210Device != null) {
+      bool? connected = await bluetooth.isConnected;
+      if (connected != true) {
+        await bluetooth.connect(pt210Device);
+        await Future.delayed(Duration(seconds: 1));
+      }
+
+      if (!_testPrinted) {
+        await _printTestLabel();
+        _testPrinted = true;
+      }
+
       setState(() {
-        _devices = devices;
-        if (devices.isNotEmpty) _selectedDevice = devices.first;
+      _responseMessage = '✅ Connected to ${pt210Device?.name ?? 'PT210'}';
       });
+    } else {
+      setState(() {
+        _responseMessage = '❌ PT210 printer not found. Pair it in Bluetooth settings.';
+      });
+    }
+  } catch (e) {
+    setState(() {
+      _responseMessage = 'Bluetooth error: $e';
+    });
+  }
+}
+
+
+  Future<void> _printTestLabel() async {
+    try {
+      bluetooth.write("\n\n");
+      bluetooth.write("====== TEST PRINT ======\n");
+      bluetooth.write("Printer connected ✅\n");
+      bluetooth.write("========================\n\n\n");
     } catch (e) {
       setState(() {
-        _responseMessage = 'Bluetooth initialization failed: $e';
+        _responseMessage = '❌ Test print failed: $e';
       });
     }
   }
@@ -103,13 +144,13 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
       if (response.statusCode == 201) {
         await _printTicket(data['ticket']);
         setState(() {
-          _responseMessage = '✅ Ticket printed successfully: ID ${data['ticketId']}';
+          _responseMessage = '✅ Ticket printed: ID ${data['ticketId']}';
           _vehicleNumberController.clear();
           _selectedVehicleType = 'Car';
         });
       } else {
         setState(() {
-          _responseMessage = data['message'] ?? 'Ticket issuing failed.';
+          _responseMessage = data['message'] ?? 'Ticket issue failed.';
         });
       }
     } catch (e) {
@@ -129,7 +170,7 @@ class _VehicleTicketingPageState extends State<VehicleTicketingPage> {
 
     try {
       bool? connected = await bluetooth.isConnected;
-      if (connected != true) {
+      if (connected != true && _selectedDevice != null) {
         await bluetooth.connect(_selectedDevice!);
         await Future.delayed(Duration(seconds: 1));
       }
