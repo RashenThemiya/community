@@ -48,10 +48,10 @@
   "Pumpkin - Malashian": "பூசணிக்காய் (மாத்தளை)",
   "Pumpkin (Kalukuma)": "பூசணிக்காய் (களுகுமா)",
   "Butternut Squash": "பட்டர்நட் சுக்கோஷ்",
-  "Banana (Sini)": "சீனி வாழை",
+  "Banana - Sini": "சீனி வாழை",
   "Banana (Ambul)": "அம்புள் வாழை",
   "Kolikuttu Banana": "கொலிகுட்டு வாழை",
-  "Ambun Banana": "அம்புன் வாழை",
+  "Banana - Ambun": "அம்புன் வாழை",
   "Eggplant": "கத்தரிக்காய்",
   "Brinjal": "கத்தரிக்காய்",
   "Thithbatu": "தித்பட்டு",
@@ -87,6 +87,8 @@
    "Watermelon": "தர்பூசணி",
    "Papaya": "பப்பாளி",
     "Pineapple": "அன்னாசி",
+     "Mango - Karatha Kolomban": "மாம்பழம் - கரத்த கொலம்பன்",
+     "Passion": "பேஷன் பழம்",
 
   "home": {
     "welcomeMessage": "தம்புள்ள சிறப்பு பொருளாதார மையத்திற்கு வரவேற்கிறோம்",
