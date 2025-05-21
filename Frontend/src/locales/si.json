@@ -219,10 +219,10 @@
     "uncategorized": "වර්ගීකරණය නොකළ"
   },
   "types": {
-  "Fruit": "පළතුරු",
-  "Vegetable": "එළවළු",
-  "Rice": "සහල් වර්ග",
-  "Potatoes": "අල වර්ග",
+  "fruit": "පළතුරු",
+  "vegetable": "එළවළු",
+  "rice": "සහල් වර්ග",
+  "potatoes": "අල වර්ග",
   "Leaf Vegetable": "පලා වර්ග",
   "Grain": "ධාන්‍ය වර්ග",
   "Uncategorized": "වර්ගීකරණය නොකළ"

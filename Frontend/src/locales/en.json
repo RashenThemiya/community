@@ -203,10 +203,10 @@
     "uncategorized": "Uncategorized"
   },
   "types": {
-  "Fruit": "Fruit",
-  "Vegetable": "Vegetable",
-  "Rice": "Rice",
-  "Potatoes": "Potatoes",
+  "fruit": "Fruit",
+  "vegetable": "Vegetable",
+  "rice": "Rice",
+  "potatoes": "Potatoes",
   "Leaf Vegetable": "Leaf Vegetable",
   "Grain": "Grain",
   "Uncategorized": "Uncategorized"

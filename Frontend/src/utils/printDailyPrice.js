@@ -29,11 +29,21 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
 
   // Flatten grouped with translated category headers
   const categorizedList = [];
-  for (const [type, items] of Object.entries(grouped)) {
-    const translatedType = (types && types[type]) || type;
-    categorizedList.push({ isHeader: true, label: translatedType });
-    items.forEach(item => categorizedList.push({ isHeader: false, item }));
-  }
+  function capitalizeFirst(str) {
+  if (!str) return "";
+  // Only capitalize if the first character is a-z or A-Z
+  return str[0].toLocaleUpperCase() + str.slice(1);
+}
+
+for (const [type, items] of Object.entries(grouped)) {
+  let translatedType = (types && types[type]) || type;
+  // Capitalize only for English or Tamil/Sinhala if you want
+  // (this will work for all languages, but will only affect the first character)
+  translatedType = capitalizeFirst(translatedType);
+  categorizedList.push({ isHeader: true, label: translatedType });
+  items.forEach(item => categorizedList.push({ isHeader: false, item }));
+}
+
 
   const numColumnSets = 2;
   const rowsPerColumn = Math.ceil(categorizedList.length / numColumnSets);

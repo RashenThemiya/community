@@ -225,10 +225,10 @@
     "uncategorized": "வகைப்படுத்தப்படவில்லை"
   },
   "types": {
-  "Fruit": "பழம்",
-  "Vegetable": "காய்கறி",
-  "Rice": "அரிசி",
-  "Potatoes": "உருளைக்கிழங்கு",
+  "fruit": "பழம்",
+  "vegetable": "காய்கறி",
+  "rice": "அரிசி",
+  "potatoes": "உருளைக்கிழங்கு",
   "Leaf Vegetable": "இலைக் காய்கறி",
   "Grain": "தானியம்",
   "Uncategorized": "வகைப்படுத்தப்படவில்லை"
