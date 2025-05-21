@@ -131,15 +131,15 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
 
   const printableContent = `
     <div style="font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif; color:#222; font-size:7px;">
-      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #333; margin-bottom:6px; padding-bottom:4px;">
-        <img src="/images/Gov.jpg" alt="Logo" style="height:36px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #333; margin-bottom:12px; padding-bottom:8px;">
+<img src="/images/Gov.jpg" alt="Logo" style="height:48px;">
         <div style="text-align:center; flex:1;">
           <div style="font-size:14px; font-weight:bold;">${ui.title}</div>
           <div style="font-size:9px; margin-top:2px;">${ui.center}</div>
         </div>
-        <img src="/images/logo.jpg" alt="Logo" style="height:36px;">
+        <img src="/images/logo.jpg" alt="Logo" style="height:48px;">
       </div>
-      <div style="display:flex; justify-content:space-between; font-size:9px; margin-bottom:6px;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px;">
         <div>${ui.tel}</div>
         <div>${ui.dateLabel}: <strong>${date}</strong></div>
         <div>${ui.emailLabel}: dambulladec@gmail.com</div>
