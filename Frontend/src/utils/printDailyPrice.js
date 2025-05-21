@@ -30,20 +30,15 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
   // Flatten grouped with translated category headers
   const categorizedList = [];
   function capitalizeFirst(str) {
-  if (!str) return "";
-  // Only capitalize if the first character is a-z or A-Z
-  return str[0].toLocaleUpperCase() + str.slice(1);
-}
-
-for (const [type, items] of Object.entries(grouped)) {
-  let translatedType = (types && types[type]) || type;
-  // Capitalize only for English or Tamil/Sinhala if you want
-  // (this will work for all languages, but will only affect the first character)
-  translatedType = capitalizeFirst(translatedType);
-  categorizedList.push({ isHeader: true, label: translatedType });
-  items.forEach(item => categorizedList.push({ isHeader: false, item }));
-}
-
+    if (!str) return "";
+    return str[0].toLocaleUpperCase() + str.slice(1);
+  }
+  for (const [type, items] of Object.entries(grouped)) {
+    let translatedType = (types && types[type]) || type;
+    translatedType = capitalizeFirst(translatedType);
+    categorizedList.push({ isHeader: true, label: translatedType });
+    items.forEach(item => categorizedList.push({ isHeader: false, item }));
+  }
 
   const numColumnSets = 2;
   const rowsPerColumn = Math.ceil(categorizedList.length / numColumnSets);
@@ -55,10 +50,10 @@ for (const [type, items] of Object.entries(grouped)) {
 
   const headerRow = Array(numColumnSets)
     .fill(`
-      <th style="border:1px solid #000; padding:2px 4px; font-size:11px; width:4%;">${ui.tableHeaders.number}</th>
-      <th style="border:1px solid #000; padding:2px 4px; font-size:11px;">${ui.tableHeaders.item}</th>
-      <th style="border:1px solid #000; padding:2px 4px; font-size:11px; width:13%;">${ui.tableHeaders.minPrice}</th>
-      <th style="border:1px solid #000; padding:2px 4px; font-size:11px; width:13%;">${ui.tableHeaders.maxPrice}</th>
+      <th style="border:1px solid #000; padding:0 4px; font-size:8px; width:4%;">${ui.tableHeaders.number}</th>
+      <th style="border:1px solid #000; padding:0 4px; font-size:8px;">${ui.tableHeaders.item}</th>
+      <th style="border:1px solid #000; padding:0 4px; font-size:8px; width:13%;">${ui.tableHeaders.minPrice}</th>
+      <th style="border:1px solid #000; padding:0 4px; font-size:8px; width:13%;">${ui.tableHeaders.maxPrice}</th>
     `)
     .join(`<th style="width:12px; border:none;"></th>`);
 
@@ -88,7 +83,7 @@ for (const [type, items] of Object.entries(grouped)) {
         `;
       } else if (entry.isHeader) {
         tableRows += `
-          <td colspan="4" style="border:1px solid #000; background:#ddd; font-weight:bold; font-size:12px; padding:6px 8px; text-align:left;">
+          <td colspan="4" style="border:1px solid #000; background:#ddd; font-weight:bold; font-size:8px; padding:0 8px; text-align:left;">
             ${entry.label}
           </td>
         `;
@@ -104,12 +99,12 @@ for (const [type, items] of Object.entries(grouped)) {
         const productName = productNames[item.product?.name] || item.product?.name || "";
 
         tableRows += `
-          <td style="border:1px solid #000; padding:4px 8px; font-size:10px;">${number}</td>
-          <td style="border:1px solid #000; padding:4px 8px; font-size:10px; text-align:left;">${productName}</td>
-          <td style="border:1px solid #000; padding:4px 8px; font-size:10px; text-align:right;">${
+          <td style="border:1px solid #000; padding:0 8px; font-size:7px;">${number}</td>
+          <td style="border:1px solid #000; padding:0 8px; font-size:7px; text-align:left;">${productName}</td>
+          <td style="border:1px solid #000; padding:0 8px; font-size:7px; text-align:right;">${
             item.min_price ? "Rs. " + Number(item.min_price).toFixed(2) : ""
           }</td>
-          <td style="border:1px solid #000; padding:4px 8px; font-size:10px; text-align:right;">${
+          <td style="border:1px solid #000; padding:0 8px; font-size:7px; text-align:right;">${
             item.max_price ? "Rs. " + Number(item.max_price).toFixed(2) : ""
           }</td>
         `;
@@ -122,7 +117,7 @@ for (const [type, items] of Object.entries(grouped)) {
   }
 
   const tableHtml = `
-    <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:12px;">
+    <table style="width:100%; border-collapse:collapse; margin-top:6px; margin-bottom:6px; page-break-inside: avoid; font-size:7px;">
       <thead>
         <tr style="background:#f5f5f5;">
           ${headerRow}
@@ -135,22 +130,24 @@ for (const [type, items] of Object.entries(grouped)) {
   `;
 
   const printableContent = `
-    <div style="font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif; color:#222;">
-      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #333; margin-bottom:12px; padding-bottom:8px;">
-        <img src="/images/Gov.jpg" alt="Logo" style="height:48px;">
+    <div style="font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif; color:#222; font-size:7px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid #333; margin-bottom:6px; padding-bottom:4px;">
+        <img src="/images/Gov.jpg" alt="Logo" style="height:36px;">
         <div style="text-align:center; flex:1;">
-          <div style="font-size:18px; font-weight:bold;">${ui.title}</div>
-          <div style="font-size:12px; margin-top:4px;">${ui.center}</div>
+          <div style="font-size:14px; font-weight:bold;">${ui.title}</div>
+          <div style="font-size:9px; margin-top:2px;">${ui.center}</div>
         </div>
-        <img src="/images/logo.jpg" alt="Logo" style="height:48px;">
+        <img src="/images/logo.jpg" alt="Logo" style="height:36px;">
       </div>
-      <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px;">
+      <div style="display:flex; justify-content:space-between; font-size:9px; margin-bottom:6px;">
         <div>${ui.tel}</div>
         <div>${ui.dateLabel}: <strong>${date}</strong></div>
         <div>${ui.emailLabel}: dambulladec@gmail.com</div>
       </div>
-      ${tableHtml}
-      <div style="margin-top:12px; font-size:11px; background:#fff3cd; border:1px solid #000; padding:8px;">
+      <div style="page-break-inside: avoid;">
+        ${tableHtml}
+      </div>
+      <div style="margin-top:6px; font-size:8px; background:#fff3cd; border:1px solid #000; padding:4px;">
         <strong>${ui.inquiry}</strong> ${ui.manager}<br/>
         ${ui.contact}
       </div>
@@ -168,18 +165,16 @@ for (const [type, items] of Object.entries(grouped)) {
       <head>
         <title>${ui.title}</title>
         <style>
-          @page { size: A4 portrait; margin: 10mm; }
-          body { margin:0; padding:0; }
+          @page { size: A4 portrait; margin: 8mm; }
+          body { margin:0; padding:0; font-size:7px; }
           table, th, td { border-collapse: collapse; }
-        </style>
-        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+Sinhala:400,700&display=swap" rel="stylesheet">
-        <style>
           body, td, th {
             font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif !important;
           }
         </style>
+        <link href="https://fonts.googleapis.com/css?family=Noto+Sans+Sinhala:400,700&display=swap" rel="stylesheet">
       </head>
-      <body>
+      <body class="printable-content">
         ${printableContent}
       </body>
     </html>
