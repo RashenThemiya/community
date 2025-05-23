@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import Sidebar from "../../components/Sidebar";
-import api from "../../utils/axiosInstance";
 import { FaTrash } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import Sidebar from "../../components/Sidebar";
 import { useAuth } from "../../context/AuthContext";
+import api from "../../utils/axiosInstance";
 
 const VehicleTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -247,7 +247,9 @@ const VehicleTickets = () => {
               <table className="w-full table-auto border-collapse">
                 <thead className="bg-teal-600 text-white">
                   <tr>
-                    <th className="p-3 text-left">ID</th>
+                    <th className="p-3 text-left">#</th> 
+                    <th className="p-3 text-left">Ref ID</th >
+
                     <th className="p-3 text-left">Vehicle Number</th>
                     <th className="p-3 text-left">Type</th>
                     <th className="p-3 text-left">Price</th>
@@ -257,38 +259,37 @@ const VehicleTickets = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTickets.length > 0 ? (
-                    filteredTickets.map((ticket) => (
-                      <tr key={ticket.id} className="border-b hover:bg-gray-50">
-                        <td className="p-3">{ticket.id}</td>
-                        <td className="p-3">{ticket.vehicleNumber}</td>
-                        <td className="p-3">{ticket.vehicleType}</td>
-                        <td className="p-3">Rs. {ticket.ticketPrice}</td>
-                        <td className="p-3">{ticket.time}</td>
-                        <td className="p-3">{ticket.byWhom}</td>
-                        <td className="p-3">
-                          <ConfirmWrapper
-                            message="Are you sure you want to delete this ticket?"
-                            onConfirm={() => handleDeleteTicket(ticket.id)}
-                          >
-                            <button
-                              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm w-full sm:w-auto justify-center"
-                            >
+                 {filteredTickets.length > 0 ? (
+  filteredTickets.map((ticket, index) => (
+    <tr key={ticket.id} className="border-b hover:bg-gray-50">
+      <td className="p-3">{index + 1}</td>  {/* Chronological ID */}
+      <td className="p-3">{ticket.id}</td>  {/* Reference ID */}
+      <td className="p-3">{ticket.vehicleNumber}</td>
+      <td className="p-3">{ticket.vehicleType}</td>
+      <td className="p-3">Rs. {ticket.ticketPrice}</td>
+      <td className="p-3">{ticket.time}</td>
+      <td className="p-3">{ticket.byWhom}</td>
+      <td className="p-3">
+        <ConfirmWrapper
+          message="Are you sure you want to delete this ticket?"
+          onConfirm={() => handleDeleteTicket(ticket.id)}
+        >
+          <button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm w-full sm:w-auto justify-center">
+            <span>Delete</span>
+            <FaTrash className="text-base" />
+          </button>
+        </ConfirmWrapper>
+      </td>
+    </tr>
+  ))
+) : (
+  <tr>
+    <td className="p-3 text-center text-gray-500" colSpan="8">
+      No tickets found.
+    </td>
+  </tr>
+)}
 
-                              <span>Delete</span>
-                              <FaTrash className="text-base" />
-                            </button>
-                          </ConfirmWrapper>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td className="p-3 text-center text-gray-500" colSpan="6">
-                        No tickets found.
-                      </td>
-                    </tr>
-                  )}
                 </tbody>
               </table>
             )}
