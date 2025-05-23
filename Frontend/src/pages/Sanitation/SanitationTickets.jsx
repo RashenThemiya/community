@@ -3,6 +3,7 @@ import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { FaTrash } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 
 const SanitationTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -15,6 +16,9 @@ const SanitationTickets = () => {
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(true);
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   useEffect(() => {
     fetchTickets();

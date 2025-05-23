@@ -3,10 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 
 const UpdateVATRate = () => {
   const navigate = useNavigate();
   const [vatRate, setVatRate] = useState("");
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   const handleUpdateVAT = async () => {
     const newVatRate = parseFloat(vatRate);

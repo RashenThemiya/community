@@ -3,6 +3,7 @@ import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { FaTrash } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 
 const VehicleTickets = () => {
   const [tickets, setTickets] = useState([]);
@@ -20,6 +21,9 @@ const VehicleTickets = () => {
   const [monthlyIncome, setMonthlyIncome] = useState({ totalIncome: 0, ticketCount: 0 });
 
   const vehicleTypes = ["Lorry", "Van", "Three-Wheeler", "Motorbike", "Car"];
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   useEffect(() => {
     fetchTickets();
