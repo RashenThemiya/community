@@ -10,6 +10,7 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import { useAuth } from "../../context/AuthContext";
 
 const ViewProducts = () => {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ const ViewProducts = () => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   useEffect(() => {
     const fetchProducts = async () => {

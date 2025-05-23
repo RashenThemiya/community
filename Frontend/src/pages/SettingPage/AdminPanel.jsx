@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminPanel = () => {
   const token = localStorage.getItem("token");
@@ -21,6 +22,9 @@ const AdminPanel = () => {
   const [role, setRole] = useState("");
 
   const headers = { Authorization: `Bearer ${token}` };
+  const { name } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   useEffect(() => {
     if (token) {
@@ -139,9 +143,8 @@ const AdminPanel = () => {
           </div>
           <ConfirmWrapper onConfirm={handleRegister}>
             <button
-              className={`mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`mt-4 w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               disabled={loading}
             >
               {loading ? "Registering..." : "Register Admin"}
@@ -174,9 +177,8 @@ const AdminPanel = () => {
           </div>
           <ConfirmWrapper onConfirm={handlePasswordChange}>
             <button
-              className={`mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               disabled={loading}
             >
               {loading ? "Changing..." : "Change Password"}

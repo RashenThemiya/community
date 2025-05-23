@@ -1,9 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
 import { Eye, FileEdit, CreditCard } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+
+
 
 const Payment = () => {
     const navigate = useNavigate();
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     return (
         <div className="flex flex-col md:flex-row h-screen">

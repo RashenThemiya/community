@@ -10,7 +10,7 @@ import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 import Sidebar from "../components/Sidebar";
 import api from "../utils/axiosInstance";
 import { ResponsiveContainer } from 'recharts';
-
+import { useAuth } from "../context/AuthContext";
 
 const months = [
   { name: "All Months", value: 0 },
@@ -37,6 +37,9 @@ const AdminDashboard = () => {
   const [error, setError] = useState("");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(currentYear);
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-LK", {
