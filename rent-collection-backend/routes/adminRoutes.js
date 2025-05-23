@@ -16,7 +16,7 @@ router.post("/register", authenticateUser, authorizeRole(["superadmin"]), async 
 
   try {
     // Validate role
-    if (!["superadmin", "admin"].includes(role)) {
+    if (!["superadmin", "admin", "tiketing", "editor", "manager"].includes(role)) {
       return res.status(400).json({ message: "Invalid role!" });
     }
 
