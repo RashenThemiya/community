@@ -1,14 +1,52 @@
 import { useEffect, useState } from "react";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { FaTrash } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 
+// Export to Excel function
+const exportSanitationTicketsExcel = async (tickets) => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Sanitation Tickets");
+
+  worksheet.columns = [
+    { header: "Ticket ID", key: "id", width: 15 },
+    { header: "Price (Rs.)", key: "price", width: 15 },
+    { header: "Date", key: "date", width: 20 },
+    { header: "Issued By", key: "byWhom", width: 30 },
+  ];
+
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF4CAF50" },
+    };
+    cell.alignment = { vertical: "middle", horizontal: "center" };
+  });
+
+  tickets.forEach((ticket) => {
+    worksheet.addRow({
+      id: ticket.id,
+      price: ticket.price,
+      date: ticket.date,
+      byWhom: ticket.byWhom,
+    });
+  });
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  saveAs(new Blob([buffer]), `SanitationTickets_${new Date().toISOString()}.xlsx`);
+};
+
 const SanitationTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [ticketPrice, setTicketPrice] = useState("");
-  const [searchDate, setSearchDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [searchByWhom, setSearchByWhom] = useState("");
   const [dailyIncome, setDailyIncome] = useState({ totalIncome: 0, ticketCount: 0 });
   const [monthlyIncome, setMonthlyIncome] = useState({ totalIncome: 0, ticketCount: 0 });
@@ -19,16 +57,31 @@ const SanitationTickets = () => {
   useEffect(() => {
     fetchTickets();
     fetchDailyIncome();
-    fetchMonthlyIncome(); // re-fetch monthly income when filters change
-  }, [searchDate, searchByWhom]);
+    fetchMonthlyIncome();
+    // eslint-disable-next-line
+  }, [searchByWhom]);
+
+  // Frontend-only filtering for date range
+  useEffect(() => {
+    let filtered = tickets;
+
+    if (startDate) {
+      filtered = filtered.filter(ticket => ticket.date >= startDate);
+    }
+    if (endDate) {
+      filtered = filtered.filter(ticket => ticket.date <= endDate);
+    }
+    setFilteredTickets(filtered);
+  }, [startDate, endDate, tickets]);
 
   const fetchTickets = async () => {
+    setLoading(true);
     try {
       const queryParams = [];
-      if (searchDate) queryParams.push(`date=${searchDate}`);
       if (searchByWhom) queryParams.push(`byWhom=${searchByWhom}`);
       const query = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
+      // Fetch all tickets, filter by date range on frontend
       const res = await api.get(`/api/sanitation/by-date${query}`);
       const allTickets = res.data.tickets || [];
       setTickets(allTickets);
@@ -43,7 +96,6 @@ const SanitationTickets = () => {
   const fetchDailyIncome = async () => {
     try {
       const queryParams = [];
-      if (searchDate) queryParams.push(`date=${searchDate}`);
       if (searchByWhom) queryParams.push(`byWhom=${searchByWhom}`);
       const query = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
@@ -104,16 +156,14 @@ const SanitationTickets = () => {
     try {
       await api.delete(`/api/sanitation/${id}`);
       setSuccessMsg("Ticket deleted successfully.");
-      fetchTickets();          // Refresh ticket list
-      fetchDailyIncome();      // Refresh daily income
-      fetchMonthlyIncome();    // Refresh monthly income
+      fetchTickets();
+      fetchDailyIncome();
+      fetchMonthlyIncome();
     } catch (err) {
       setError("Failed to delete the ticket.");
       console.error("Failed to delete ticket:", err);
     }
   };
-
-
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
@@ -148,9 +198,17 @@ const SanitationTickets = () => {
           <div className="mb-6 flex flex-col sm:flex-row gap-4">
             <input
               type="date"
-              value={searchDate}
-              onChange={(e) => setSearchDate(e.target.value)}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
               className="border border-gray-300 p-3 rounded-lg"
+              placeholder="Start Date"
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border border-gray-300 p-3 rounded-lg"
+              placeholder="End Date"
             />
             <input
               type="text"
@@ -165,7 +223,7 @@ const SanitationTickets = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-white rounded-lg shadow p-4 border border-teal-100">
               <h4 className="text-lg font-semibold text-gray-700">
-                {(searchDate || searchByWhom) ? "Filtered Income" : "Today's Income"}
+                {(startDate || endDate || searchByWhom) ? "Filtered Income" : "Today's Income"}
               </h4>
               <p className="text-teal-700 font-bold text-2xl">
                 Rs. {parseFloat(dailyIncome?.totalIncome).toLocaleString()}
@@ -189,7 +247,17 @@ const SanitationTickets = () => {
 
           {/* Ticket Table */}
           <div>
-            <h3 className="text-xl font-semibold mb-4 text-gray-700">Tickets</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-gray-700">Filtered Tickets</h3>
+              <button
+                onClick={() => exportSanitationTicketsExcel(filteredTickets)}
+                className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition"
+                disabled={filteredTickets.length === 0}
+                title={filteredTickets.length === 0 ? "No tickets to export" : "Export tickets to Excel"}
+              >
+                Export to Excel
+              </button>
+            </div>
             {loading ? (
               <p>Loading...</p>
             ) : (
@@ -219,18 +287,16 @@ const SanitationTickets = () => {
                             <button
                               className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm w-full sm:w-auto justify-center"
                             >
-
                               <span>Delete</span>
                               <FaTrash className="text-base" />
                             </button>
                           </ConfirmWrapper>
                         </td>
-
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td className="p-3 text-center text-gray-500" colSpan="4">
+                      <td className="p-3 text-center text-gray-500" colSpan="5">
                         No tickets found.
                       </td>
                     </tr>
