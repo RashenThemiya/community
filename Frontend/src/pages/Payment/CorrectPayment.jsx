@@ -3,9 +3,13 @@ import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import { MdWarningAmber } from "react-icons/md";
+import { useAuth } from "../../context/AuthContext";
 
 const CorrectPayment = () => {
     const navigate = useNavigate();
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     const [formData, setFormData] = useState({
         invoice_id: "",

@@ -2,11 +2,15 @@ import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import ConfirmWrapper from "../../components/ConfirmWrapper"; // Adjust the import path as needed
 import { FaDownload } from "react-icons/fa"; // Optional icon for confirmation dialog
+import { useAuth } from "../../context/AuthContext"; // Adjust the import path as needed
 
 const Report = () => {
     const today = new Date();
     const [month, setMonth] = useState(today.getMonth() + 1);
     const [year, setYear] = useState(today.getFullYear());
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
 

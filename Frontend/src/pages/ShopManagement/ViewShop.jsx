@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -14,6 +15,9 @@ const ViewShops = () => {
     const [successMessage, setSuccessMessage] = useState(null);
     const [confirmDeleteShopId, setConfirmDeleteShopId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     useEffect(() => {
         const fetchShops = async () => {

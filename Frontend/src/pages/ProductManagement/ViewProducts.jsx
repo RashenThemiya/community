@@ -10,6 +10,7 @@ import {
   getFilteredRowModel,
   flexRender,
 } from "@tanstack/react-table";
+import { useAuth } from "../../context/AuthContext";
 
 const ViewProducts = () => {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ const ViewProducts = () => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -89,23 +93,29 @@ const ViewProducts = () => {
       {
         id: "actions",
         header: "Actions",
-        cell: (info) => (
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => navigate(`/edit-product/${info.row.original.id}`)}
-              className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md text-sm"
-            >
-              Edit
-            </button>
-
-            <ConfirmWrapper onConfirm={() => handleDeleteProduct(info.row.original.id)}>
-              <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm">
-                Delete
+        cell: (info) => {
+          const product = info.row.original;
+          return (
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => navigate(`/edit-product/${product.id}`)}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md text-sm"
+              >
+                Edit
               </button>
-            </ConfirmWrapper>
-          </div>
-        ),
-      },
+              <ConfirmWrapper
+                message={`Are you sure you want to delete product "${product.name}" with ID "${product.id}"?`}
+                onConfirm={() => handleDeleteProduct(product.id)}
+              >
+                <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm">
+                  Delete
+                </button>
+              </ConfirmWrapper>
+            </div>
+          );
+        },
+      }
+
     ],
     [navigate, globalFilter]
   );
