@@ -13,6 +13,7 @@ import InvoiceTable from "./components/InvoiceTableDelete";
 import PaymentList from "./components/PaymentDelete";
 import MakePayment from "./components/SettingPayment";
 import ConfirmWrapper from "../../components/ConfirmWrapper"; // Only needed for other buttons
+import { useAuth } from "../../context/AuthContext";
 
 const SystemSetting = () => {
   const [shopId, setShopId] = useState("");
@@ -22,6 +23,9 @@ const SystemSetting = () => {
   const [activeTab, setActiveTab] = useState("payments");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const navigate = useNavigate();
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   const fetchShopSummary = async () => {
     if (!shopId.trim()) return;

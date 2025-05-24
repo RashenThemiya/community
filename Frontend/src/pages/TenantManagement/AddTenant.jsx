@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import { FiUserPlus } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
 
 const AddTenant = () => {
     const navigate = useNavigate();
@@ -17,6 +18,9 @@ const AddTenant = () => {
     const [error, setError] = useState(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false); // ✅ Success message state
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     useEffect(() => {
         const fetchAvailableShops = async () => {
