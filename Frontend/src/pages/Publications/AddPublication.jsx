@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import { FiPlusCircle } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext"; // Adjust the import path as needed
 
 const AddPublication = () => {
     const navigate = useNavigate();
@@ -15,6 +16,9 @@ const AddPublication = () => {
     const [error, setError] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
     const [isConfirmed, setIsConfirmed] = useState(false);
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     useEffect(() => {
         if (error) {

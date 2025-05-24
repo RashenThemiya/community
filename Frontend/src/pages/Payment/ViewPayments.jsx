@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import ExcelJS from "exceljs";
+import { useAuth } from "../../context/AuthContext";
 
 const ViewPayments = () => {
   const navigate = useNavigate();
@@ -13,6 +14,9 @@ const ViewPayments = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   // Calculate total amount for filtered payments
   const totalAmount = filteredPayments.reduce(

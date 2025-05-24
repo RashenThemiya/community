@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FiEdit3 } from "react-icons/fi";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 
 const EditTenant = () => {
     const navigate = useNavigate();
@@ -13,6 +14,9 @@ const EditTenant = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [showConfirm, setShowConfirm] = useState(false);
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     useEffect(() => {
         const fetchTenant = async () => {

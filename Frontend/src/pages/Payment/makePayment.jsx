@@ -5,11 +5,14 @@ import api from "../../utils/axiosInstance";
 import { FaCheckCircle, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper"; // adjust path if needed
 
+
 const ALLOW_FUTURE_DATES = false;
 
 const MakePayment = () => {
     const navigate = useNavigate();
-    const { name } = useAuth();
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     const [paymentData, setPaymentData] = useState({
         referenceId: "",

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper"; // Adjust path if needed
 import { FiPlusCircle } from "react-icons/fi"; // Optional icon for ConfirmWrapper
+import { useAuth } from "../../context/AuthContext"; // Adjust path if needed
 
 const AddProduct = () => {
     const navigate = useNavigate();
@@ -11,6 +12,9 @@ const AddProduct = () => {
     const [error, setError] = useState(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     const handleChange = (e) => {
         if (e.target.name === "image") {

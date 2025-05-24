@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
 
 const ViewDailyPrice = () => {
   const navigate = useNavigate();
@@ -9,6 +10,9 @@ const ViewDailyPrice = () => {
   const [searchItem, setSearchItem] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   useEffect(() => {
     const fetchDailyPrices = async () => {
