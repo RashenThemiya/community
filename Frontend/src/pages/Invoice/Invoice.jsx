@@ -60,7 +60,7 @@ const Invoice = () => {
     const filteredInvoices = invoices.filter(invoice => {
         if (activeTab !== "all") {
             if (activeTab === "paid" && invoice.status !== "Paid") return false;
-            if (activeTab === "arrears" && invoice.status !== "Arrears") return false;
+            if (activeTab === "arrears" && invoice.status !== "Arrest") return false;
             if (activeTab === "partly-paid" && invoice.status !== "Partially Paid") return false;
             if (activeTab === "newly-arrived" && invoice.printedtime !== 0) return false;
             if (activeTab === "unpaid" && invoice.status !== "Unpaid") return false;
