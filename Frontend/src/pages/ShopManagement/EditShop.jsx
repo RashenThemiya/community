@@ -3,9 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FiEdit3 } from "react-icons/fi";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import { useAuth } from "../../context/AuthContext";
 
 const EditShop = () => {
     const navigate = useNavigate();
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
     const { id } = useParams();
     const [shop, setShop] = useState({});
     const [loading, setLoading] = useState(false);

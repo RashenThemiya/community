@@ -1,9 +1,15 @@
+import { CreditCard, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
-import { Eye, FileEdit, CreditCard } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+
+
 
 const Payment = () => {
     const navigate = useNavigate();
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     return (
         <div className="flex flex-col md:flex-row h-screen">
@@ -32,7 +38,7 @@ const Payment = () => {
                     </div>
 
                     {/* Correct a Payment */}
-                    <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+                {/* <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
                         <h2 className="text-xl font-semibold mb-4 flex items-center"><FileEdit className="mr-2 text-green-600" />Payment Correction</h2>
                         <p className="text-gray-700 mb-4">Modify or correct payment mistake.</p>
                         <button
@@ -41,8 +47,7 @@ const Payment = () => {
                         >
                             Correct Payment
                         </button>
-                    </div>
-
+                    </div>*/}
                     {/* View All Payments */}
                     <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
                         <h2 className="text-xl font-semibold mb-4 flex items-center"><Eye className="mr-2 text-green-600" />View All Payments</h2>

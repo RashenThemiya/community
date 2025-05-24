@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import api from "../../utils/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -14,6 +15,9 @@ const ViewTenants = () => {
     const [successMessage, setSuccessMessage] = useState(null);
     const [confirmDeleteTenantId, setConfirmDeleteTenantId] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const { name, role } = useAuth();
+
+    console.log("Logged in user:", name, "Role:", role);
 
     useEffect(() => {
         const fetchTenants = async () => {
@@ -59,7 +63,7 @@ const ViewTenants = () => {
         tenant.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         tenant.shop_id?.toString().toLowerCase().includes(searchQuery.toLowerCase())
     );
-    
+
 
     const totalPages = Math.ceil(filteredTenants.length / ITEMS_PER_PAGE);
     const currentTenants = filteredTenants.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);

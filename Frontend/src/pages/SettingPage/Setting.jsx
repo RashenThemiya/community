@@ -5,6 +5,7 @@ import CredentialModal from "../../components/CredentialModal";
 
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
 
 
 import { FaBan, FaClipboardList, FaCog, FaDatabase, FaExclamationTriangle, FaFileInvoiceDollar, FaGavel, FaPercentage, FaUserShield } from "react-icons/fa";
@@ -16,6 +17,9 @@ const Setting = () => {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   const token = localStorage.getItem("token");
 
@@ -151,10 +155,10 @@ const Setting = () => {
 
         {/* Show loading spinner overlay when loading */}
         {loading && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-    <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
-  </div>
-)}
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+            <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
 
 
 
@@ -369,7 +373,7 @@ const Setting = () => {
           </div>
 
 
- 
+
         </div>
 
       </div>
