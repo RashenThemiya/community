@@ -37,6 +37,23 @@ const exportSanitationTicketsExcel = async (tickets) => {
     });
   });
 
+ // Calculate the total price, formatted to two decimals
+  const total = tickets.reduce((sum, t) => sum + parseFloat(t.price), 0);
+
+  // Add the total row
+  const totalRow = worksheet.addRow({
+    id: 'Total',
+    price: total.toFixed(2), // Always two decimals
+    date: '',
+    byWhom: '',
+  });
+
+  // Make the total row bold
+  totalRow.font = { bold: true };
+
+  // Set number format for the price column (including the total row)
+  worksheet.getColumn('price').numFmt = '0.00';
+
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer]), `SanitationTickets_${new Date().toISOString()}.xlsx`);
 };

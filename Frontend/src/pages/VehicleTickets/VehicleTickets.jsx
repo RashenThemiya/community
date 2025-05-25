@@ -37,11 +37,30 @@ const exportVehicleTicketsExcel = async (tickets) => {
       id: ticket.id,
       vehicleNumber: ticket.vehicleNumber,
       vehicleType: ticket.vehicleType,
-      ticketPrice: ticket.ticketPrice,
+      ticketPrice: Number(ticket.ticketPrice).toFixed(2),
       time: ticket.time,
       byWhom: ticket.byWhom,
     });
   });
+
+  const total = tickets.reduce((sum, t) => sum + parseFloat(t.ticketPrice), 0);
+
+  // Add the total row
+  const totalRow = worksheet.addRow({
+    index: '', // Empty for index
+    id: 'Total', // "Total" in the leftmost cell
+    vehicleNumber: '',
+    vehicleType: '',
+    ticketPrice: total.toFixed(2), // Always two decimals
+    time: '',
+    byWhom: '',
+  });
+
+  // Make the total row bold for emphasis
+  totalRow.font = { bold: true };
+
+  // Set number format for the Price column (including the total row)
+  worksheet.getColumn('ticketPrice').numFmt = '0.00';
 
   const buffer = await workbook.xlsx.writeBuffer();
   saveAs(new Blob([buffer]), `VehicleTickets_${new Date().toISOString()}.xlsx`);
