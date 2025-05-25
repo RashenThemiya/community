@@ -5,7 +5,6 @@ import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { FaTrash } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
-import { useAuth } from "../../context/AuthContext";
 
 // Export to Excel function
 const exportSanitationTicketsExcel = async (tickets) => {
@@ -46,18 +45,18 @@ const SanitationTickets = () => {
   const [tickets, setTickets] = useState([]);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [ticketPrice, setTicketPrice] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [searchByWhom, setSearchByWhom] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [pendingFrom, setPendingFrom] = useState("");
+  const [pendingTo, setPendingTo] = useState("");
   const [dailyIncome, setDailyIncome] = useState({ totalIncome: 0, ticketCount: 0 });
   const [monthlyIncome, setMonthlyIncome] = useState({ totalIncome: 0, ticketCount: 0 });
   const [error, setError] = useState(null);
   const [successMsg, setSuccessMsg] = useState("");
   const [loading, setLoading] = useState(true);
-  const { name, role } = useAuth();
 
-  console.log("Logged in user:", name, "Role:", role);
-
+  // Fetch tickets and incomes when searchByWhom changes (date range is client-side)
   useEffect(() => {
     fetchTickets();
     fetchDailyIncome();
@@ -65,18 +64,17 @@ const SanitationTickets = () => {
     // eslint-disable-next-line
   }, [searchByWhom]);
 
-  // Frontend-only filtering for date range
+  // Filter tickets by date range on the frontend
   useEffect(() => {
     let filtered = tickets;
-
-    if (startDate) {
-      filtered = filtered.filter(ticket => ticket.date >= startDate);
+    if (fromDate) {
+      filtered = filtered.filter(ticket => ticket.date >= fromDate);
     }
-    if (endDate) {
-      filtered = filtered.filter(ticket => ticket.date <= endDate);
+    if (toDate) {
+      filtered = filtered.filter(ticket => ticket.date <= toDate);
     }
     setFilteredTickets(filtered);
-  }, [startDate, endDate, tickets]);
+  }, [fromDate, toDate, tickets]);
 
   const fetchTickets = async () => {
     setLoading(true);
@@ -85,11 +83,10 @@ const SanitationTickets = () => {
       if (searchByWhom) queryParams.push(`byWhom=${searchByWhom}`);
       const query = queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
-      // Fetch all tickets, filter by date range on frontend
       const res = await api.get(`/api/sanitation/by-date${query}`);
       const allTickets = res.data.tickets || [];
       setTickets(allTickets);
-      setFilteredTickets(allTickets);
+      setFilteredTickets(allTickets); // Initial, before range filter
     } catch (err) {
       setError("Failed to fetch sanitation tickets.");
     } finally {
@@ -169,6 +166,20 @@ const SanitationTickets = () => {
     }
   };
 
+  // Date range filter handlers
+  const handleDateRangeSubmit = (e) => {
+    e.preventDefault();
+    setFromDate(pendingFrom);
+    setToDate(pendingTo);
+  };
+
+  const handleDateRangeReset = () => {
+    setFromDate("");
+    setToDate("");
+    setPendingFrom("");
+    setPendingTo("");
+  };
+
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <Sidebar />
@@ -199,42 +210,88 @@ const SanitationTickets = () => {
           {successMsg && <div className="mb-4 text-green-600">{successMsg}</div>}
 
           {/* Filters */}
-          <div className="mb-6 flex flex-col sm:flex-row gap-4">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="border border-gray-300 p-3 rounded-lg"
-              placeholder="Start Date"
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="border border-gray-300 p-3 rounded-lg"
-              placeholder="End Date"
-            />
-            <input
-              type="text"
-              placeholder="Search by Email (byWhom)"
-              value={searchByWhom}
-              onChange={(e) => setSearchByWhom(e.target.value)}
-              className="border border-gray-300 p-3 rounded-lg"
-            />
-          </div>
+         {/* Filters */}
+<div className="mb-6 flex flex-col gap-4">
+  <div className="flex flex-col sm:flex-row gap-4 items-center">
+    {/* Search by Email */}
+    <label className="flex flex-col items-start w-full sm:w-auto">
+      <span className="text-sm font-medium text-gray-700 mb-1">Search By Email (byWhom)</span>
+      <input
+        type="text"
+        placeholder="Search"
+        value={searchByWhom}
+        onChange={(e) => setSearchByWhom(e.target.value)}
+        className="border border-gray-300 p-3 rounded-lg w-64"
+      />
+    </label>
+    {/* Date Range */}
+    <form
+      className="flex flex-col sm:flex-row items-center gap-2"
+      onSubmit={handleDateRangeSubmit}
+    >
+      <label className="flex flex-col items-start">
+        <span className="text-sm font-medium text-gray-700 mb-1">Select Range of Dates</span>
+        <div className="flex flex-row gap-2">
+          <input
+            type="date"
+            value={pendingFrom}
+            onChange={e => setPendingFrom(e.target.value)}
+            className="border border-gray-300 p-3 rounded-lg"
+            placeholder="From"
+            required
+          />
+          <input
+            type="date"
+            value={pendingTo}
+            onChange={e => setPendingTo(e.target.value)}
+            className="border border-gray-300 p-3 rounded-lg"
+            placeholder="To"
+            required
+          />
+        </div>
+      </label>
+      <button
+        type="submit"
+        className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition mt-4 sm:mt-6"
+      >
+        Submit
+      </button>
+      <button
+        type="button"
+        onClick={handleDateRangeReset}
+        className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition mt-4 sm:mt-6"
+      >
+        Reset
+      </button>
+    </form>
+  </div>
+</div>
 
           {/* Income Summary */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="bg-white rounded-lg shadow p-4 border border-teal-100">
               <h4 className="text-lg font-semibold text-gray-700">
-                {(startDate || endDate || searchByWhom) ? "Filtered Income" : "Today's Income"}
+                {(fromDate || toDate || searchByWhom) ? "Filtered Income" : "Today's Income"}
               </h4>
-              <p className="text-teal-700 font-bold text-2xl">
-                Rs. {parseFloat(dailyIncome?.totalIncome).toLocaleString()}
-              </p>
-              <p className="text-sm text-gray-500">
-                Tickets issued: {dailyIncome?.ticketCount}
-              </p>
+              {(fromDate || toDate || searchByWhom) ? (
+                <>
+                  <p className="text-teal-700 font-bold text-2xl">
+                    Rs. {filteredTickets.reduce((sum, t) => sum + parseFloat(t.price), 0).toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Tickets issued: {filteredTickets.length}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-teal-700 font-bold text-2xl">
+                    Rs. {parseFloat(dailyIncome?.totalIncome).toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Tickets issued: {dailyIncome?.ticketCount}
+                  </p>
+                </>
+              )}
             </div>
             <div className="bg-white rounded-lg shadow p-4 border border-teal-100">
               <h4 className="text-lg font-semibold text-gray-700">
@@ -252,7 +309,7 @@ const SanitationTickets = () => {
           {/* Ticket Table */}
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-gray-700">Filtered Tickets</h3>
+              <h3 className="text-xl font-semibold text-gray-700">Tickets</h3>
               <button
                 onClick={() => exportSanitationTicketsExcel(filteredTickets)}
                 className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition"
