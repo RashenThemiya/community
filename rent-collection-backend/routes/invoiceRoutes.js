@@ -136,4 +136,35 @@ router.patch('/:invoiceId/print', authenticateUser, authorizeRole(['admin', 'sup
   }
 });
 
+
+
+// Send WhatsApp messages for selected invoices
+router.post('/send-whatsapp', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
+    try {
+        const { invoices } = req.body; // Expecting [{ invoice_id, shop_id }]
+
+        if (!Array.isArray(invoices) || invoices.length === 0) {
+            return res.status(400).json({ message: "No invoice data provided" });
+        }
+
+        for (const invoice of invoices) {
+            const tenant = await Tenant.findOne({ where: { shop_id: invoice.shop_id } });
+
+            if (!tenant || !tenant.contact) {
+                console.warn(`No tenant or contact found for shop_id: ${invoice.shop_id}`);
+                continue;
+            }
+
+            const message = `Dear ${tenant.name}, your invoice #${invoice.invoice_id} has been processed.`;
+            await sendWhatsAppMessage(tenant.contact, message); // Replace with real WhatsApp API
+        }
+
+        res.status(200).json({ success: true, message: "WhatsApp messages sent successfully" });
+    } catch (error) {
+        console.error("WhatsApp send error:", error);
+        res.status(500).json({ success: false, message: "Failed to send WhatsApp messages", error: error.message });
+    }
+});
+
+
 module.exports = router;
