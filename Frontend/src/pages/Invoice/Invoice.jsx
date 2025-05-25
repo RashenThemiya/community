@@ -112,6 +112,62 @@ const Invoice = () => {
     setShowConfirm(false);
   };
 
+
+
+  const handleSendEmail = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setError("Unauthorized: Please log in first.");
+            return;
+        }
+
+        const selectedData = filteredInvoices.filter(invoice =>
+            selectedInvoices.includes(invoice.invoice_id)
+        );
+
+        const response = await api.post("/api/send-email", { invoices: selectedData }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+            setSuccess("Email(s) sent successfully!");
+        } else {
+            setError("Failed to send email(s).");
+        }
+    } catch (error) {
+        console.error(error);
+        setError("An error occurred while sending email(s).");
+    }
+};
+
+const handleSendWhatsApp = async () => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setError("Unauthorized: Please log in first.");
+            return;
+        }
+
+        const selectedData = filteredInvoices.filter(invoice =>
+            selectedInvoices.includes(invoice.invoice_id)
+        );
+
+        const response = await api.post("/api/send-whatsapp", { invoices: selectedData }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+            setSuccess("WhatsApp message(s) sent successfully!");
+        } else {
+            setError("Failed to send WhatsApp message(s).");
+        }
+    } catch (error) {
+        console.error(error);
+        setError("An error occurred while sending WhatsApp message(s).");
+    }
+};
+
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
       <Sidebar className="w-64 flex-shrink-0" />
