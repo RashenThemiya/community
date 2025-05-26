@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import ExcelJS from "exceljs";
+import { useAuth } from "../../context/AuthContext";
 
 const ViewPayments = () => {
   const navigate = useNavigate();
@@ -11,6 +12,12 @@ const ViewPayments = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
+
   // Calculate total amount for filtered payments
   const totalAmount = filteredPayments.reduce(
     (sum, payment) => sum + parseFloat(payment.amount_paid),
@@ -35,22 +42,31 @@ const ViewPayments = () => {
 
   // Search filter function
   useEffect(() => {
-    const filtered = payments.filter(
-      (payment) =>
+    const filtered = payments.filter((payment) => {
+      // Search filter (existing)
+      const matchesSearch =
         payment.payment_id.toString().includes(searchQuery) ||
         (payment.shop_id &&
           payment.shop_id.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (payment.invoice_id &&
-          payment.invoice_id
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())) ||
+          payment.invoice_id.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (payment.payment_method &&
-          payment.payment_method
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()))
-    );
+          payment.payment_method.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      // Date filter for Year & Month
+      const paymentDate = new Date(payment.payment_date);
+      const paymentYear = paymentDate.getFullYear().toString();
+      const paymentMonth = (paymentDate.getMonth() + 1).toString(); // getMonth() is zero-based
+
+      const matchesYear = selectedYear ? paymentYear === selectedYear : true;
+      const matchesMonth = selectedMonth ? paymentMonth === selectedMonth : true;
+
+      return matchesSearch && matchesYear && matchesMonth;
+    });
+
     setFilteredPayments(filtered);
-  }, [searchQuery, payments]);
+  }, [searchQuery, payments, selectedYear, selectedMonth]);
+
 
   // Export to Excel function
   const exportToExcel = async () => {
@@ -78,11 +94,11 @@ const ViewPayments = () => {
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
     // Sort payments by shop_id
-filteredPayments.sort((a, b) => {
-  if (a.shop_id < b.shop_id) return -1;
-  if (a.shop_id > b.shop_id) return 1;
-  return 0;
-});
+    filteredPayments.sort((a, b) => {
+      if (a.shop_id < b.shop_id) return -1;
+      if (a.shop_id > b.shop_id) return 1;
+      return 0;
+    });
 
     // Add payment rows
     filteredPayments.forEach((payment) => {
@@ -129,6 +145,9 @@ filteredPayments.sort((a, b) => {
     window.URL.revokeObjectURL(url);
   };
 
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
@@ -155,6 +174,45 @@ filteredPayments.sort((a, b) => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+
+        <div className="flex gap-4 mb-4">
+          {/* Year Dropdown */}
+          <select
+            className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-40"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+          >
+            <option value="">All Years</option>
+            {years.map((year) => (
+              <option key={year} value={year.toString()}>
+                {year}
+              </option>
+            ))}
+          </select>
+
+          {/* Month Dropdown */}
+          <select
+            className="p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 w-40"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+          >
+            <option value="">All Months</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+
+
         <p className="text-lg font-semibold mb-4 text-center">
           Total Amount Paid (LKR): {totalAmount.toFixed(2)}
         </p>

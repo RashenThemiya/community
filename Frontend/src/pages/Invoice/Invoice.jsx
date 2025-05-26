@@ -5,6 +5,7 @@ import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { printInvoices } from "../../utils/printInvoices";
 import { Printer } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 
 const Invoice = () => {
@@ -19,7 +20,9 @@ const Invoice = () => {
     const [confirmMessage, setConfirmMessage] = useState("");
     const [showOkOnly, setShowOkOnly] = useState(false);
     const navigate = useNavigate();
+    const { name, role } = useAuth();
 
+    console.log("Logged in user:", name, "Role:", role);
     useEffect(() => {
         const fetchInvoices = async () => {
             try {

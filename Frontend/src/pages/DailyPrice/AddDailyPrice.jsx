@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
 
 const AddDailyPrice = () => {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ const AddDailyPrice = () => {
   const [submitting, setSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const { name, role } = useAuth();
+
+  console.log("Logged in user:", name, "Role:", role);
 
   useEffect(() => {
     const fetchProducts = async () => {
