@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ConfirmWrapper from "../../components/ConfirmWrapper";
 import Sidebar from "../../components/Sidebar";
 import api from "../../utils/axiosInstance";
 import { printInvoices } from "../../utils/printInvoices";
+import { Printer } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
-import { useNavigate } from "react-router-dom";
+
 const Invoice = () => {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,9 +16,13 @@ const Invoice = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState("all");
     const [selectedInvoices, setSelectedInvoices] = useState([]);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [showOkOnly, setShowOkOnly] = useState(false);
     const navigate = useNavigate();
+    const { name, role } = useAuth();
 
-
+    console.log("Logged in user:", name, "Role:", role);
     useEffect(() => {
         const fetchInvoices = async () => {
             try {
@@ -70,30 +78,32 @@ const Invoice = () => {
     const toggleInvoiceSelection = (invoiceId) => {
         setSelectedInvoices((prevSelected) =>
             prevSelected.includes(invoiceId)
-                ? prevSelected.filter(id => id !== invoiceId) // Deselect if already selected
-                : [...prevSelected, invoiceId] // Select if not already selected
+                ? prevSelected.filter(id => id !== invoiceId)
+                : [...prevSelected, invoiceId]
         );
     };
-    
 
-    const handlePrintSelected = () => {
-        const token = localStorage.getItem("token"); // Retrieve token
+    const onPrintClick = () => {
+        if (selectedInvoices.length === 0) return;
+        setConfirmMessage("Are you sure you want to print?");
+        setShowOkOnly(false);
+        setShowConfirm(true);
+    };
+
+    const handleConfirm = () => {
+        const token = localStorage.getItem("token");
         if (!token) {
             setError("Unauthorized: Please log in first.");
             return;
         }
-    
+
         const invoicesToPrint = filteredInvoices.filter(invoice =>
             selectedInvoices.includes(invoice.invoice_id)
         );
-        
-        printInvoices(invoicesToPrint, token);
-        
-         // Pass token to the print function
-    };
-    
 
-    
+        printInvoices(invoicesToPrint, token);
+        setShowConfirm(false);
+    };
 
     return (
         <div className="flex h-screen bg-gray-100 overflow-hidden">
@@ -103,16 +113,16 @@ const Invoice = () => {
                 {error && <p className="text-red-500">{error}</p>}
                 {success && <p className="text-green-500">{success}</p>}
 
-                <input 
-                    type="text" 
-                    placeholder="Search by Shop ID, Invoice ID, or Month-Year" 
-                    className="p-2 border rounded mb-4 w-full" 
-                    value={searchQuery} 
-                    onChange={(e) => setSearchQuery(e.target.value)} 
+                <input
+                    type="text"
+                    placeholder="Search by Shop ID, Invoice ID, or Month-Year"
+                    className="p-2 border rounded mb-4 w-full"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
 
                 <div className="flex space-x-4 mt-6 border-b pb-2">
-                    {[ 
+                    {[
                         { key: "all", label: "All Invoices" },
                         { key: "paid", label: "Paid Invoices" },
                         { key: "arrears", label: "Arrears Invoices" },
@@ -123,40 +133,56 @@ const Invoice = () => {
                         <button
                             key={tab.key}
                             onClick={() => setActiveTab(tab.key)}
-                            className={`px-4 py-2 rounded-lg ${activeTab === tab.key ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+                            className={`px-4 py-2 rounded-lg cursor-pointer ${activeTab === tab.key ? "bg-blue-500 text-white" : "bg-gray-200"}`}
                         >
                             {tab.label}
                         </button>
                     ))}
                 </div>
 
-                <button 
-                    onClick={handlePrintSelected} 
-                    className="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-700"
+                <ConfirmWrapper
+                    show={showConfirm}
+                    message={confirmMessage}
+                    onConfirm={handleConfirm}
+                    onCancel={() => setShowConfirm(false)}
+                    confirmText="Yes"
+                    cancelText={showOkOnly ? "Ok" : "No"}
+                    icon="🖨️"
                 >
-                    Print Selected Invoices
-                </button>
+                    <button
+                        onClick={onPrintClick}
+                        disabled={selectedInvoices.length === 0}
+                        className={`mt-4 px-6 py-2 rounded-lg text-white flex items-center ${selectedInvoices.length === 0
+                            ? "bg-green-300 cursor-not-allowed"
+                            : "bg-green-500 hover:bg-green-700"}`
+                        }
+                    >
+                        <Printer className="w-5 h-5 mr-2" />
+                        Print Selected Invoices
+                    </button>
 
+                </ConfirmWrapper>
 
                 <div className="overflow-x-auto bg-white p-4 shadow-md rounded-lg mt-4">
                     <table className="w-full border-collapse border border-gray-300">
                         <thead>
                             <tr className="bg-gray-200">
-
-                            <th className="border p-2">
-    <input 
-        type="checkbox" 
-        checked={selectedInvoices.length === filteredInvoices.length && filteredInvoices.length > 0}
-        onChange={(e) => {
-            if (e.target.checked) {
-                setSelectedInvoices(filteredInvoices.map(invoice => invoice.invoice_id));
-            } else {
-                setSelectedInvoices([]);
-            }
-        }}
-    />
-</th>
-
+                                <th className="border p-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={
+                                            selectedInvoices.length === filteredInvoices.length &&
+                                            filteredInvoices.length > 0
+                                        }
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedInvoices(filteredInvoices.map(invoice => invoice.invoice_id));
+                                            } else {
+                                                setSelectedInvoices([]);
+                                            }
+                                        }}
+                                    />
+                                </th>
                                 <th className="border p-2">Invoice ID</th>
                                 <th className="border p-2">Shop ID</th>
                                 <th className="border p-2">Month</th>
@@ -164,33 +190,33 @@ const Invoice = () => {
                                 <th className="border p-2">Operation Fee</th>
                                 <th className="border p-2">VAT</th>
                                 <th className="border p-2">Previous Balance</th>
-                                <th className="border p-2">total Fines</th>
-                                <th className="border p-2">Fines previous month</th>
+                                <th className="border p-2">Total Fines</th>
+                                <th className="border p-2">Fines Prev Month</th>
                                 <th className="border p-2">Total Arrears</th>
                                 <th className="border p-2">Total Amount</th>
                                 <th className="border p-2">Status</th>
+                                <th className="border p-2">Total Paid</th>
+                                <th className="border p-2">Prev Total Paid</th>
+                                <th className="border p-2">Prev Payment Date</th>
                                 <th className="border p-2">Created At</th>
-                                <th className="border p-2">Shop name</th>
-                                <th className="border p-2">Address</th>
+                                <th className="border p-2">Shop Name</th>
                                 <th className="border p-2">Tenant</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="12" className="text-center p-4">Loading...</td></tr>
+                                <tr><td colSpan="19" className="text-center p-4">Loading...</td></tr>
                             ) : (
                                 filteredInvoices.map((invoice) => (
                                     <tr key={invoice.invoice_id} className="border">
-                                         <td className="border p-2">
-    <input 
-        type="checkbox" 
-        checked={selectedInvoices.includes(invoice.invoice_id)}
-        onChange={() => toggleInvoiceSelection(invoice.invoice_id)} 
-    />
-</td>
-
+                                        <td className="border p-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedInvoices.includes(invoice.invoice_id)}
+                                                onChange={() => toggleInvoiceSelection(invoice.invoice_id)}
+                                            />
+                                        </td>
                                         <td className="border p-2">{invoice.invoice_id}</td>
-                                        
                                         <td
                                             className="px-6 py-4 text-sm text-blue-600 cursor-pointer underline"
                                             onClick={() => navigate(`/shop-summary/${invoice.shop_id}`)}
@@ -207,9 +233,15 @@ const Invoice = () => {
                                         <td className="border p-2">LKR {invoice.total_arrears}</td>
                                         <td className="border p-2">LKR {invoice.total_amount}</td>
                                         <td className={`border p-2 text-center font-bold ${getStatusClass(invoice.status)}`}>{invoice.status}</td>
+                                        <td className="border p-2">LKR {invoice.total_paid?.toFixed(2) || '0.00'}</td>
+                                        <td className="border p-2">LKR {invoice.previous_payment_summary?.total_paid?.toFixed(2) || '0.00'}</td>
+                                        <td className="border p-2">
+                                            {invoice.previous_payment_summary?.last_payment_date
+                                                ? new Date(invoice.previous_payment_summary.last_payment_date).toLocaleDateString()
+                                                : 'N/A'}
+                                        </td>
                                         <td className="border p-2">{new Date(invoice.createdAt).toLocaleDateString()}</td>
                                         <td className="border p-2">{invoice.Shop?.shop_name || 'N/A'}</td>
-                                        <td className="border p-2">{invoice.Shop?.location || 'N/A'}</td>
                                         <td className="border p-2">{invoice.Shop?.Tenant?.name || 'N/A'}</td>
                                     </tr>
                                 ))
@@ -221,6 +253,5 @@ const Invoice = () => {
         </div>
     );
 };
-
 
 export default Invoice;

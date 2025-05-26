@@ -25,7 +25,7 @@ const Admin = sequelize.define(
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM("superadmin", "admin"), // You can use DataTypes.STRING if more roles are expected
+      type: DataTypes.ENUM("superadmin", "admin", "tiketing", "editor", "manager"), // You can use DataTypes.STRING if more roles are expected
       allowNull: false,
       defaultValue: "admin",
     },

@@ -7,7 +7,8 @@ const Invoice = require('../models/Invoice');
 const Fine = require('../models/Fine');
 const OperationFee = require('../models/OperationFee');
 const Rent = require('../models/Rent');
-const Vat = require('../models/Vat');
+
+const Vat = require('../models/VAT');
 const AuditTrail = require('../models/AuditTrail');
 const shopBalance = require('../models/ShopBalance');
 const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware"); // ✅ Import middleware once
@@ -97,7 +98,7 @@ router.put('/:shopId', authenticateUser, authorizeRole(["admin", "superadmin"]),
 });
 
 // Delete shop (only accessible by Super Admin)
-router.delete('/:shopId', authenticateUser, authorizeRole(["admin", "superadmin"]), async (req, res) => {
+router.delete('/:shopId', authenticateUser, authorizeRole([ "superadmin"]), async (req, res) => {
   const { shopId } = req.params;
 
   try {
