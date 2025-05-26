@@ -5,35 +5,40 @@ const MarketOperations = () => {
   const { t } = useTranslation();
 
   return (
-    <section className="bg-white px-6 py-16 md:px-20 lg:px-36">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section className="bg-white px-6 py-12 md:px-16 lg:px-32">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         {/* Text Content */}
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6">
+          <h2 className="text-4xl font-extrabold text-green-800 mb-4">
             {t('marketOperations.title')}
           </h2>
-          <div className="space-y-6 text-gray-700 text-lg leading-relaxed text-justify">
-            <p className="whitespace-pre-line">{t('marketOperations.para1')}</p>
-            <p className="whitespace-pre-line">{t('marketOperations.para2')}</p>
-            <p className="whitespace-pre-line">{t('marketOperations.para3')}</p>
-            <p className="whitespace-pre-line">{t('marketOperations.para4')}</p>
-          </div>
+          <p className="text-gray-600 text-lg leading-relaxed mb-8 whitespace-pre-line text-justify">
+            {t('marketOperations.para1')}
+          </p>
+          <p className="text-gray-600 text-lg leading-relaxed mb-8 whitespace-pre-line text-justify">
+            {t('marketOperations.para2')}
+          </p>
+          <p className="text-gray-600 text-lg leading-relaxed mb-8 whitespace-pre-line text-justify">
+            {t('marketOperations.para3')}
+          </p>
+          <p className="text-gray-600 text-lg leading-relaxed mb-8 whitespace-pre-line text-justify">
+            {t('marketOperations.para4')}
+          </p>
         </div>
 
-        {/* Animated Image */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="w-full flex justify-center"
-        >
+        {/* Animated and translated alt text for Image */}
+        <div className="w-full flex justify-center">
           <motion.img
             src="/images/market.jpeg"
             alt={t('marketOperations.imageAlt')}
-            className="w-full max-w-md rounded-2xl shadow-lg object-cover transition-transform duration-300 hover:scale-105"
-            whileTap={{ scale: 0.97 }}
+            className="w-full max-w-xs object-cover"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
