@@ -195,8 +195,8 @@
     "tableHeaders": {
       "number": "#",
       "item": "Item",
-      "minPrice": "Min Price",
-      "maxPrice": "Max Price"
+      "minPrice": "Min Price(per kg)",
+      "maxPrice": "Max Price(per kg)"
     },
     "noPrices": "No daily prices to print.",
     "popupBlocked": "Popup blocked! Please allow popups for printing.",
