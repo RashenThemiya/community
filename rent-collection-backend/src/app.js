@@ -9,6 +9,7 @@ const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
+const emailRoutes = require('../routes/emailRoute'); // Import email routes
 
 
 
@@ -64,6 +65,7 @@ app.use('/api/prices', productPriceRoutes); // Product price routes
 app.use('/api/publications', publicationRoutes); // Publications routes
 app.use('/api/backup', backupRoutes); // Backup routes
 app.use('/api/systemsetting', systemseetingRoute); // System settings routes
+app.use('/api/email', emailRoutes); // Email routes
 const createDefaultAdmins = async () => {
   try {
     const users = [

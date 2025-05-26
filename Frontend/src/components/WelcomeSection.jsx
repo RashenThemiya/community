@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
 
 const images = [
@@ -22,6 +23,28 @@ const WelcomeSection = () => {
 
   return (
     <div className="relative overflow-hidden">
+      {/* SEO Metadata */}
+      <Helmet>
+        <title>Dambulla Dedicated Economic Center | Welcome</title>
+        <meta
+          name="description"
+          content="Welcome to the Dambulla Dedicated Economic Center, Sri Lanka’s hub for wholesale vegetable trading since 1999. Supporting local farmers and traders."
+        />
+        <meta
+          name="keywords"
+          content="Dambulla Economic Center, wholesale market, Sri Lanka vegetables, farmers market, crop prices"
+        />
+        <link rel="canonical" href="https://dambulladec.com/" />
+        <meta property="og:title" content="Dambulla Dedicated Economic Center" />
+        <meta
+          property="og:description"
+          content="Explore the heart of agricultural trade in Sri Lanka at the Dambulla Dedicated Economic Center."
+        />
+        <meta property="og:image" content="https://dambulladec.com/images/welcome.jpg" />
+        <meta property="og:url" content="https://dambulladec.com/" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
       {/* Blurred Background Image */}
       <div
         className="absolute inset-0 bg-[url('/images/welcome.jpg')] bg-cover bg-center z-0"
@@ -47,7 +70,7 @@ const WelcomeSection = () => {
               <motion.img
                 key={currentIndex}
                 src={images[currentIndex]}
-                alt={`Slide ${currentIndex + 1}`}
+                alt={`Fresh produce slide ${currentIndex + 1}`}
                 className="rounded-3xl w-full h-[350px] object-contain shadow-2xl"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
