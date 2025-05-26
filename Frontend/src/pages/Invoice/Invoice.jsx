@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { Printer } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import Sidebar from "../../components/Sidebar";
+import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/axiosInstance";
 import { printInvoices } from "../../utils/printInvoices";
-import { Printer } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
 
 const Invoice = () => {
   const [invoices, setInvoices] = useState([]);
@@ -20,6 +20,41 @@ const Invoice = () => {
   const [showOkOnly, setShowOkOnly] = useState(false);
   const navigate = useNavigate();
   const { name, role } = useAuth();
+const handleSendBulkEmail = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Unauthorized: Please log in first.");
+      return;
+    }
+
+    const invoicesToSend = filteredInvoices.filter((invoice) =>
+      selectedInvoices.includes(invoice.invoice_id)
+    );
+
+    const response = await api.post(
+      "/api/email/send-email",
+      { invoices: invoicesToSend },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (response.data.success && Array.isArray(response.data.results)) {
+      // Show result messages for each invoice
+      const messages = response.data.results.map((r) =>
+        `${r.invoice_id} (${r.shop_id}): ${r.success ? "✅" : "❌"} ${r.message}`
+      );
+      setSuccess(messages.join("\n"));
+    } else {
+      setError("Failed to send invoices.");
+    }
+  } catch (error) {
+    console.error(error);
+    setError("An error occurred while sending the email.");
+  }
+};
+
 
   console.log("Logged in user:", name, "Role:", role);
   useEffect(() => {
@@ -122,7 +157,7 @@ const Invoice = () => {
       }
 
       const response = await api.post(
-        "/api/send-email",
+        "/api/email/send-email",
         { invoices: [invoice] }, // Send as an array of one
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -178,29 +213,42 @@ const Invoice = () => {
             </button>
           ))}
         </div>
+<div className="flex items-center space-x-4 mt-4">
+  <ConfirmWrapper
+    show={showConfirm}
+    message={confirmMessage}
+    onConfirm={handleConfirm}
+    onCancel={() => setShowConfirm(false)}
+    confirmText="Yes"
+    cancelText={showOkOnly ? "Ok" : "No"}
+    icon="🖨️"
+  >
+    <button
+      onClick={onPrintClick}
+      disabled={selectedInvoices.length === 0}
+      className={`px-6 py-2 rounded-lg text-white flex items-center ${
+        selectedInvoices.length === 0
+          ? "bg-green-300 cursor-not-allowed"
+          : "bg-green-500 hover:bg-green-700"
+      }`}
+    >
+      <Printer className="w-5 h-5 mr-2" />
+      Print Selected Invoices
+    </button>
+  </ConfirmWrapper>
 
-        <ConfirmWrapper
-          show={showConfirm}
-          message={confirmMessage}
-          onConfirm={handleConfirm}
-          onCancel={() => setShowConfirm(false)}
-          confirmText="Yes"
-          cancelText={showOkOnly ? "Ok" : "No"}
-          icon="🖨️"
-        >
-          <button
-            onClick={onPrintClick}
-            disabled={selectedInvoices.length === 0}
-            className={`mt-4 px-6 py-2 rounded-lg text-white flex items-center ${
-              selectedInvoices.length === 0
-                ? "bg-green-300 cursor-not-allowed"
-                : "bg-green-500 hover:bg-green-700"
-            }`}
-          >
-            <Printer className="w-5 h-5 mr-2" />
-            Print Selected Invoices
-          </button>
-        </ConfirmWrapper>
+  <button
+    onClick={handleSendBulkEmail}
+    disabled={selectedInvoices.length === 0}
+    className={`px-6 py-2 rounded-lg text-white flex items-center ${
+      selectedInvoices.length === 0
+        ? "bg-blue-300 cursor-not-allowed"
+        : "bg-blue-500 hover:bg-blue-700"
+    }`}
+  >
+    📧 Send Selected Invoices via Email
+  </button>
+</div>
 
         <div className="overflow-x-auto bg-white p-4 shadow-md rounded-lg mt-4">
           <table className="w-full border-collapse border border-gray-300">
@@ -317,14 +365,7 @@ const Invoice = () => {
                     <td className="border p-2">
                       {invoice.Shop?.Tenant?.name || "N/A"}
                     </td>
-                    <td className="border p-2">
-                      <button
-                        onClick={() => handleSendSingleEmail(invoice)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
-                      >
-                        📧 Send Email
-                      </button>
-                    </td>
+                   
                   </tr>
                 ))
               )}
