@@ -13,7 +13,7 @@ const Contact = () => {
       <div
         className="absolute inset-0 z-0 bg-cover bg-center opacity-50"
         style={{
-          backgroundImage: 'url("/images/Contact Bg.jpg")',
+          backgroundImage: 'url("/images/ContactBg.jpg")',
           filter: "brightness(0.5)",
         }}
       ></div>
