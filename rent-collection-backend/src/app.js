@@ -9,6 +9,7 @@ const shopRoutes = require('../routes/shopRoutes');
 const Admin = require('../models/Admin');
 const bcrypt = require('bcrypt');
 const paymentRoutes = require('../routes/paymentRoutes'); 
+const emailRoutes = require('../routes/emailRoute'); // Import email routes
 
 
 
@@ -35,7 +36,8 @@ const app = express();
 
 app.use(cors({ origin: "*", credentials: true }));
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 
 console.log("Loading environment variables...");
 console.log("Super Admin Email:", process.env.DEFAULT_SUPERADMIN_EMAIL);
@@ -64,6 +66,7 @@ app.use('/api/prices', productPriceRoutes); // Product price routes
 app.use('/api/publications', publicationRoutes); // Publications routes
 app.use('/api/backup', backupRoutes); // Backup routes
 app.use('/api/systemsetting', systemseetingRoute); // System settings routes
+app.use('/api/email', emailRoutes); // Email routes
 const createDefaultAdmins = async () => {
   try {
     const users = [
@@ -105,3 +108,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(` Server running on port ${PORT}`);
 });
+

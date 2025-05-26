@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -19,24 +19,39 @@ export default function Login() {
         e.preventDefault();
         setError("");
         setLoading(true);
-        try {
-            const res = await api.post("/api/admin/login", { email, password });
-            const { token, role, name } = res.data;
+       try {
+    const res = await api.post("/api/admin/login", { email, password });
+    const { token, role, name } = res.data;
 
-            localStorage.setItem("token", token);
-            localStorage.setItem("role", role);
-            localStorage.setItem("name", name);
+    localStorage.setItem("token", token);
+    localStorage.setItem("role", role);
+    localStorage.setItem("name", name);
 
-            setToken(token);
-            setRole(role);
-            setName(name);
+    setToken(token);
+    setRole(role);
+    setName(name);
 
-            navigate(role === "admin" ? "/admin-dashboard" : "/home");
-        } catch (err) {
-            setError(err.response?.data?.message || "Login failed");
-        } finally {
-            setLoading(false);
-        }
+    // Redirect based on role
+    if (["superadmin", "admin", "editor", "manager"].includes(role)) {
+        navigate("/admin-dashboard");
+    } else if (role === "tiketing") {
+        // Clear session and redirect to login or show error
+        localStorage.clear();
+        setToken(null);
+        setRole(null);
+        setName(null);
+        setError("Unauthorized role");
+        navigate("/login");
+    } else {
+        setError("Invalid role");
+        navigate("/login");
+    }
+} catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+} finally {
+    setLoading(false);
+}
+
     };
 
     return (
