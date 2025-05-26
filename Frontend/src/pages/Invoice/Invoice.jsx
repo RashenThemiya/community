@@ -112,61 +112,35 @@ const Invoice = () => {
     setShowConfirm(false);
   };
 
-
-
-  const handleSendEmail = async () => {
+  // Function to handle sending emails for selected invoices
+  const handleSendSingleEmail = async (invoice) => {
     try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            setError("Unauthorized: Please log in first.");
-            return;
-        }
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Unauthorized: Please log in first.");
+        return;
+      }
 
-        const selectedData = filteredInvoices.filter(invoice =>
-            selectedInvoices.includes(invoice.invoice_id)
+      const response = await api.post(
+        "/api/send-email",
+        { invoices: [invoice] }, // Send as an array of one
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.success) {
+        setSuccess(
+          `Invoice ${invoice.invoice_id} sent successfully via email!`
         );
-
-        const response = await api.post("/api/send-email", { invoices: selectedData }, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (response.data.success) {
-            setSuccess("Email(s) sent successfully!");
-        } else {
-            setError("Failed to send email(s).");
-        }
+      } else {
+        setError(`Failed to send invoice ${invoice.invoice_id}.`);
+      }
     } catch (error) {
-        console.error(error);
-        setError("An error occurred while sending email(s).");
+      console.error(error);
+      setError("An error occurred while sending the email.");
     }
-};
-
-const handleSendWhatsApp = async () => {
-    try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            setError("Unauthorized: Please log in first.");
-            return;
-        }
-
-        const selectedData = filteredInvoices.filter(invoice =>
-            selectedInvoices.includes(invoice.invoice_id)
-        );
-
-        const response = await api.post("/api/send-whatsapp", { invoices: selectedData }, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (response.data.success) {
-            setSuccess("WhatsApp message(s) sent successfully!");
-        } else {
-            setError("Failed to send WhatsApp message(s).");
-        }
-    } catch (error) {
-        console.error(error);
-        setError("An error occurred while sending WhatsApp message(s).");
-    }
-};
+  };
 
   return (
     <div className="flex h-screen bg-gray-100 overflow-hidden">
@@ -214,7 +188,6 @@ const handleSendWhatsApp = async () => {
           cancelText={showOkOnly ? "Ok" : "No"}
           icon="🖨️"
         >
-          <div className="flex flex-wrap gap-4 mt-4">
           <button
             onClick={onPrintClick}
             disabled={selectedInvoices.length === 0}
@@ -227,30 +200,6 @@ const handleSendWhatsApp = async () => {
             <Printer className="w-5 h-5 mr-2" />
             Print Selected Invoices
           </button>
-          <button
-            onClick={handleSendEmail}
-            disabled={selectedInvoices.length === 0}
-            className={`px-6 py-2 rounded-lg text-white flex items-center ${
-              selectedInvoices.length === 0
-                ? "bg-blue-300 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-700"
-            }`}
-          >
-            📧 Send Email
-          </button>
-          <button
-            onClick={handleSendWhatsApp}
-            disabled={selectedInvoices.length === 0}
-            className={`px-6 py-2 rounded-lg text-white flex items-center ${
-              selectedInvoices.length === 0
-                ? "bg-green-300 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-800"
-            }`}
-          >
-            📱 Send WhatsApp
-          </button>
-          </div>
-          
         </ConfirmWrapper>
 
         <div className="overflow-x-auto bg-white p-4 shadow-md rounded-lg mt-4">
@@ -367,6 +316,14 @@ const handleSendWhatsApp = async () => {
                     </td>
                     <td className="border p-2">
                       {invoice.Shop?.Tenant?.name || "N/A"}
+                    </td>
+                    <td className="border p-2">
+                      <button
+                        onClick={() => handleSendSingleEmail(invoice)}
+                        className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                      >
+                        📧 Send Email
+                      </button>
                     </td>
                   </tr>
                 ))
