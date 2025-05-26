@@ -18,8 +18,6 @@ const transporter = nodemailer.createTransport({
 if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
   console.error("Email credentials not set in environment variables");
 }
-
-// Controller for sending invoice emails
 const sendEmail = async (req, res) => {
   const { invoices } = req.body;
 
@@ -27,13 +25,20 @@ const sendEmail = async (req, res) => {
     return res.status(400).json({ success: false, message: "No invoices provided." });
   }
 
-  try {
-    for (const invoice of invoices) {
+  const results = [];
+
+  for (const invoice of invoices) {
+    try {
       const tenant = await Tenant.findOne({ where: { shop_id: invoice.shop_id } });
 
       if (!tenant || !tenant.email) {
-        console.warn(`Email not found for shop_id: ${invoice.shop_id}`);
-        continue; // Skip if tenant or email is not found
+        results.push({
+          invoice_id: invoice.invoice_id,
+          shop_id: invoice.shop_id,
+          success: false,
+          message: "Tenant email not found",
+        });
+        continue;
       }
 
       const mailOptions = {
@@ -53,14 +58,26 @@ const sendEmail = async (req, res) => {
       };
 
       await transporter.sendMail(mailOptions);
-    }
 
-    res.status(200).json({ success: true, message: "Emails sent successfully." });
-  } catch (error) {
-    console.error("Email error:", error);
-    res.status(500).json({ success: false, message: "Failed to send emails." });
+      results.push({
+        invoice_id: invoice.invoice_id,
+        shop_id: invoice.shop_id,
+        success: true,
+        message: "Email sent successfully",
+      });
+    } catch (err) {
+      results.push({
+        invoice_id: invoice.invoice_id,
+        shop_id: invoice.shop_id,
+        success: false,
+        message: `Error sending email: ${err.message}`,
+      });
+    }
   }
+
+  return res.status(200).json({ success: true, results });
 };
+
 
 // Register route
 router.post("/send-email", sendEmail);
