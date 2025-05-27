@@ -47,7 +47,7 @@ const WelcomeSection = () => {
 
       {/* Blurred Background Image */}
       <div
-        className="absolute inset-0 bg-[url('/images/welcome.jpg')] bg-cover bg-center z-0"
+        className="absolute inset-0 bg-[url('/images/welcome2.jpg')] bg-cover bg-center z-0"
         style={{ filter: "blur(2px) brightness(0.3)" }}
       ></div>
 
