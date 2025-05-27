@@ -46,7 +46,13 @@ const sendEmail = async (req, res) => {
   subject: `Invoice ${invoice.invoice_id} from Dambulla DEC`,
   html: `
     <div style="background-color: #f6e4ba; font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #d2a679;">
-      <h2 style="color: #333;">🧾 Monthly Rent Invoice </h2>
+     <h2 style="color: #333; text-align: center; font-size: 24px; margin-bottom: 5px;">
+  🧾 Monthly Rent Invoice
+</h2>
+<h3 style="color: #333; text-align: center; font-size: 16px; margin-top: 0; margin-bottom: 20px;">
+  Management Office<br>
+  Dedicated Economic Center, Dambulla
+</h3>
       <table style="width: 100%; border-collapse: collapse;">
         <tr>
           <td><strong>Invoice ID:</strong></td>
@@ -99,6 +105,9 @@ const sendEmail = async (req, res) => {
        
       </table>
       <p style="margin-top: 20px; font-size: 0.9em; color: #777;">Generated on: ${new Date().toLocaleString()}</p>
+
+
+      
     </div>
   `,
 };
