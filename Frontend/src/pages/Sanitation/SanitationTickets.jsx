@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
-import Sidebar from "../../components/Sidebar";
-import api from "../../utils/axiosInstance";
+import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
+import Sidebar from "../../components/Sidebar";
+import api from "../../utils/axiosInstance";
 
 // Export to Excel function
 const exportSanitationTicketsExcel = async (tickets) => {
@@ -102,6 +102,7 @@ const SanitationTickets = () => {
 
       const res = await api.get(`/api/sanitation/by-date${query}`);
       const allTickets = res.data.tickets || [];
+      console.log("Fetched tickets:", allTickets);
       setTickets(allTickets);
       setFilteredTickets(allTickets); // Initial, before range filter
     } catch (err) {
@@ -345,6 +346,7 @@ const SanitationTickets = () => {
                     <th className="p-3 text-left">ID</th>
                     <th className="p-3 text-left">Price</th>
                     <th className="p-3 text-left">Date</th>
+                     <th className="p-3 text-left">Time</th>
                     <th className="p-3 text-left">By Whom</th>
                     <th className="p-3 text-left">Actions</th>
                   </tr>
@@ -356,6 +358,7 @@ const SanitationTickets = () => {
                         <td className="p-3">{ticket.id}</td>
                         <td className="p-3">Rs. {ticket.price}</td>
                         <td className="p-3">{ticket.date}</td>
+                        <td className="p-3">{ticket.createdAtSriLanka}</td>
                         <td className="p-3">{ticket.byWhom}</td>
                         <td className="p-3">
                           <ConfirmWrapper
