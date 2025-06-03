@@ -15,6 +15,7 @@ const exportSanitationTicketsExcel = async (tickets) => {
     { header: "Ticket ID", key: "id", width: 15 },
     { header: "Price (Rs.)", key: "price", width: 15 },
     { header: "Date", key: "date", width: 20 },
+    { header: "Time", key: "createdAtSriLanka", width: 20 },
     { header: "Issued By", key: "byWhom", width: 30 },
   ];
 
@@ -33,6 +34,7 @@ const exportSanitationTicketsExcel = async (tickets) => {
       id: ticket.id,
       price: ticket.price,
       date: ticket.date,
+      createdAtSriLanka: ticket.createdAtSriLanka,
       byWhom: ticket.byWhom,
     });
   });
@@ -43,8 +45,10 @@ const exportSanitationTicketsExcel = async (tickets) => {
   // Add the total row
   const totalRow = worksheet.addRow({
     id: 'Total',
-    price: total.toFixed(2), // Always two decimals
+    price: total.toFixed(2),
+     // Always two decimals
     date: '',
+    createdAtSriLanka: '',
     byWhom: '',
   });
 
