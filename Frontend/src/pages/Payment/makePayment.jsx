@@ -325,32 +325,40 @@ const MakePayment = () => {
               })()}
 
               <h3 className="text-xl font-semibold mt-6 mb-2">Payment History</h3>
-              <div className="max-h-64 overflow-y-auto">
-                {paymentRecords.filter((p) => p.shop_id === paymentData.referenceId).length > 0 ? (
-                  <table className="w-full text-left border">
-                    <thead>
-                      <tr className="bg-gray-200 text-sm">
-                        <th className="p-2 border">Date</th>
-                        <th className="p-2 border">Amount</th>
-                        <th className="p-2 border">Method</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paymentRecords
-                        .filter((p) => p.shop_id === paymentData.referenceId)
-                        .map((p) => (
-                          <tr key={p.payment_id} className="text-sm">
-                            <td className="p-2 border">{new Date(p.payment_date).toLocaleDateString()}</td>
-                            <td className="p-2 border">{p.amount_paid}</td>
-                            <td className="p-2 border">{p.payment_method}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="text-gray-500">No payment records found.</p>
-                )}
-              </div>
+          <div className="max-h-64 overflow-y-auto">
+  {paymentRecords.filter((p) => 
+    p.shop_id?.toString().trim().toLowerCase() === paymentData.referenceId?.toString().trim().toLowerCase()
+  ).length > 0 ? (
+    <table className="w-full text-left border">
+      <thead>
+        <tr className="bg-gray-200 text-sm">
+          <th className="p-2 border">Date</th>
+          <th className="p-2 border">Amount</th>
+          <th className="p-2 border">Method</th>
+        </tr>
+      </thead>
+      <tbody>
+        {paymentRecords
+          .filter((p) => 
+            p.shop_id?.toString().trim().toLowerCase() === 
+            paymentData.referenceId?.toString().trim().toLowerCase()
+          )
+          .map((p) => (
+            <tr key={p.payment_id} className="text-sm">
+              <td className="p-2 border">
+                {new Date(p.payment_date).toLocaleDateString()}
+              </td>
+              <td className="p-2 border">LKR {p.amount_paid}</td>
+              <td className="p-2 border">{p.payment_method}</td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  ) : (
+    <p className="text-gray-500">No payment records found.</p>
+  )}
+</div>
+
             </>
           )}
         </div>
