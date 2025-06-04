@@ -39,32 +39,49 @@ router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin', 'tiketi
 /**
  * 📅 Get sanitation tickets by date and byWhom (optional query params: ?date=YYYY-MM-DD&byWhom=email)
  */
+
+const moment = require('moment-timezone');
+
+
 router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { date, byWhom } = req.query;
 
- try {
-  const whereClause = {};
-  if (date) whereClause.date = date;
-  if (byWhom) whereClause.byWhom = byWhom;
+  try {
+    const whereClause = {};
 
-  const tickets = await Sanitation.findAll({
-    where: whereClause,
-    attributes: ['id', 'price', 'date', 'byWhom', 'createdAt'],
-    order: [['date', 'DESC'], ['id', 'DESC']],
-    raw: true
-  });
+    if (byWhom) whereClause.byWhom = byWhom;
 
-  // Format createdAt to Sri Lanka time
-  const formattedTickets = tickets.map(ticket => ({
-    ...ticket,
-    createdAtSriLanka: new Date(ticket.createdAt).toLocaleString('en-GB', {
-      timeZone: 'Asia/Colombo',
-      hour12: false
-    })
-  }));
+    if (date) {
+      // Define start and end of the given day in Asia/Colombo, convert to UTC
+      const startOfDay = moment.tz(date, 'Asia/Colombo').startOf('day').toDate();
+      const endOfDay = moment.tz(date, 'Asia/Colombo').endOf('day').toDate();
 
-  res.status(200).json({ count: tickets.length, tickets: formattedTickets });
-} catch (error) {
+      console.log("Sri Lanka Start of Day:", startOfDay);
+      console.log("Sri Lanka End of Day:", endOfDay);
+
+      whereClause.createdAt = {
+        [Op.gte]: startOfDay,
+        [Op.lte]: endOfDay
+      };
+    }
+
+    const tickets = await Sanitation.findAll({
+      where: whereClause,
+      attributes: ['id', 'price', 'date', 'byWhom', 'createdAt'],
+      order: [['createdAt', 'DESC'], ['id', 'DESC']],
+      raw: true
+    });
+
+    const formattedTickets = tickets.map(ticket => ({
+      ...ticket,
+      createdAtSriLanka: new Date(ticket.createdAt).toLocaleString('en-GB', {
+        timeZone: 'Asia/Colombo',
+        hour12: false
+      })
+    }));
+
+    res.status(200).json({ count: tickets.length, tickets: formattedTickets });
+  } catch (error) {
     res.status(500).json({ message: 'Error fetching sanitation tickets', error: error.message });
   }
 });
@@ -72,23 +89,37 @@ router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']),
 /**
  * 💰 Daily income summary (optional query params: ?date=YYYY-MM-DD&byWhom=email)
  */
+
+
 router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
-  const { date, byWhom } = req.query;
+  const { startDate, endDate, byWhom } = req.query;
 
   try {
     const whereClause = {};
-    if (date) whereClause.date = date;
     if (byWhom) whereClause.byWhom = byWhom;
+
+    if (startDate || endDate) {
+      whereClause.createdAt = {};
+      if (startDate) {
+        const start = moment.tz(startDate, 'Asia/Colombo').startOf('day').toDate();
+        whereClause.createdAt[Op.gte] = start;
+      }
+      if (endDate) {
+        const end = moment.tz(endDate, 'Asia/Colombo').endOf('day').toDate();
+        whereClause.createdAt[Op.lte] = end;
+      }
+    }
 
     const dailyIncome = await Sanitation.findAll({
       attributes: [
-        [fn('DATE', col('date')), 'date'],
+        [fn('DATE', literal("CONVERT_TZ(`createdAt`, '+00:00', '+05:30')")), 'date'],
         [fn('SUM', col('price')), 'totalIncome'],
         [fn('COUNT', col('id')), 'ticketCount']
       ],
       where: whereClause,
-      group: [literal('DATE(date)')],
-      order: [[literal('DATE(date)'), 'DESC']]
+      group: [literal("DATE(CONVERT_TZ(`createdAt`, '+00:00', '+05:30'))")],
+      order: [[literal("DATE(CONVERT_TZ(`createdAt`, '+00:00', '+05:30'))"), 'DESC']],
+      raw: true
     });
 
     res.status(200).json(dailyIncome);
@@ -97,29 +128,34 @@ router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmi
   }
 });
 
-/**
- * 📆 Monthly income summary (optional query param: ?byWhom=email)
- */
+// 📅 Monthly income summary
 router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
-  const { byWhom } = req.query;
+  const { startDate, endDate, byWhom } = req.query;
 
   try {
     const whereClause = {};
     if (byWhom) whereClause.byWhom = byWhom;
 
+    if (startDate || endDate) {
+      whereClause.createdAt = {};
+      if (startDate) whereClause.createdAt[Op.gte] = new Date(startDate);
+      if (endDate) whereClause.createdAt[Op.lte] = new Date(endDate);
+    }
+
     const monthlyIncome = await Sanitation.findAll({
       attributes: [
-        [fn('YEAR', col('date')), 'year'],
-        [fn('MONTH', col('date')), 'month'],
+        [fn('YEAR', col('createdAt')), 'year'],
+        [fn('MONTH', col('createdAt')), 'month'],
         [fn('SUM', col('price')), 'totalIncome'],
         [fn('COUNT', col('id')), 'ticketCount']
       ],
       where: whereClause,
-      group: [fn('YEAR', col('date')), fn('MONTH', col('date'))],
+      group: [fn('YEAR', col('createdAt')), fn('MONTH', col('createdAt'))],
       order: [
-        [fn('YEAR', col('date')), 'DESC'],
-        [fn('MONTH', col('date')), 'DESC']
-      ]
+        [fn('YEAR', col('createdAt')), 'DESC'],
+        [fn('MONTH', col('createdAt')), 'DESC']
+      ],
+      raw: true
     });
 
     res.status(200).json(monthlyIncome);
@@ -127,6 +163,7 @@ router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superad
     res.status(500).json({ message: 'Error fetching monthly income', error: error.message });
   }
 });
+
 
 router.delete('/:id', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { id } = req.params;
