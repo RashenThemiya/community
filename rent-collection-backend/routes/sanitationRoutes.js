@@ -128,7 +128,6 @@ router.get('/daily-income', authenticateUser, authorizeRole(['admin', 'superadmi
   }
 });
 
-// 📅 Monthly income summary
 router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { startDate, endDate, byWhom } = req.query;
 
@@ -138,22 +137,31 @@ router.get('/monthly-income', authenticateUser, authorizeRole(['admin', 'superad
 
     if (startDate || endDate) {
       whereClause.createdAt = {};
-      if (startDate) whereClause.createdAt[Op.gte] = new Date(startDate);
-      if (endDate) whereClause.createdAt[Op.lte] = new Date(endDate);
+      if (startDate) {
+        const start = moment.tz(startDate, 'Asia/Colombo').startOf('month').toDate();
+        whereClause.createdAt[Op.gte] = start;
+      }
+      if (endDate) {
+        const end = moment.tz(endDate, 'Asia/Colombo').endOf('month').toDate();
+        whereClause.createdAt[Op.lte] = end;
+      }
     }
 
     const monthlyIncome = await Sanitation.findAll({
       attributes: [
-        [fn('YEAR', col('createdAt')), 'year'],
-        [fn('MONTH', col('createdAt')), 'month'],
+        [fn('YEAR', literal("CONVERT_TZ(`createdAt`, '+00:00', '+05:30')")), 'year'],
+        [fn('MONTH', literal("CONVERT_TZ(`createdAt`, '+00:00', '+05:30')")), 'month'],
         [fn('SUM', col('price')), 'totalIncome'],
         [fn('COUNT', col('id')), 'ticketCount']
       ],
       where: whereClause,
-      group: [fn('YEAR', col('createdAt')), fn('MONTH', col('createdAt'))],
+      group: [
+        literal("YEAR(CONVERT_TZ(`createdAt`, '+00:00', '+05:30'))"),
+        literal("MONTH(CONVERT_TZ(`createdAt`, '+00:00', '+05:30'))")
+      ],
       order: [
-        [fn('YEAR', col('createdAt')), 'DESC'],
-        [fn('MONTH', col('createdAt')), 'DESC']
+        [literal("YEAR(CONVERT_TZ(`createdAt`, '+00:00', '+05:30'))"), 'DESC'],
+        [literal("MONTH(CONVERT_TZ(`createdAt`, '+00:00', '+05:30'))"), 'DESC']
       ],
       raw: true
     });
