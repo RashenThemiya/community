@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { FaCheckCircle, FaExclamationTriangle, FaTimesCircle } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaTimesCircle,
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import { useAuth } from "../../context/AuthContext";
@@ -27,14 +31,13 @@ const MakePayment = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const today = new Date().toISOString().split("T")[0];
+
   useEffect(() => {
     const fetchShops = async () => {
       try {
         const res = await api.get("/api/shops");
-        const shopList = res.data;
-        setShops(shopList);
-
-        // Do NOT set default referenceId automatically — user must select manually
+        setShops(res.data || []);
         setPaymentData((prev) => ({ ...prev, referenceId: "" }));
       } catch (err) {
         console.error("Failed to load shop list:", err.message);
@@ -44,9 +47,7 @@ const MakePayment = () => {
     const fetchPayments = async () => {
       try {
         const res = await api.get("api/payments/payments");
-        if (res.data?.payments) {
-          setPaymentRecords(res.data.payments);
-        }
+        setPaymentRecords(res.data?.payments || []);
       } catch (err) {
         console.error("Failed to fetch payment records:", err.message);
       }
@@ -62,11 +63,26 @@ const MakePayment = () => {
     }
   }, [paymentData.referenceId, paymentData.type]);
 
+  useEffect(() => {
+    if (message || error) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+        setError(null);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [message, error]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "type") {
-      // Reset referenceId and amountPaid when switching payment type
-      setPaymentData((prev) => ({ ...prev, type: value, referenceId: "", amountPaid: "", paymentDate: "" }));
+      setPaymentData({
+        ...paymentData,
+        type: value,
+        referenceId: "",
+        amountPaid: "",
+        paymentDate: "",
+      });
     } else {
       setPaymentData((prev) => ({ ...prev, [name]: value }));
     }
@@ -85,10 +101,13 @@ const MakePayment = () => {
   };
 
   const handleSubmit = async () => {
+    if (loading) return; // ✅ Prevent multiple submissions
+
     setError(null);
     setMessage(null);
 
-    const { referenceId, amountPaid, paymentMethod, type, paymentDate } = paymentData;
+    const { referenceId, amountPaid, paymentMethod, type, paymentDate } =
+      paymentData;
 
     if (!referenceId.trim() || !amountPaid || !paymentMethod || !paymentDate) {
       setError("All fields are required. Please complete the form.");
@@ -107,13 +126,11 @@ const MakePayment = () => {
         ? `api/payments/by-shop/${referenceId.trim()}`
         : `api/payments/by-invoice/${referenceId.trim()}`;
 
-    const isoPaymentDate = new Date(combinedDateTime).toISOString();
-
     try {
       await api.post(endpoint, {
         amountPaid: parseFloat(amountPaid),
         paymentMethod,
-        paymentDate: isoPaymentDate,
+        paymentDate: new Date(combinedDateTime).toISOString(),
       });
 
       setMessage("Payment processed successfully!");
@@ -125,37 +142,34 @@ const MakePayment = () => {
         paymentDate: "",
       });
 
-      if (firstInputRef.current) {
-        firstInputRef.current.focus();
-      }
+      if (firstInputRef.current) firstInputRef.current.focus();
 
       const res = await api.get("api/payments/payments");
-      if (res.data?.payments) {
-        setPaymentRecords(res.data.payments);
-      }
+      setPaymentRecords(res.data?.payments || []);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to process payment. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          "Failed to process payment. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (message || error) {
-      const timer = setTimeout(() => {
-        setMessage(null);
-        setError(null);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [message, error]);
+  const filteredPayments = paymentRecords.filter(
+    (p) =>
+      p.shop_id?.toString().trim().toLowerCase() ===
+      paymentData.referenceId?.toString().trim().toLowerCase()
+  );
 
-  const today = new Date().toISOString().split("T")[0];
+  const shop = shops.find((s) => s.shop_id === paymentData.referenceId);
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <h2 className="text-2xl font-bold text-center mb-2">Make a Payment</h2>
-      <p className="text-center text-gray-600 mb-6">Admin: {name || "Unknown"}</p>
+      <p className="text-center text-gray-600 mb-6">
+        Admin: {name || "Unknown"}
+      </p>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* LEFT: Payment Form */}
@@ -166,7 +180,6 @@ const MakePayment = () => {
               <span className="font-medium">{message}</span>
             </div>
           )}
-
           {error && (
             <div className="flex items-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
               <FaTimesCircle className="mr-2 text-red-600 text-xl" />
@@ -182,7 +195,9 @@ const MakePayment = () => {
             className="space-y-4"
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700">Payment Type</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Payment Type
+              </label>
               <select
                 name="type"
                 value={paymentData.type}
@@ -196,7 +211,9 @@ const MakePayment = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Reference ID</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Reference ID
+              </label>
               {paymentData.type === "shop" ? (
                 <select
                   ref={firstInputRef}
@@ -231,7 +248,9 @@ const MakePayment = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Amount Paid</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Amount Paid
+              </label>
               <input
                 type="number"
                 name="amountPaid"
@@ -247,7 +266,9 @@ const MakePayment = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Payment Method</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Payment Method
+              </label>
               <select
                 name="paymentMethod"
                 value={paymentData.paymentMethod}
@@ -264,7 +285,9 @@ const MakePayment = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Payment Date</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Payment Date
+              </label>
               <input
                 type="date"
                 name="paymentDate"
@@ -303,62 +326,54 @@ const MakePayment = () => {
           {paymentData.type === "shop" && paymentData.referenceId && (
             <>
               <h3 className="text-xl font-semibold mb-2">Shop Details</h3>
-              {(() => {
-                const shop = shops.find((s) => s.shop_id === paymentData.referenceId);
-                if (!shop) return <p className="text-gray-500">No shop data found.</p>;
-                return (
-                  <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                    <p>
-                      <strong>Shop ID:</strong> {shop.shop_id}
-                    </p>
-                    <p>
-                      <strong>Name:</strong> {shop.shop_name}
-                    </p>
-                    <p>
-                      <strong>Location:</strong> {shop.location}
-                    </p>
-                    <p>
-                      <strong>Rent:</strong> {shop.rent_amount}
-                    </p>
-                  </div>
-                );
-              })()}
+              {shop ? (
+                <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                  <p>
+                    <strong>Shop ID:</strong> {shop.shop_id}
+                  </p>
+                  <p>
+                    <strong>Name:</strong> {shop.shop_name}
+                  </p>
+                  <p>
+                    <strong>Location:</strong> {shop.location}
+                  </p>
+                  <p>
+                    <strong>Rent:</strong> {shop.rent_amount}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-500">No shop data found.</p>
+              )}
 
-              <h3 className="text-xl font-semibold mt-6 mb-2">Payment History</h3>
-          <div className="max-h-64 overflow-y-auto">
-  {paymentRecords.filter((p) => 
-    p.shop_id?.toString().trim().toLowerCase() === paymentData.referenceId?.toString().trim().toLowerCase()
-  ).length > 0 ? (
-    <table className="w-full text-left border">
-      <thead>
-        <tr className="bg-gray-200 text-sm">
-          <th className="p-2 border">Date</th>
-          <th className="p-2 border">Amount</th>
-          <th className="p-2 border">Method</th>
-        </tr>
-      </thead>
-      <tbody>
-        {paymentRecords
-          .filter((p) => 
-            p.shop_id?.toString().trim().toLowerCase() === 
-            paymentData.referenceId?.toString().trim().toLowerCase()
-          )
-          .map((p) => (
-            <tr key={p.payment_id} className="text-sm">
-              <td className="p-2 border">
-                {new Date(p.payment_date).toLocaleDateString()}
-              </td>
-              <td className="p-2 border">LKR {p.amount_paid}</td>
-              <td className="p-2 border">{p.payment_method}</td>
-            </tr>
-          ))}
-      </tbody>
-    </table>
-  ) : (
-    <p className="text-gray-500">No payment records found.</p>
-  )}
-</div>
-
+              <h3 className="text-xl font-semibold mt-6 mb-2">
+                Payment History
+              </h3>
+              <div className="max-h-64 overflow-y-auto">
+                {filteredPayments.length > 0 ? (
+                  <table className="w-full text-left border">
+                    <thead>
+                      <tr className="bg-gray-200 text-sm">
+                        <th className="p-2 border">Date</th>
+                        <th className="p-2 border">Amount</th>
+                        <th className="p-2 border">Method</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPayments.map((p) => (
+                        <tr key={p.payment_id} className="text-sm">
+                          <td className="p-2 border">
+                            {new Date(p.payment_date).toLocaleDateString()}
+                          </td>
+                          <td className="p-2 border">LKR {p.amount_paid}</td>
+                          <td className="p-2 border">{p.payment_method}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-gray-500">No payment records found.</p>
+                )}
+              </div>
             </>
           )}
         </div>
