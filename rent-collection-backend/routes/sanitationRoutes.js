@@ -42,19 +42,29 @@ router.post('/', authenticateUser, authorizeRole(['admin', 'superadmin', 'tiketi
 router.get('/by-date', authenticateUser, authorizeRole(['admin', 'superadmin']), async (req, res) => {
   const { date, byWhom } = req.query;
 
-  try {
-    const whereClause = {};
-    if (date) whereClause.date = date;
-    if (byWhom) whereClause.byWhom = byWhom;
+ try {
+  const whereClause = {};
+  if (date) whereClause.date = date;
+  if (byWhom) whereClause.byWhom = byWhom;
 
-    const tickets = await Sanitation.findAll({
-      where: whereClause,
-      attributes: ['id', 'price', 'date', 'byWhom'],
-      order: [['date', 'DESC'], ['id', 'DESC']]
-    });
+  const tickets = await Sanitation.findAll({
+    where: whereClause,
+    attributes: ['id', 'price', 'date', 'byWhom', 'createdAt'],
+    order: [['date', 'DESC'], ['id', 'DESC']],
+    raw: true
+  });
 
-    res.status(200).json({ count: tickets.length, tickets });
-  } catch (error) {
+  // Format createdAt to Sri Lanka time
+  const formattedTickets = tickets.map(ticket => ({
+    ...ticket,
+    createdAtSriLanka: new Date(ticket.createdAt).toLocaleString('en-GB', {
+      timeZone: 'Asia/Colombo',
+      hour12: false
+    })
+  }));
+
+  res.status(200).json({ count: tickets.length, tickets: formattedTickets });
+} catch (error) {
     res.status(500).json({ message: 'Error fetching sanitation tickets', error: error.message });
   }
 });

@@ -89,6 +89,7 @@
   },
   "contact": {
     "title": "Contact Us",
+    "description": "If you have any questions or suggestions, please feel free to reach out to us. We are here to assist you.",
     "breadcrumb": "Home > Contact Us",
     "talkToUs": "Talk to us",
     "subText": "Tell us your suggestions and allegations",
