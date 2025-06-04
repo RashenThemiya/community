@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmWrapper from "../../components/ConfirmWrapper";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../utils/axiosInstance";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const ALLOW_FUTURE_DATES = false;
 
@@ -101,7 +102,7 @@ const MakePayment = () => {
   };
 
   const handleSubmit = async () => {
-    if (loading) return; // ✅ Prevent multiple submissions
+    if (loading) return; // Prevent multiple submissions
 
     setError(null);
     setMessage(null);
@@ -166,6 +167,7 @@ const MakePayment = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+      {loading && <LoadingSpinner />} {/* <-- Spinner overlay here */}
       <h2 className="text-2xl font-bold text-center mb-2">Make a Payment</h2>
       <p className="text-center text-gray-600 mb-6">
         Admin: {name || "Unknown"}
@@ -194,25 +196,11 @@ const MakePayment = () => {
             }}
             className="space-y-4"
           >
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Payment Type
-              </label>
-              <select
-                name="type"
-                value={paymentData.type}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              >
-                <option value="shop">By Shop ID</option>
-                <option value="invoice">By Invoice ID</option>
-              </select>
-            </div>
+            
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Reference ID
+                Shop ID
               </label>
               {paymentData.type === "shop" ? (
                 <select
@@ -283,7 +271,6 @@ const MakePayment = () => {
                 <option value="Correction Made">Correction Made</option>
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Payment Date
