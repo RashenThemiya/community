@@ -363,7 +363,7 @@ sheet.getRow(1).font = { bold: true, size: 10 };
     }
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=Monthly_Income_Report_${latestMonthStr}.xlsx`);
+    res.setHeader('Content-Disposition', `attachment; filename=Monthly_full_Report_${latestMonthStr}.xlsx`);
     await workbook.xlsx.write(res);
     res.end();
   } catch (err) {
