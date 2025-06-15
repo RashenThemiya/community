@@ -18,6 +18,7 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
     return;
   }
 
+  // Group prices by product type (or uncategorized)
   const grouped = prices.reduce((acc, item) => {
     const type = item.product?.type || ui.uncategorized;
     if (!acc[type]) acc[type] = [];
@@ -27,42 +28,58 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
 
   const capitalize = str => str ? str.charAt(0).toLocaleUpperCase() + str.slice(1) : "";
 
-  const categorizedList = [];
-  for (const [type, items] of Object.entries(grouped)) {
-    categorizedList.push({ isHeader: true, label: capitalize(types?.[type] || type) });
-    items.forEach(item => categorizedList.push({ isHeader: false, item }));
-  }
+  // Convert grouped object into array of groups with header and items
+  const groups = Object.entries(grouped).map(([type, items]) => ({
+    header: capitalize(types?.[type] || type),
+    items
+  }));
 
-  const itemsOnly = categorizedList.filter(e => !e.isHeader);
-  while (itemsOnly.length < 120) {
-    itemsOnly.push({ isHeader: false, item: null });
-  }
+  // Calculate total number of items (excluding headers)
+  let totalItemsCount = groups.reduce((sum, group) => sum + group.items.length, 0);
 
-  const finalList = [];
-  for (const [type, items] of Object.entries(grouped)) {
-    finalList.push({ isHeader: true, label: capitalize(types?.[type] || type) });
-    for (const item of items) {
-      finalList.push({ isHeader: false, item });
-    }
-  }
-  while (finalList.filter(e => !e.isHeader).length < 120) {
-    finalList.push({ isHeader: false, item: null });
-  }
-
-  const rowsPerCol = 60;
-  const col1 = [], col2 = [];
-  let count = 0;
-  for (const entry of finalList) {
-    if (entry.isHeader || count < rowsPerCol) {
-      col1.push(entry);
-      if (!entry.isHeader) count++;
+  // Pad groups with empty items to reach 120 total items (excluding headers)
+  const itemsToAdd = 120 - totalItemsCount;
+  if (itemsToAdd > 0) {
+    if (groups.length === 0) {
+      groups.push({ header: ui.uncategorized, items: Array(itemsToAdd).fill(null) });
     } else {
-      col2.push(entry);
+      groups[groups.length - 1].items.push(...Array(itemsToAdd).fill(null));
+    }
+    totalItemsCount = 120;
+  }
+
+  // Split groups into two columns so that each column has ~60 items (excluding headers)
+  const rowsPerCol = 60;
+  const col1 = [];
+  const col2 = [];
+
+  let currentCount = 0;
+  for (const group of groups) {
+    if (currentCount + group.items.length <= rowsPerCol) {
+      col1.push({ isHeader: true, label: group.header });
+      group.items.forEach(item => col1.push({ isHeader: false, item }));
+      currentCount += group.items.length;
+    } else {
+      col2.push({ isHeader: true, label: group.header });
+      group.items.forEach(item => col2.push({ isHeader: false, item }));
     }
   }
 
-  const cumulativeCounts = [0, col1.filter(e => !e.isHeader).length];
+  // Pad columns to exactly 60 items (excluding headers)
+  const padColumn = (col) => {
+    let count = col.filter(e => !e.isHeader).length;
+    while (count < rowsPerCol) {
+      col.push({ isHeader: false, item: null });
+      count++;
+    }
+  };
+  padColumn(col1);
+  padColumn(col2);
 
+  // Calculate cumulative counts for numbering items per column
+  const cumulativeCounts = [0, col1.filter(e => !e.isHeader && e.item).length];
+
+  // Build table header HTML for two columns
   const headerRow = Array(2).fill(`
     <th style="border:1px solid #000; padding:2px; font-size:9.25px; font-weight:bold; width:5%;">${ui.tableHeaders.number}</th>
     <th style="border:1px solid #000; padding:2px; font-size:9.25px; font-weight:bold;">${ui.tableHeaders.item}</th>
@@ -70,6 +87,7 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
     <th style="border:1px solid #000; padding:2px; font-size:9.25px; font-weight:bold; width:13%;">${ui.tableHeaders.maxPrice}</th>
   `).join(`<th style="width:8px; border:none;"></th>`);
 
+  // Build table rows for each row index (0 to 59)
   let tableRows = "";
   for (let i = 0; i < rowsPerCol; i++) {
     tableRows += "<tr>";
@@ -85,8 +103,11 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
         `;
       } else {
         const item = entry.item;
-        const index = cumulativeCounts[colIndex] +
-          column.slice(0, i + 1).filter(e => !e.isHeader && e.item).length;
+
+        // Calculate index: count only valid items (non-header and non-null) up to this row
+        const validItemsUpToRow = column.slice(0, i + 1).filter(e => !e.isHeader && e.item).length;
+        const index = cumulativeCounts[colIndex] + validItemsUpToRow;
+
         const name = item?.product?.name ? (productNames?.[item.product.name] || item.product.name) : "";
         const min = item?.min_price ? `Rs. ${Number(item.min_price).toFixed(2)}` : "";
         const max = item?.max_price ? `Rs. ${Number(item.max_price).toFixed(2)}` : "";
@@ -105,6 +126,7 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
     tableRows += "</tr>";
   }
 
+  // Compose full table HTML
   const tableHtml = `
     <table style="width:100%; border-collapse:collapse; margin:0; page-break-inside: avoid;">
       <thead><tr>${headerRow}</tr></thead>
@@ -112,6 +134,7 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
     </table>
   `;
 
+  // Compose full content HTML
   const content = `
     <div style="font-family: 'Iskoola Pota', 'Noto Sans Sinhala', Arial, sans-serif;">
       <!-- HEADER -->
