@@ -40,7 +40,6 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
   // Pad groups with empty items to reach 120 total items (excluding headers)
   const itemsToAdd = 120 - totalItemsCount;
   if (itemsToAdd > 0) {
-    // Add empty items to the last group (or create a dummy group if none)
     if (groups.length === 0) {
       groups.push({ header: ui.uncategorized, items: Array(itemsToAdd).fill(null) });
     } else {
@@ -57,18 +56,16 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
   let currentCount = 0;
   for (const group of groups) {
     if (currentCount + group.items.length <= rowsPerCol) {
-      // Add entire group to col1
       col1.push({ isHeader: true, label: group.header });
       group.items.forEach(item => col1.push({ isHeader: false, item }));
       currentCount += group.items.length;
     } else {
-      // Add entire group to col2
       col2.push({ isHeader: true, label: group.header });
       group.items.forEach(item => col2.push({ isHeader: false, item }));
     }
   }
 
-  // If columns have less than 60 items, pad with empty rows
+  // Pad columns to exactly 60 items (excluding headers)
   const padColumn = (col) => {
     let count = col.filter(e => !e.isHeader).length;
     while (count < rowsPerCol) {
@@ -80,7 +77,7 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
   padColumn(col2);
 
   // Calculate cumulative counts for numbering items per column
-  const cumulativeCounts = [0, col1.filter(e => !e.isHeader).length];
+  const cumulativeCounts = [0, col1.filter(e => !e.isHeader && e.item).length];
 
   // Build table header HTML for two columns
   const headerRow = Array(2).fill(`
@@ -106,8 +103,11 @@ export const printDailyPrices = async ({ prices, date, ui, productNames, types }
         `;
       } else {
         const item = entry.item;
-        const index = cumulativeCounts[colIndex] +
-          column.slice(0, i + 1).filter(e => !e.isHeader && e.item).length;
+
+        // Calculate index: count only valid items (non-header and non-null) up to this row
+        const validItemsUpToRow = column.slice(0, i + 1).filter(e => !e.isHeader && e.item).length;
+        const index = cumulativeCounts[colIndex] + validItemsUpToRow;
+
         const name = item?.product?.name ? (productNames?.[item.product.name] || item.product.name) : "";
         const min = item?.min_price ? `Rs. ${Number(item.min_price).toFixed(2)}` : "";
         const max = item?.max_price ? `Rs. ${Number(item.max_price).toFixed(2)}` : "";
