@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const images = [
   "/images/crops1.png",
@@ -13,6 +14,7 @@ const images = [
 const WelcomeSection = () => {
   const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
+ const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -62,6 +64,24 @@ const WelcomeSection = () => {
             <p className="text-lg md:text-xl text-gray-100 text-justify leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)]">
               {t("home.description")}
             </p>
+
+
+          <div className="flex space-x-4 mt-6">
+            <button
+              onClick={() => navigate("/home-dailyprice")}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded shadow"
+            >
+              Daily Price
+            </button>
+
+            <button
+              onClick={() => navigate("/contact")}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded shadow"
+            >
+              Contact Page
+            </button>
+          </div>
+
           </div>
 
           {/* Image Slider */}

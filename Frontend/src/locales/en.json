@@ -212,6 +212,15 @@
   "Leaf Vegetable": "Leaf Vegetable",
   "Grain": "Grain",
   "Uncategorized": "Uncategorized"
-}
+},
+
+  "priceInsights": {
+    "title": "Market Price Overview",
+    "range": "prices ranged between",
+    "latest": "Latest data recorded on",
+    "trends": "Use this chart to explore seasonal fluctuations, upward/downward trends, or price spikes.",
+    "zoom": "Zoom and scroll to investigate specific time periods for better insights."
+  }
+
 
 }
